@@ -1,1 +1,94 @@
-<p>nav-bar works!</p>
+
+<header class="flex h-20 items-center justify-between
+               border-b border-slate-200 bg-white px-5 md:px-8">
+
+  <!-- Left section -->
+  <div class="flex items-center gap-4">
+
+    <button
+      class="rounded-lg p-2 text-slate-600
+             transition hover:bg-slate-100 lg:hidden"
+      (click)="menuToggle.emit()">
+
+      <ng-icon name="heroBars3" size="24"></ng-icon>
+
+    </button>
+
+    <div>
+      <h2 class="text-lg font-semibold text-slate-800">
+        {{ pageTitle }}
+      </h2>
+
+      <p class="hidden text-xs text-slate-400 sm:block">
+        Botebo Ice Suppliers
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Right section -->
+  <div class="flex items-center gap-3 md:gap-6">
+
+    <!-- Search -->
+    <div class="hidden items-center gap-2 rounded-lg
+                border border-slate-200 bg-slate-50
+                px-3 py-2 md:flex">
+
+      <ng-icon
+        name="heroMagnifyingGlass"
+        class="text-slate-400"
+        size="18">
+      </ng-icon>
+
+      <input
+        type="text"
+        placeholder="Search..."
+        class="w-36 bg-transparent text-sm outline-none
+               placeholder:text-slate-400 lg:w-52">
+
+    </div>
+
+    <!-- Notifications -->
+    <button
+      class="relative rounded-lg p-2 text-slate-500
+             transition hover:bg-slate-100 hover:text-slate-800">
+
+      <ng-icon name="heroBell" size="21"></ng-icon>
+
+      <span class="absolute right-2 top-2 h-2 w-2
+                   rounded-full bg-red-500 ring-2 ring-white">
+      </span>
+
+    </button>
+
+    <!-- Profile -->
+    <button class="flex items-center gap-2 rounded-lg
+                   p-1.5 transition hover:bg-slate-100">
+
+      <div class="flex h-9 w-9 items-center justify-center
+                  rounded-full bg-blue-100 text-sm font-bold
+                  text-blue-700">
+        BM
+      </div>
+
+      <div class="hidden text-left sm:block">
+        <p class="text-sm font-semibold text-slate-700">
+          Administrator
+        </p>
+
+        <p class="text-xs text-slate-400">
+          Admin
+        </p>
+      </div>
+
+      <ng-icon
+        name="heroChevronDown"
+        class="hidden text-slate-400 sm:block"
+        size="16">
+      </ng-icon>
+
+    </button>
+
+  </div>
+
+</header>
