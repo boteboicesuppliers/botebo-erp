@@ -1,39 +1,46 @@
-<!-- ================= DESKTOP APP VIEW (Hidden on mobile/tablet) ================= -->
+<!-- DESKTOP APPLICATION -->
 <div class="hidden lg:block min-h-screen bg-slate-100">
 
-  <!-- Left Sidebar -->
+  <!-- Sidebar -->
   <app-nav-bar></app-nav-bar>
 
-  <!-- Main Application Content -->
-  <main class="min-h-screen ml-64 p-8">
-    <router-outlet></router-outlet>
+  <!-- Main Application -->
+  <main class="ml-64 min-h-screen">
+
+    <!-- Header aligned with sidebar branding -->
+    <app-header></app-header>
+
+    <!-- Page Content -->
+    <div class="p-8">
+      <app-dashboard></app-dashboard>
+    </div>
+
   </main>
 
 </div>
 
-<!-- ================= MOBILE / SMALL SCREEN BLOCKER (Shown below 1024px) ================= -->
-<div class="flex lg:hidden min-h-screen w-full flex-col items-center justify-center bg-slate-950 p-6 text-center text-white">
-  <div class="max-w-md space-y-4 rounded-2xl bg-slate-900 p-8 border border-slate-800 shadow-2xl">
-    
-    <!-- Brand Icon -->
-    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-2xl font-bold text-white shadow-lg shadow-blue-900/40">
+<!-- MOBILE BLOCKER -->
+<div class="flex lg:hidden min-h-screen w-full flex-col items-center justify-center bg-slate-50 p-6 text-center text-slate-800">
+
+  <div class="w-full max-w-md space-y-5 rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/50">
+
+    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-blue-600 text-2xl font-medium text-white">
       B
     </div>
-    
-    <!-- Heading -->
-    <h1 class="text-xl font-bold uppercase tracking-wide text-white">
+
+    <h1 class="text-xl font-medium uppercase tracking-wide text-slate-900">
       Desktop Experience Required
     </h1>
-    
-    <!-- Description -->
-    <p class="text-sm text-slate-400 leading-relaxed">
-      <strong>Botebo ERP</strong> is a professional management system optimized for desktop and laptop displays. Please open this application on a computer for the best experience.
+
+    <p class="text-sm leading-relaxed text-slate-700">
+      <strong class="font-medium text-slate-800">Botebo ERP</strong>
+      is a professional management system optimized for desktop and laptop displays. Please open this application on a computer for the best experience.
     </p>
-    
-    <!-- Technical Note -->
-    <div class="pt-2 border-t border-slate-800 text-xs text-slate-500 font-mono">
+
+    <div class="border-t border-slate-200 pt-4 text-xs font-mono text-slate-600">
       Minimum required width: 1024px
     </div>
 
   </div>
+
 </div>

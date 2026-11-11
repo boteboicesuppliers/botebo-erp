@@ -1,1 +1,495 @@
-<p>dashboard works!</p>
+<div class="dashboard w-full space-y-7 text-slate-800">
+
+  <!-- DASHBOARD INTRODUCTION -->
+  <section class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-semibold tracking-tight text-slate-900">Dashboard Overview</h2>
+      <p class="mt-1 text-sm text-slate-700">Monitor your business operations, orders, inventory and financial performance.</p>
+    </div>
+
+    <div class="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700">
+      <svg class="h-4 w-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="17" rx="2"/>
+        <path d="M16 2v4M8 2v4M3 10h18"/>
+      </svg>
+      12 November 2026
+    </div>
+  </section>
+
+  <!-- KPI CARDS -->
+  <section>
+    <div class="mb-4 flex items-center justify-between">
+      <h3 class="text-[16px] font-medium tracking-[-0.025em] text-slate-900">Business at a glance</h3>
+      <span class="text-xs font-medium text-slate-600">Live overview · Mock data</span>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      @for (kpi of kpis; track kpi.label) {
+        <article class="flex min-h-[150px] min-w-0 flex-col justify-between rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] ease-[ease] transition-[border-color,box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_5px_15px_rgba(15,23,42,0.07)] max-md:p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-medium text-slate-700">{{ kpi.label }}</p>
+              <p class="mt-3 break-words text-2xl font-semibold tracking-tight text-slate-900">{{ kpi.value }}</p>
+            </div>
+
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[11px] [&_svg]:h-[21px] [&_svg]:w-[21px]" [class]="
+              kpi.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+              kpi.color === 'orange' ? 'bg-orange-100 text-orange-700' :
+              kpi.color === 'red' ? 'bg-red-100 text-red-700' :
+              kpi.color === 'purple' ? 'bg-purple-100 text-purple-700' :
+              kpi.color === 'cyan' ? 'bg-cyan-100 text-cyan-700' :
+              kpi.color === 'indigo' ? 'bg-indigo-100 text-indigo-700' :
+              'bg-green-100 text-green-700'
+            ">
+              @switch (kpi.icon) {
+                @case ('orders') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                }
+                @case ('delivery') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h11v12H3zM14 10h4l3 3v5h-7z"/><circle cx="7.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg>
+                }
+                @case ('inventory') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9"/></svg>
+                }
+                @case ('invoice') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+                }
+                @case ('quotation') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h14v18H5zM8 8h8M8 12h8M8 16h4"/></svg>
+                }
+                @case ('purchase') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h4"/></svg>
+                }
+                @case ('warning') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg>
+                }
+                @case ('receivables') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M8 15h3"/></svg>
+                }
+              }
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-semibold text-slate-700">{{ kpi.change }}</span>
+            <span class="text-xs text-slate-600">{{ kpi.detail }}</span>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <!-- OPERATIONS -->
+  <section>
+    <div class="mb-4">
+      <h3 class="text-[16px] font-medium tracking-[-0.025em] text-slate-900">Operations</h3>
+      <p class="mt-1 text-[13px] text-slate-600">Order processing, fulfilment and delivery activity.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
+
+      <!-- OPEN ORDERS OVERVIEW -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px] xl:col-span-1">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Open Orders Overview</h4>
+            <p class="mt-1 text-xs text-slate-500">Order status distribution</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">128 orders</span>
+        </div>
+
+        <div class="mt-6 flex items-center justify-center">
+          <div class="relative h-44 w-44">
+            <svg viewBox="0 0 160 160" class="h-full w-full -rotate-90">
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#e2e8f0" stroke-width="17"/>
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#2563eb" stroke-width="17" stroke-dasharray="128.6 389.6" stroke-dashoffset="0"/>
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#0891b2" stroke-width="17" stroke-dasharray="85.7 389.6" stroke-dashoffset="-128.6"/>
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#7c3aed" stroke-width="17" stroke-dasharray="105.2 389.6" stroke-dashoffset="-214.3"/>
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#d97706" stroke-width="17" stroke-dasharray="39 389.6" stroke-dashoffset="-319.5"/>
+              <circle cx="80" cy="80" r="62" fill="none" stroke="#dc2626" stroke-width="17" stroke-dasharray="31.1 389.6" stroke-dashoffset="-358.5"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-3xl font-semibold text-slate-900">128</span>
+              <span class="text-xs font-medium text-slate-600">Open orders</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-5 space-y-3">
+          @for (status of orderStatuses; track status.label) {
+            <div class="flex items-center justify-between gap-3 text-sm">
+              <div class="flex items-center gap-2">
+                <span class="h-2.5 w-2.5 rounded-full" [style.background]="status.color"></span>
+                <span class="text-slate-700">{{ status.label }}</span>
+              </div>
+              <span class="font-semibold text-slate-900">{{ status.count }}</span>
+            </div>
+          }
+        </div>
+      </article>
+
+      <!-- UPCOMING DELIVERIES -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px] xl:col-span-2">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Upcoming Deliveries</h4>
+            <p class="mt-1 text-xs text-slate-500">Scheduled deliveries and fulfilment commitments</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">5 upcoming</span>
+        </div>
+
+        <div class="mt-5 w-full overflow-x-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full border-collapse text-left text-[13px] text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr]:ease-[ease] [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-[14px] [&_td]:py-[13px] [&_td]:align-middle [&_th]:whitespace-nowrap [&_th]:px-[14px] [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 [&_thead]:border-b [&_thead]:border-slate-200 [&_thead]:bg-slate-50 max-md:[&_td]:p-[11px] max-md:[&_th]:p-[11px]">
+            <thead>
+              <tr>
+                <th>Delivery</th>
+                <th>Customer</th>
+                <th>Destination</th>
+                <th>Scheduled</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (delivery of upcomingDeliveries; track delivery.id) {
+                <tr>
+                  <td>
+                    <span class="font-semibold text-slate-900">{{ delivery.id }}</span>
+                    <span class="block text-xs text-slate-600">{{ delivery.order }}</span>
+                  </td>
+                  <td>{{ delivery.customer }}</td>
+                  <td>{{ delivery.destination }}</td>
+                  <td>
+                    <span class="whitespace-nowrap">{{ delivery.date }}</span>
+                    <span class="block text-xs text-slate-600">{{ delivery.time }}</span>
+                  </td>
+                  <td><span class="inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-full px-2.5 py-[5px] text-[11px] font-medium leading-[1.4]" [class]="getStatusClass(delivery.status)">{{ delivery.status }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- SALES AND PROCUREMENT DOCUMENTS -->
+  <section>
+    <div class="mb-4">
+      <h3 class="text-[16px] font-medium tracking-[-0.025em] text-slate-900">Sales & Procurement</h3>
+      <p class="mt-1 text-[13px] text-slate-600">Recent commercial activity across orders, purchasing and quotations.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
+
+      <!-- RECENT SALES ORDERS -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Recent Sales Orders</h4>
+            <p class="mt-1 text-xs text-slate-500">Latest customer orders</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">5 records</span>
+        </div>
+
+        <div class="mt-5 w-full overflow-x-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full border-collapse text-left text-[13px] text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr]:ease-[ease] [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-[14px] [&_td]:py-[13px] [&_td]:align-middle [&_th]:whitespace-nowrap [&_th]:px-[14px] [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 [&_thead]:border-b [&_thead]:border-slate-200 [&_thead]:bg-slate-50 max-md:[&_td]:p-[11px] max-md:[&_th]:p-[11px]">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              @for (order of recentSalesOrders; track order.id) {
+                <tr>
+                  <td class="font-semibold text-slate-900">{{ order.id }}</td>
+                  <td>{{ order.customer }}</td>
+                  <td class="whitespace-nowrap">{{ order.date }}</td>
+                  <td class="whitespace-nowrap font-medium text-slate-900">{{ order.amount }}</td>
+                  <td><span class="inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-full px-2.5 py-[5px] text-[11px] font-medium leading-[1.4]" [class]="getStatusClass(order.status)">{{ order.status }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- RECENT PURCHASE ORDERS -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Recent Purchase Orders</h4>
+            <p class="mt-1 text-xs text-slate-500">Latest supplier purchasing activity</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">4 records</span>
+        </div>
+
+        <div class="mt-5 w-full overflow-x-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full border-collapse text-left text-[13px] text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr]:ease-[ease] [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-[14px] [&_td]:py-[13px] [&_td]:align-middle [&_th]:whitespace-nowrap [&_th]:px-[14px] [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 [&_thead]:border-b [&_thead]:border-slate-200 [&_thead]:bg-slate-50 max-md:[&_td]:p-[11px] max-md:[&_th]:p-[11px]">
+            <thead><tr><th>PO Number</th><th>Supplier</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              @for (order of recentPurchaseOrders; track order.id) {
+                <tr>
+                  <td class="font-semibold text-slate-900">{{ order.id }}</td>
+                  <td>{{ order.supplier }}</td>
+                  <td class="whitespace-nowrap">{{ order.date }}</td>
+                  <td class="whitespace-nowrap font-medium text-slate-900">{{ order.amount }}</td>
+                  <td><span class="inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-full px-2.5 py-[5px] text-[11px] font-medium leading-[1.4]" [class]="getStatusClass(order.status)">{{ order.status }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- RECENT QUOTATIONS -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Recent Quotations</h4>
+            <p class="mt-1 text-xs text-slate-500">Customer quotations and responses</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">4 records</span>
+        </div>
+
+        <div class="mt-5 w-full overflow-x-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full border-collapse text-left text-[13px] text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr]:ease-[ease] [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-[14px] [&_td]:py-[13px] [&_td]:align-middle [&_th]:whitespace-nowrap [&_th]:px-[14px] [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 [&_thead]:border-b [&_thead]:border-slate-200 [&_thead]:bg-slate-50 max-md:[&_td]:p-[11px] max-md:[&_th]:p-[11px]">
+            <thead><tr><th>Quotation</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              @for (quotation of recentQuotations; track quotation.id) {
+                <tr>
+                  <td class="font-semibold text-slate-900">{{ quotation.id }}</td>
+                  <td>{{ quotation.customer }}</td>
+                  <td class="whitespace-nowrap">{{ quotation.date }}</td>
+                  <td class="whitespace-nowrap font-medium text-slate-900">{{ quotation.amount }}</td>
+                  <td><span class="inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-full px-2.5 py-[5px] text-[11px] font-medium leading-[1.4]" [class]="getStatusClass(quotation.status)">{{ quotation.status }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- RECENT INVOICES -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Recent Invoices</h4>
+            <p class="mt-1 text-xs text-slate-500">Latest customer billing activity</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">4 records</span>
+        </div>
+
+        <div class="mt-5 w-full overflow-x-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full border-collapse text-left text-[13px] text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr]:ease-[ease] [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-[14px] [&_td]:py-[13px] [&_td]:align-middle [&_th]:whitespace-nowrap [&_th]:px-[14px] [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 [&_thead]:border-b [&_thead]:border-slate-200 [&_thead]:bg-slate-50 max-md:[&_td]:p-[11px] max-md:[&_th]:p-[11px]">
+            <thead><tr><th>Invoice</th><th>Customer</th><th>Due Date</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              @for (invoice of recentInvoices; track invoice.id) {
+                <tr>
+                  <td class="font-semibold text-slate-900">{{ invoice.id }}</td>
+                  <td>{{ invoice.customer }}</td>
+                  <td class="whitespace-nowrap">{{ invoice.due }}</td>
+                  <td class="whitespace-nowrap font-medium text-slate-900">{{ invoice.amount }}</td>
+                  <td><span class="inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-full px-2.5 py-[5px] text-[11px] font-medium leading-[1.4]" [class]="getStatusClass(invoice.status)">{{ invoice.status }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- DELIVERY TRACKING AND INVENTORY -->
+  <section>
+    <div class="mb-4">
+      <h3 class="text-[16px] font-medium tracking-[-0.025em] text-slate-900">Fulfilment & Inventory</h3>
+      <p class="mt-1 text-[13px] text-slate-600">Track active shipments and monitor stock movements.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
+
+      <!-- DELIVERY TRACKING -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Delivery Tracking</h4>
+            <p class="mt-1 text-xs text-slate-500">Progress of active deliveries</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">4 active</span>
+        </div>
+
+        <div class="mt-5 space-y-5">
+          @for (delivery of deliveryTracking; track delivery.id) {
+            <div>
+              <div class="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p class="text-sm font-semibold text-slate-900">{{ delivery.id }} <span class="font-normal text-slate-600">· {{ delivery.customer }}</span></p>
+                  <p class="mt-1 text-xs text-slate-600">{{ delivery.destination }}</p>
+                </div>
+                <span class="inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-full px-2.5 py-[5px] text-[11px] font-medium leading-[1.4]" [class]="getStatusClass(delivery.stage)">{{ delivery.stage }}</span>
+              </div>
+
+              <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+                <div class="h-full rounded-full bg-blue-600" [style.width.%]="delivery.progress"></div>
+              </div>
+
+              <div class="mt-2 flex justify-between text-xs text-slate-700">
+                <span>{{ delivery.progress }}% complete</span>
+                <span>ETA: {{ delivery.eta }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+
+      <!-- INVENTORY MOVEMENT -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Inventory Movement</h4>
+            <p class="mt-1 text-xs text-slate-500">Recent stock receipts, issues and adjustments</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">5 movements</span>
+        </div>
+
+        <div class="mt-5 w-full overflow-x-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full border-collapse text-left text-[13px] text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr]:ease-[ease] [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-[14px] [&_td]:py-[13px] [&_td]:align-middle [&_th]:whitespace-nowrap [&_th]:px-[14px] [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 [&_thead]:border-b [&_thead]:border-slate-200 [&_thead]:bg-slate-50 max-md:[&_td]:p-[11px] max-md:[&_th]:p-[11px]">
+            <thead><tr><th>Item</th><th>Movement</th><th>Quantity</th><th>Date</th></tr></thead>
+            <tbody>
+              @for (movement of inventoryMovements; track movement.reference) {
+                <tr>
+                  <td>
+                    <span class="font-semibold text-slate-900">{{ movement.item }}</span>
+                    <span class="block text-xs text-slate-600">{{ movement.sku }} · {{ movement.reference }}</span>
+                  </td>
+                  <td>{{ movement.type }}</td>
+                  <td>
+                    <span class="font-semibold" [class.text-green-700]="movement.quantity.startsWith('+')" [class.text-red-700]="movement.quantity.startsWith('-')">
+                      {{ movement.quantity }}
+                    </span>
+                  </td>
+                  <td class="whitespace-nowrap">{{ movement.date }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- FINANCIAL OVERVIEW -->
+  <section>
+    <div class="mb-4">
+      <h3 class="text-[16px] font-medium tracking-[-0.025em] text-slate-900">Financial Overview</h3>
+      <p class="mt-1 text-[13px] text-slate-600">Revenue, cash flow, receivables, payables and outstanding customer balances.</p>
+    </div>
+
+    <!-- FINANCIAL SUMMARY CARDS -->
+    <div class="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      @for (item of financialSummary; track item.label) {
+        <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+          <p class="text-sm font-medium text-slate-700">{{ item.label }}</p>
+          <p class="mt-3 text-2xl font-semibold tracking-tight text-slate-900">{{ item.value }}</p>
+          <div class="mt-3 flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold" [class.text-green-700]="item.positive" [class.text-slate-700]="!item.positive">{{ item.change }}</span>
+            <span class="text-right text-xs text-slate-600">{{ item.description }}</span>
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
+
+      <!-- MONTHLY SALES PERFORMANCE -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px] xl:col-span-2">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Monthly Sales Performance</h4>
+            <p class="mt-1 text-xs text-slate-500">Sales performance against monthly targets · R thousands</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-full border border-slate-200 bg-slate-50 px-[11px] py-[5px] text-[11px] font-medium text-slate-600">Jun – Nov 2026</span>
+        </div>
+
+        <div class="mt-7">
+          <div class="flex h-56 items-end justify-around gap-4 border-b border-l border-slate-300 px-3">
+            @for (month of monthlySales; track month.month) {
+              <div class="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                <div class="flex h-full w-full items-end justify-center gap-1">
+                  <div class="block min-h-1 w-full max-w-8 rounded-t-[5px] bg-blue-600 [transition:opacity_180ms_ease,height_250ms_ease] hover:opacity-75" [style.height.%]="month.sales" [title]="'Sales: R' + month.sales + 'k'"></div>
+                  <div class="block min-h-1 w-full max-w-8 rounded-t-[5px] bg-slate-300 [transition:opacity_180ms_ease,height_250ms_ease] hover:opacity-75" [style.height.%]="month.target" [title]="'Target: R' + month.target + 'k'"></div>
+                </div>
+                <span class="mb-2 text-xs font-medium text-slate-700">{{ month.month }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="mt-4 flex flex-wrap justify-center gap-6 text-xs font-medium text-slate-700">
+            <span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-sm bg-blue-600"></span>Actual sales</span>
+            <span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-sm bg-slate-300"></span>Sales target</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- REVENUE BREAKDOWN -->
+      <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+          <div>
+            <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Revenue Breakdown</h4>
+            <p class="mt-1 text-xs text-slate-500">Revenue by business category</p>
+          </div>
+        </div>
+
+        <div class="mt-6 space-y-6">
+          @for (item of revenueBreakdown; track item.label) {
+            <div>
+              <div class="mb-2 flex items-center justify-between gap-2 text-sm">
+                <span class="font-medium text-slate-800">{{ item.label }}</span>
+                <span class="font-semibold text-slate-900">{{ item.amount }}</span>
+              </div>
+              <div class="h-2.5 overflow-hidden rounded-full bg-slate-200">
+                <div class="h-full rounded-full bg-blue-600" [style.width.%]="item.percentage"></div>
+              </div>
+              <p class="mt-1 text-right text-xs text-slate-600">{{ item.percentage }}% of revenue</p>
+            </div>
+          }
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- OVERDUE INVOICES -->
+  <section>
+    <article class="min-w-0 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] max-md:p-[15px]">
+      <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-[15px]">
+        <div>
+          <h4 class="text-sm font-medium tracking-[-0.01em] text-slate-900">Overdue Invoices</h4>
+          <p class="mt-1 text-xs text-slate-500">Customer accounts requiring collection follow-up</p>
+        </div>
+        <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800">4 overdue</span>
+      </div>
+
+      <div class="mt-5 w-full overflow-x-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+        <table class="w-full border-collapse text-left text-[13px] text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr]:ease-[ease] [&_td]:border-b [&_td]:border-slate-100 [&_td]:px-[14px] [&_td]:py-[13px] [&_td]:align-middle [&_th]:whitespace-nowrap [&_th]:px-[14px] [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 [&_thead]:border-b [&_thead]:border-slate-200 [&_thead]:bg-slate-50 max-md:[&_td]:p-[11px] max-md:[&_th]:p-[11px]">
+          <thead><tr><th>Invoice</th><th>Customer</th><th>Due Date</th><th>Days Overdue</th><th>Outstanding Amount</th></tr></thead>
+          <tbody>
+            @for (invoice of overdueInvoices; track invoice.id) {
+              <tr>
+                <td class="font-semibold text-slate-900">{{ invoice.id }}</td>
+                <td>{{ invoice.customer }}</td>
+                <td>{{ invoice.due }}</td>
+                <td><span class="font-semibold text-red-700">{{ invoice.days }} days</span></td>
+                <td class="font-semibold text-slate-900">{{ invoice.amount }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+  <p class="pb-2 text-center text-xs text-slate-600">
+    Botebo ERP · Dashboard information is currently displayed using sample data.
+  </p>
+
+</div>
