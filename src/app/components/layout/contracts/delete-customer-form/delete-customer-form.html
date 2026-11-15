@@ -1,1 +1,58 @@
-<p>delete-customer-form works!</p>
+<div
+  class="w-full max-w-md border border-[#b8c4d2] bg-white shadow-lg"
+  role="alertdialog"
+  aria-modal="true"
+  aria-labelledby="delete-customer-title">
+
+  <div class="px-5 py-5">
+    <div class="flex items-start gap-4">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center bg-red-100 text-red-700">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"/>
+          <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/>
+          <path d="m19 6-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+        </svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 id="delete-customer-title" class="text-[14px] font-semibold text-[#17304f]">Delete customer?</h3>
+        <p class="mt-1 text-[13px] text-[#4b5563]">
+          You're about to delete
+          <span class="font-semibold text-[#17304f]">{{ customer().businessName }}</span>.
+          This action cannot be undone.
+        </p>
+
+        <label for="confirm-customer-name" class="mt-4 block text-xs text-[#374151]">
+          Enter customer name to confirm
+        </label>
+        <input
+          #nameInput
+          id="confirm-customer-name"
+          type="text"
+          autocomplete="off"
+          [value]="typedName()"
+          (input)="typedName.set(nameInput.value)"
+          (keydown.enter)="confirm()"
+          [placeholder]="customer().businessName"
+          class="mt-1.5 h-9 w-full border border-[#b8c4d2] bg-white px-3 text-[13px] text-[#1f2933] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 border-t border-[#d5dbe3] px-5 py-3">
+    <button
+      type="button"
+      (click)="closed.emit()"
+      class="h-8 min-w-[5rem] cursor-pointer border border-[#9fb3c8] bg-white px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#f1f4f8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      Cancel
+    </button>
+    <button
+      type="button"
+      [disabled]="!nameMatches()"
+      (click)="confirm()"
+      class="h-8 min-w-[5rem] cursor-pointer border border-red-800 bg-red-600 px-4 text-[13px] font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-red-600">
+      Delete
+    </button>
+  </div>
+
+</div>

@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   firebase: {
     apiKey: "AIzaSyCHaSgxLPKSDsYe9kG0Z4TvQG5lL5YSlcI",
     authDomain: "botebo-erp.firebaseapp.com",

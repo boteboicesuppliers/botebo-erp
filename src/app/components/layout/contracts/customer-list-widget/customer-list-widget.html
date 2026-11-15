@@ -1,89 +1,429 @@
-<article class="flex h-[calc(100dvh-12.9rem)] min-h-[24rem] min-w-0 flex-col rounded-xl border border-slate-400 bg-white p-5 shadow-sm max-md:p-4">
+<div class="relative isolate -m-5 flex flex-col gap-3.5 bg-[#e1e6ed] text-[13px] text-[#1f2933] before:absolute before:-inset-3 before:-z-10 before:bg-[#e1e6ed]">
 
-  <!-- HEADING -->
-  <div class="flex shrink-0 flex-wrap items-center justify-end gap-3 border-b border-slate-100 pb-4">
-    <button
-      type="button"
-      (click)="openForm()"
-      class="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-150 hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
-      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 5v14M5 12h14"/>
-      </svg>
-      New Customer
-    </button>
+  <!-- MAIN CARD -->
+  <div class="border border-[#c5ced9] bg-white">
+
+    <!-- PAGE HEADER -->
+    <section class="px-5 pt-5">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <h1 class="text-[30px] leading-9 font-bold tracking-tight text-[#17304f]">Customers</h1>
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="openForm()"
+            class="inline-flex cursor-pointer items-center gap-2 border border-[#17304f] bg-[#1b5a9a] px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2">
+            <span class="text-sm leading-none">+</span>
+            Add customer
+          </button>
+          <button
+            type="button"
+            class="inline-flex cursor-pointer items-center gap-1.5 border border-[#9fb3c8] bg-white px-4 py-2 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+            Actions
+            <span class="text-[9px]">▾</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STATS STRIP (divider runs full card width) -->
+      <div class="-mx-5 mt-3 flex flex-wrap items-center gap-y-2 border-b border-[#c5ced9] px-5 pb-4 text-[13px] text-[#4b5563]">
+        <span class="pr-14">Contracted Customers</span>
+        <span class="pr-5 font-semibold text-[#1f2933]">{{ customers().length }} customers</span>
+        <span class="border-l border-[#c5ced9] pl-5">{{ vatCount() }} VAT registered</span>
+      </div>
+    </section>
+
+    <!-- FILTER BAR -->
+    <section class="border-b border-[#c5ced9] bg-white px-5 pt-4 pb-3">
+      <div class="flex flex-wrap items-end gap-4">
+        <div class="min-w-[16rem] flex-[1.6]">
+          <label class="mb-1.5 block text-xs text-[#374151]">Search customers</label>
+          <input
+            #searchBox
+            type="text"
+            [value]="draftSearch()"
+            (input)="draftSearch.set(searchBox.value)"
+            (keydown.enter)="find()"
+            placeholder="Business name, email or phone"
+            class="h-8 w-full border border-[#b8c4d2] bg-white px-3 text-[13px] text-[#1f2933] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+        </div>
+
+        <div class="min-w-[11rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]">Customer Type</label>
+          <div class="relative">
+            <select
+              #typeSel
+              [value]="draftType()"
+              (change)="draftType.set(typeSel.value)"
+              class="h-8 w-full cursor-pointer appearance-none border border-[#b8c4d2] bg-white px-3 pr-8 text-[13px] text-[#4b5563] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="">All types</option>
+              @for (t of customerTypes(); track t) {
+                <option [value]="t">{{ t }}</option>
+              }
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+        </div>
+
+        <div class="min-w-[11rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]">VAT Status</label>
+          <div class="relative">
+            <select
+              #vatSel
+              [value]="draftVat()"
+              (change)="draftVat.set(vatSel.value)"
+              class="h-8 w-full cursor-pointer appearance-none border border-[#b8c4d2] bg-white px-3 pr-8 text-[13px] text-[#4b5563] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="">All statuses</option>
+              <option value="registered">VAT registered</option>
+              <option value="not-registered">Not VAT registered</option>
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+        </div>
+
+        <div class="min-w-[11rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]">Payment Term</label>
+          <div class="relative">
+            <select
+              #termSel
+              [value]="draftTerm()"
+              (change)="draftTerm.set(termSel.value)"
+              class="h-8 w-full cursor-pointer appearance-none border border-[#b8c4d2] bg-white px-3 pr-8 text-[13px] text-[#4b5563] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="">All terms</option>
+              @for (t of paymentTerms(); track t) {
+                <option [value]="t">{{ t }}</option>
+              }
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="find()"
+            class="h-8 min-w-[6.5rem] cursor-pointer border border-[#17304f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2">
+            Find
+          </button>
+          <button
+            type="button"
+            (click)="reset()"
+            class="h-8 min-w-[5.5rem] cursor-pointer border border-[#9fb3c8] bg-white px-5 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-[13px]">
+        <div class="flex items-center gap-10">
+          <button type="button" class="cursor-pointer text-[#1b5a9a] hover:underline">
+            Advanced <span class="text-[8px]">▾</span>
+          </button>
+          <span class="text-[#4b5563]">View: All customers</span>
+        </div>
+        <div class="text-[#4b5563]">
+          Saved query:
+          <button type="button" class="cursor-pointer text-[#1b5a9a] hover:underline">
+            All customers <span class="text-[8px]">▾</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLE SECTION -->
+    <section class="bg-white">
+
+      <!-- TOOLBAR -->
+      <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+        <div class="flex items-center gap-4">
+          <button
+            type="button"
+            (click)="selectFirst()"
+            class="h-8 min-w-[5rem] cursor-pointer border border-[#9fb3c8] bg-white px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+            Select
+          </button>
+          <button
+            type="button"
+            [disabled]="!selected()"
+            (click)="editSelected()"
+            class="h-8 min-w-[5rem] cursor-pointer border border-[#9fb3c8] bg-white px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:hover:bg-white">
+            Edit
+          </button>
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleMore($event)"
+              class="inline-flex h-8 min-w-[5rem] cursor-pointer items-center justify-center gap-1.5 border border-[#9fb3c8] bg-white px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+              More <span class="text-[8px]">▾</span>
+            </button>
+            @if (moreOpen()) {
+              <div class="absolute top-9 left-0 z-30 w-44 border border-[#b8c4d2] bg-white py-1 shadow-lg" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  [disabled]="!selected()"
+                  (click)="deleteSelected()"
+                  class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:hover:bg-white">
+                  Delete customer
+                </button>
+              </div>
+            }
+          </div>
+          <span class="text-[13px] text-[#4b5563]">{{ selected() ? 1 : 0 }} selected</span>
+        </div>
+
+        <div class="flex items-center gap-8 text-[13px] text-[#17304f]">
+          <button type="button" class="cursor-pointer hover:underline">Export ↓</button>
+          <button type="button" (click)="print()" class="cursor-pointer hover:underline">Print</button>
+          <button type="button" class="cursor-pointer hover:underline">Columns <span class="text-[8px]">▾</span></button>
+        </div>
+      </div>
+
+      @if (customers().length === 0) {
+        <!-- EMPTY STATE -->
+        <div class="flex flex-col items-center justify-center border-t border-[#c5ced9] px-4 py-14 text-center">
+          <div class="flex h-11 w-11 items-center justify-center bg-[#e1e6ed] text-[#4b5563]">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <p class="mt-4 text-sm font-medium text-[#17304f]">No contracted customers yet</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Use the Add customer button to add your first customer.</p>
+        </div>
+      } @else {
+        <!-- CUSTOMER TABLE (scrolls horizontally) -->
+        <div class="w-full overflow-x-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-r [&_td]:border-b [&_td]:border-[#c5ced9] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-[#c5ced9] [&_th]:bg-[#e1e6ed] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151]">
+            <thead>
+              <tr>
+                <th class="w-10 text-center">
+                  <input
+                    type="checkbox"
+                    [checked]="!!selected()"
+                    (change)="clearSelection()"
+                    aria-label="Clear selection"
+                    class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+                </th>
+                <th class="min-w-[11rem]">
+                  <button type="button" (click)="toggleSort()" class="inline-flex cursor-pointer items-center gap-1.5 hover:text-[#17304f]">
+                    Business Name
+                    <span class="text-[11px]">{{ sortAsc() ? '↑' : '↓' }}</span>
+                  </button>
+                </th>
+                <th class="min-w-[18rem]">Address</th>
+                <th class="min-w-[14rem]">Business Email</th>
+                <th class="min-w-[12rem]">Business Phone</th>
+                <th class="min-w-[10rem]">Customer Type</th>
+                <th class="min-w-[9rem]">First Name</th>
+                <th class="min-w-[9rem]">Last Name</th>
+                <th class="min-w-[14rem]">Email</th>
+                <th class="min-w-[10rem]">Phone</th>
+                <th class="min-w-[10rem]">VAT Status</th>
+                <th class="min-w-[9rem]">VAT Number</th>
+                <th class="min-w-[9rem]">Credit Limit</th>
+                <th class="min-w-[10rem]">Payment Term</th>
+                <th class="min-w-[9rem]">Payment Days</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (customer of pagedCustomers(); track customer) {
+                <tr
+                  (click)="toggleRow(customer)"
+                  class="cursor-pointer transition-colors duration-150"
+                  [class]="isSelected(customer) ? '[&_td]:bg-[#dde9f7] [&_td]:font-medium [&_td]:text-[#1b5a9a]' : '[&_td]:bg-white hover:[&_td]:bg-[#f5f8fc]'">
+                  <td class="text-center">
+                    <input
+                      type="checkbox"
+                      [checked]="isSelected(customer)"
+                      (click)="$event.stopPropagation()"
+                      (change)="toggleRow(customer)"
+                      [attr.aria-label]="'Select ' + customer.businessName"
+                      class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+                  </td>
+                  <td>{{ customer.businessName }}</td>
+                  <td>{{ customer.address }}</td>
+                  <td>{{ customer.businessEmail || '—' }}</td>
+                  <td>{{ customer.businessPhone || '—' }}</td>
+                  <td>{{ customer.customerType }}</td>
+                  <td>{{ customer.contactFirstName }}</td>
+                  <td>{{ customer.contactLastName }}</td>
+                  <td>{{ customer.contactEmail }}</td>
+                  <td>{{ customer.contactPhone }}</td>
+                  <td>{{ customer.vatRegistered ? 'VAT registered' : 'Not VAT registered' }}</td>
+                  <td>{{ customer.vatRegistered ? customer.vatNumber : '—' }}</td>
+                  <td>{{ formatRand(customer.creditLimit) }}</td>
+                  <td>{{ customer.paymentTerm }}</td>
+                  <td>{{ customer.paymentTerm === 'Custom Term' ? customer.paymentDays + ' days' : '—' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="15" class="!h-24 bg-white text-center text-[#4b5563]">No customers match your search.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <p class="mt-3 text-center text-xs text-[#4b5563]">Scroll horizontally for tax, credit and payment columns →</p>
+
+        <!-- PAGINATION -->
+        <div class="flex flex-wrap items-center justify-between gap-3 px-5 pt-1 pb-5 text-[13px] text-[#4b5563]">
+          <span>Showing {{ rangeStart() }}–{{ rangeEnd() }} of {{ filteredCustomers().length }} customers</span>
+
+          <div class="flex items-center gap-10">
+            <label class="flex items-center gap-2">
+              Rows per page:
+              <span class="relative">
+                <select
+                  #sizeSel
+                  [value]="pageSize()"
+                  (change)="setPageSize(+sizeSel.value)"
+                  class="cursor-pointer appearance-none bg-transparent pr-4 text-[13px] text-[#1f2933] focus:outline-none">
+                  <option value="8">8</option>
+                  <option value="16">16</option>
+                  <option value="32">32</option>
+                </select>
+                <span class="pointer-events-none absolute top-1/2 right-0 -translate-y-1/2 text-[8px]">▾</span>
+              </span>
+            </label>
+
+            <div class="flex items-center gap-1.5">
+              <button
+                type="button"
+                (click)="goTo(safePage() - 1)"
+                [disabled]="safePage() === 1"
+                aria-label="Previous page"
+                class="flex h-8 w-8 cursor-pointer items-center justify-center text-[#1f2933] hover:bg-[#e1e6ed] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:hover:bg-transparent">
+                ‹
+              </button>
+              @for (p of pageNumbers(); track $index) {
+                @if (p === '...') {
+                  <span class="flex h-8 w-8 items-center justify-center">...</span>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="goTo(+p)"
+                    class="flex h-8 w-9 cursor-pointer items-center justify-center transition-colors"
+                    [class]="p === safePage() ? 'bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'text-[#1f2933] hover:bg-[#e1e6ed]'">
+                    {{ p }}
+                  </button>
+                }
+              }
+              <button
+                type="button"
+                (click)="goTo(safePage() + 1)"
+                [disabled]="safePage() === totalPages()"
+                aria-label="Next page"
+                class="flex h-8 w-8 cursor-pointer items-center justify-center text-[#1f2933] hover:bg-[#e1e6ed] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:hover:bg-transparent">
+                ›
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </section>
   </div>
 
-  @if (customers().length === 0) {
-    <!-- EMPTY STATE -->
-    <div class="flex flex-col items-center justify-center px-4 py-14 text-center">
-      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
-        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
+  <!-- CUSTOMER DETAILS CARD -->
+  @if (selected(); as sel) {
+    <section class="border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+        <div class="flex flex-wrap items-center gap-x-10 gap-y-1">
+          <button
+            type="button"
+            (click)="detailsOpen.set(!detailsOpen())"
+            class="flex cursor-pointer items-center gap-2 text-[14px] font-semibold text-[#17304f]">
+            <span class="text-[9px]">{{ detailsOpen() ? '▾' : '▸' }}</span>
+            Customer details
+          </button>
+          <span class="text-[14px] font-semibold text-[#1b5a9a]">{{ sel.businessName }}</span>
+          <span class="text-[13px] text-[#4b5563]">Customer {{ sel.id }}</span>
+        </div>
+        <button type="button" (click)="editSelected()" class="cursor-pointer text-[13px] text-[#1b5a9a] hover:underline">
+          Edit customer
+        </button>
       </div>
-      <p class="mt-4 text-sm font-medium text-slate-900">No contracted customers yet</p>
-      <p class="mt-1 text-xs text-slate-600">Use the New Customer button to add your first customer.</p>
-    </div>
-  } @else {
-    <!-- CUSTOMER TABLE (scrolls horizontally) -->
-    <div class="mt-6 min-h-0 w-full flex-1 overflow-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
-      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-sm text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-slate-300 [&_td]:px-8 [&_td]:py-6 [&_td]:align-middle [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-slate-300 [&_th]:bg-slate-50 [&_th]:whitespace-nowrap [&_th]:px-8 [&_th]:py-5 [&_th]:text-xs [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 max-md:[&_td]:px-5 max-md:[&_td]:py-4 max-md:[&_th]:px-5 max-md:[&_th]:py-4">
-        <thead>
-          <tr>
-            <!-- Business Details -->
-            <th>Business Name</th>
-            <th>Address</th>
-            <th>Business Email</th>
-            <th>Business Phone</th>
-            <th>Customer Type</th>
-            <!-- Key Contact -->
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <!-- VAT -->
-            <th>VAT Status</th>
-            <th>VAT Number</th>
-            <!-- Credit & Payment -->
-            <th>Credit Limit</th>
-            <th>Payment Term</th>
-            <th>Payment Days</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (customer of customers(); track $index) {
-            <tr>
-              <!-- Business Details -->
-              <td class="font-semibold text-slate-900">{{ customer.businessName }}</td>
-              <td>{{ customer.address }}</td>
-              <td>{{ customer.businessEmail || '—' }}</td>
-              <td>{{ customer.businessPhone || '—' }}</td>
-              <td>{{ customer.customerType }}</td>
 
-              <!-- Key Contact -->
-              <td>{{ customer.contactFirstName }}</td>
-              <td>{{ customer.contactLastName }}</td>
-              <td>{{ customer.contactEmail }}</td>
-              <td>{{ customer.contactPhone }}</td>
+      @if (detailsOpen()) {
+        <div class="grid grid-cols-1 gap-y-6 px-5 py-5 md:grid-cols-2 xl:grid-cols-4 xl:gap-y-0">
 
-              <!-- VAT -->
-              <td>{{ customer.vatRegistered ? 'VAT registered' : 'Not VAT registered' }}</td>
-              <td>{{ customer.vatRegistered ? customer.vatNumber : '—' }}</td>
+          <div class="space-y-4 xl:border-r xl:border-[#c5ced9] xl:pr-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Business Information</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">Business Name</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.businessName }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Address</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.address }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Business Email</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.businessEmail || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Business Phone</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.businessPhone || '—' }}</p>
+            </div>
+          </div>
 
-              <!-- Credit & Payment -->
-              <td class="font-medium text-slate-900">{{ formatRand(customer.creditLimit) }}</td>
-              <td>{{ customer.paymentTerm }}</td>
-              <td>{{ customer.paymentTerm === 'Custom Term' ? customer.paymentDays + ' days' : '—' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          <div class="space-y-4 xl:border-r xl:border-[#c5ced9] xl:px-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Primary Contact</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">First Name</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.contactFirstName }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Last Name</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.contactLastName }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Email</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.contactEmail }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Phone</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.contactPhone }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 xl:border-r xl:border-[#c5ced9] xl:px-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Classification &amp; Tax</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">Customer Type</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.customerType }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">VAT Status</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.vatRegistered ? 'VAT registered' : 'Not VAT registered' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">VAT Number</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.vatRegistered ? sel.vatNumber : '—' }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 xl:pl-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Credit &amp; Payment</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">Credit Limit</p>
+              <p class="mt-1 text-[14px] font-semibold text-[#17304f]">{{ formatRand(sel.creditLimit) }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Payment Term</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.paymentTerm }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Payment Days</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.paymentTerm === 'Custom Term' ? sel.paymentDays + ' days' : '—' }}</p>
+            </div>
+          </div>
+
+        </div>
+      }
+    </section>
   }
-
-</article>
+</div>
 
 <!-- NEW CUSTOMER MODAL -->
 @if (showForm()) {
@@ -92,6 +432,28 @@
     (click)="closeForm()">
     <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
       <app-new-customer-form (closed)="closeForm()" (saved)="addCustomer($event)" />
+    </div>
+  </div>
+}
+
+<!-- EDIT CUSTOMER MODAL -->
+@if (editingCustomer(); as customer) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeEdit()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-edit-customer-form [customer]="customer" (closed)="closeEdit()" (saved)="updateCustomer($event)" />
+    </div>
+  </div>
+}
+
+<!-- DELETE CUSTOMER MODAL -->
+@if (deletingCustomer(); as customer) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-[#17304f]/40 p-4 backdrop-blur-sm"
+    (click)="closeDelete()">
+    <div class="max-h-full w-full max-w-md overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-delete-customer-form [customer]="customer" (closed)="closeDelete()" (confirmed)="confirmDelete()" />
     </div>
   </div>
 }
