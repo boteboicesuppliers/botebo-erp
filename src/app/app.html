@@ -1,19 +1,19 @@
 @if (auth.ready() && auth.user()) {
 
   <!-- DESKTOP APPLICATION -->
-  <div class="hidden lg:block min-h-screen bg-slate-100">
+  <div class="hidden lg:block min-h-screen bg-[#e1e6ed]">
 
-    <!-- Sidebar -->
+    <!-- Header: full width, fixed at the top (host reserves 96px of height in the flow) -->
+    <app-header></app-header>
+
+    <!-- Sidebar: fixed, starts below the header -->
     <app-nav-bar></app-nav-bar>
 
-    <!-- Main Application -->
-    <main class="ml-64 min-h-screen">
-
-      <!-- Header aligned with sidebar branding (stays fixed at the top while scrolling) -->
-      <app-header class="sticky top-0 z-40 block"></app-header>
+    <!-- Main Application: offset by the sidebar width; wrapper (min-h-screen) supplies the blue-grey fill below short pages -->
+    <main class="ml-64 bg-[#e1e6ed]">
 
       <!-- Page Content -->
-      <div class="p-8">
+      <div class="p-2">
         <router-outlet />
       </div>
 

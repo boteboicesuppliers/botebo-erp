@@ -1,1 +1,7 @@
 @import "tailwindcss";
+/* Add to src/styles.css (keep your existing @import "tailwindcss"; line at the top) */
+html,
+body {
+  min-height: 100%;
+  background-color: #e1e6ed;
+}

@@ -1,11 +1,38 @@
 import { Component, ElementRef, computed, inject, signal } from '@angular/core';
-import { CustomerModel } from '../../../../models/contracts/customer-model';
+import { CustomerModel, CustomerStatus } from '../../../../models/contracts/customer-model';
 import { NewCustomerFormModel } from '../../../../models/contracts/new-customer-form-model';
 import { DeleteCustomerForm } from '../delete-customer-form/delete-customer-form';
 import { EditCustomerForm } from '../edit-customer-form/edit-customer-form';
 import { ImportCustomersForm } from '../import-customers-form/import-customers-form';
 import { NewCustomerForm } from '../new-customer-form/new-customer-form';
 import { StatementForm } from '../statement-form/statement-form';
+
+// STATUS BADGE STYLES
+const STATUS_STYLES: Record<CustomerStatus, string> = {
+  'Active': 'bg-emerald-100 text-emerald-900',
+  'Onboarding': 'bg-amber-100 text-amber-900',
+  'Pending Renewal': 'bg-orange-100 text-orange-900',
+  'Dormant': 'bg-sky-100 text-sky-900',
+  'Suspended': 'bg-purple-100 text-purple-900',
+  'Terminated / Expired': 'bg-red-100 text-red-900',
+};
+
+// CUSTOMER NUMBER PREFIX BY TYPE (C-RES-0004, C-RET-0004, C-FB-0004)
+const TYPE_PREFIX: Record<string, string> = {
+  'Reseller': 'RES',
+  'Retail/Forecourt': 'RET',
+  'Food & Beverage': 'FB',
+};
+
+// Mock data only: spreads a realistic mix of statuses across the records
+const MOCK_STATUS_CYCLE: CustomerStatus[] = [
+  'Active', 'Active', 'Onboarding', 'Active', 'Pending Renewal', 'Dormant',
+  'Active', 'Suspended', 'Active', 'Terminated / Expired', 'Active',
+];
+
+function withMockStatus(rows: Omit<CustomerModel, 'status'>[]): CustomerModel[] {
+  return rows.map((r, i) => ({ ...r, status: MOCK_STATUS_CYCLE[i % MOCK_STATUS_CYCLE.length] }));
+}
 
 @Component({
   selector: 'app-customer-list-widget',
@@ -27,7 +54,7 @@ export class CustomerListWidget {
   showStatement = signal(false);
 
   // CONTRACTED CUSTOMERS (mock data: 50 records)
-  customers = signal<CustomerModel[]>([
+  customers = signal<CustomerModel[]>(withMockStatus([
     { id: 'CUS-001', businessName: 'Mabena Industrial', contactFirstName: 'Thabo', contactLastName: 'Mabena', contactEmail: 'thabo@mabena.co.za', contactPhone: '011 555 0142', address: '14 Industrial Road, Germiston, Johannesburg', vatRegistered: true, vatNumber: '4123456789', businessEmail: 'accounts@mabena.co.za', businessPhone: '011 555 0100', customerType: 'Reseller', creditLimit: 170000, paymentTerm: 'Custom Term', paymentDays: 30 },
     { id: 'CUS-002', businessName: 'Cape Engineering', contactFirstName: 'Lauren', contactLastName: 'Fourie', contactEmail: 'lauren@capeeng.co.za', contactPhone: '021 555 0178', address: '8 Voortrekker Road, Bellville, Cape Town', vatRegistered: true, vatNumber: '4234567890', businessEmail: '', businessPhone: '021 555 0150', customerType: 'Reseller', creditLimit: 250000, paymentTerm: 'Custom Term', paymentDays: 60 },
     { id: 'CUS-003', businessName: 'Pretoria Fuel Stop', contactFirstName: 'Sipho', contactLastName: 'Dlamini', contactEmail: 'sipho@pretoriafuel.co.za', contactPhone: '012 555 0119', address: '221 Church Street, Pretoria', vatRegistered: false, vatNumber: '', businessEmail: '', businessPhone: '', customerType: 'Retail/Forecourt', creditLimit: 17000, paymentTerm: 'Cash on Delivery', paymentDays: null },
@@ -78,7 +105,7 @@ export class CustomerListWidget {
     { id: 'CUS-048', businessName: 'Tzaneen Citrus Traders', contactFirstName: 'Kobus', contactLastName: 'Khumalo', contactEmail: 'kobus@tzaneencitrus.co.za', contactPhone: '015 555 1526', address: '16 Agatha Street, Tzaneen', vatRegistered: true, vatNumber: '4432602914', businessEmail: 'accounts@tzaneencitrus.co.za', businessPhone: '015 555 0754', customerType: 'Reseller', creditLimit: 250000, paymentTerm: 'Custom Term', paymentDays: 14 },
     { id: 'CUS-049', businessName: 'Mbombela Express Fuel', contactFirstName: 'Lerato', contactLastName: 'Sithole', contactEmail: 'lerato@mbombelaexpress.co.za', contactPhone: '013 555 1579', address: '80 Samora Machel Drive, Mbombela', vatRegistered: false, vatNumber: '', businessEmail: 'orders@mbombelaexpress.co.za', businessPhone: '013 555 0791', customerType: 'Retail/Forecourt', creditLimit: 35000, paymentTerm: 'Cash on Delivery', paymentDays: null },
     { id: 'CUS-050', businessName: 'Somerset West Distributors', contactFirstName: 'Thandi', contactLastName: 'Jacobs', contactEmail: 'thandi@somersetwest.co.za', contactPhone: '021 555 1632', address: '34 Main Road, Somerset West', vatRegistered: true, vatNumber: '4448441148', businessEmail: '', businessPhone: '021 555 0828', customerType: 'Reseller', creditLimit: 320000, paymentTerm: 'Custom Term', paymentDays: 45 },
-  ]);
+  ]));
 
   // SELECTION / DETAILS PANEL / MORE MENU
   selected = signal<CustomerModel | null>(null);
@@ -113,6 +140,7 @@ export class CustomerListWidget {
     const filtered = this.customers().filter((c) => {
       const matchesSearch =
         !q ||
+        this.customerNumber(c).toLowerCase().includes(q) ||
         c.businessName.toLowerCase().includes(q) ||
         (c.businessEmail ?? '').toLowerCase().includes(q) ||
         (c.businessPhone ?? '').toLowerCase().includes(q);
@@ -314,7 +342,7 @@ export class CustomerListWidget {
   addCustomer(data: NewCustomerFormModel): void {
     const id = this.formatId(this.nextIdNumber());
 
-    this.customers.update((list) => [{ id, ...data }, ...list]);
+    this.customers.update((list) => [{ id, status: 'Onboarding' as CustomerStatus, ...data }, ...list]);
     this.closeForm();
   }
 
@@ -331,7 +359,11 @@ export class CustomerListWidget {
 
   importCustomers(rows: NewCustomerFormModel[]): void {
     let next = this.nextIdNumber();
-    const created: CustomerModel[] = rows.map((r) => ({ id: this.formatId(next++), ...r }));
+    const created: CustomerModel[] = rows.map((r) => ({
+      id: this.formatId(next++),
+      status: 'Onboarding' as CustomerStatus,
+      ...r,
+    }));
 
     this.customers.update((list) => [...list, ...created]);
     this.page.set(1);
@@ -361,12 +393,16 @@ export class CustomerListWidget {
 
   updateCustomer(updated: CustomerModel): void {
     const original = this.editingCustomer();
+    const merged: CustomerModel = {
+      ...updated,
+      status: updated.status ?? original?.status ?? 'Onboarding',
+    };
 
     // Match by reference (not id) so duplicate mock ids can't update the wrong rows
-    this.customers.update((list) => list.map((c) => (c === original ? updated : c)));
+    this.customers.update((list) => list.map((c) => (c === original ? merged : c)));
 
     if (this.selected() === original) {
-      this.selected.set(updated);
+      this.selected.set(merged);
     }
 
     this.closeEdit();
@@ -408,5 +444,16 @@ export class CustomerListWidget {
 
   formatRand(amount: number): string {
     return 'R ' + amount.toLocaleString('en-US');
+  }
+
+  // C-RES-0004 / C-RET-0004 / C-FB-0004 (derived from id + customer type)
+  customerNumber(c: CustomerModel): string {
+    const prefix = TYPE_PREFIX[c.customerType] ?? 'GEN';
+
+    return `C-${prefix}-${c.id.replace(/\D/g, '').padStart(4, '0')}`;
+  }
+
+  statusClass(status: CustomerStatus | undefined): string {
+    return STATUS_STYLES[status ?? 'Onboarding'];
   }
 }

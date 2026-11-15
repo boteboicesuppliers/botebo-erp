@@ -1,32 +1,20 @@
-<aside class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-white font-sans text-slate-700 antialiased border-r border-slate-400">
-
-  <!-- Brand -->
-  <div class="flex h-20 shrink-0 items-center gap-3 px-6">
-
-    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600">
-      <span class="text-2xl font-semibold tracking-tight text-white">B</span>
-    </div>
-
-    <h1 class="text-xl font-semibold tracking-tight text-slate-900">
-      Botebo ERP
-    </h1>
-
-  </div>
+<!-- Starts below the 96px header (56px brand bar + 40px menu bar) -->
+<aside class="fixed top-24 bottom-0 left-0 z-40 flex w-64 flex-col border-r border-[#c5ced9] bg-white text-[13px] text-[#374151] antialiased">
 
   <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto py-6">
+  <nav class="flex-1 overflow-y-auto py-3">
 
     @for (item of navigation; track item.route) {
 
       <a
         [routerLink]="item.route"
-        routerLinkActive="!border-blue-600 !bg-blue-50 !text-blue-700"
+        routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
         [routerLinkActiveOptions]="{ exact: true }"
-        class="group relative flex w-full cursor-pointer items-center gap-3 border-l-4 border-transparent px-5 py-3.5 text-base font-medium tracking-tight text-slate-700 transition-colors duration-200 hover:bg-slate-200 hover:text-slate-900">
+        class="flex h-10 w-full cursor-pointer items-center gap-3 border-l-[3px] border-transparent px-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
 
         <!-- Navigation Icons -->
         <svg
-          class="h-6 w-6 shrink-0 text-current"
+          class="h-[18px] w-[18px] shrink-0 text-current"
           fill="none"
           stroke="currentColor"
           stroke-width="1.8"
@@ -111,9 +99,6 @@
           {{ item.name }}
         </span>
 
-        <!-- Active Indicator -->
-        <span class="h-2 w-2 rounded-full bg-blue-600 opacity-0 transition-opacity group-[.active]:opacity-100"></span>
-
       </a>
 
     }
@@ -121,16 +106,16 @@
   </nav>
 
   <!-- Bottom Actions (no padding so the hover highlight spans the full sidebar width) -->
-  <div class="shrink-0 border-t border-slate-200">
+  <div class="shrink-0 border-t border-[#c5ced9]">
 
     <button
       type="button"
       (click)="logout()"
-      class="flex w-full cursor-pointer items-center gap-3 border-l-4 border-transparent px-5 py-4 text-base font-medium tracking-tight text-slate-700 transition-colors duration-200 hover:bg-red-100 hover:text-red-700">
+      class="flex h-10 w-full cursor-pointer items-center gap-3 border-l-[3px] border-transparent px-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-red-50 hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
 
       <!-- Logout Icon -->
       <svg
-        class="h-6 w-6 shrink-0"
+        class="h-[18px] w-[18px] shrink-0"
         fill="none"
         stroke="currentColor"
         stroke-width="1.8"

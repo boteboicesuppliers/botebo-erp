@@ -1,4 +1,3 @@
-
 import {
   Component,
   EventEmitter,
@@ -18,6 +17,9 @@ import { filter, Subscription } from 'rxjs';
   imports: [],
   templateUrl: './header.html',
   styleUrl: './header.css',
+  // The header itself is fixed edge to edge (see header.html). This host just reserves its
+  // 96px of height (56px brand bar + 40px menu bar) so page content starts directly below it.
+  host: { class: 'block h-24' },
 })
 export class Header implements OnDestroy {
 
@@ -34,7 +36,17 @@ export class Header implements OnDestroy {
 
 
   // ==========================================
+  // MENU BAR (File / Edit / View / ...)
+  // ==========================================
+
+  readonly menuItems = ['File', 'Edit', 'View', 'Tools', 'Window', 'Help'];
+
+  @Output() menuSelected = new EventEmitter<string>();
+
+
+  // ==========================================
   // PAGE TITLE AND BREADCRUMBS
+  // (no longer rendered in the header; pages show their own title and breadcrumbs)
   // ==========================================
 
   pageTitle = 'Dashboard';
