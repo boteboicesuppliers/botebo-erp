@@ -11,16 +11,35 @@
           <button
             type="button"
             (click)="openForm()"
-            class="inline-flex cursor-pointer items-center gap-2 border border-[#17304f] bg-[#1b5a9a] px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2">
+            class="inline-flex h-8 cursor-pointer items-center gap-2 border border-[#17304f] bg-[#1b5a9a] px-4 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2">
             <span class="text-sm leading-none">+</span>
             Add customer
           </button>
-          <button
-            type="button"
-            class="inline-flex cursor-pointer items-center gap-1.5 border border-[#9fb3c8] bg-white px-4 py-2 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
-            Actions
-            <span class="text-[9px]">▾</span>
-          </button>
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleActions($event)"
+              class="inline-flex h-8 cursor-pointer items-center gap-1.5 border border-[#9fb3c8] bg-white px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+              Actions
+              <span class="text-[9px]">▾</span>
+            </button>
+            @if (actionsOpen()) {
+              <div class="absolute top-9 right-0 z-30 w-64 border border-[#b8c4d2] bg-white py-1 shadow-lg" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="openImport()"
+                  class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] text-[#17304f] hover:bg-[#e1e6ed]">
+                  Import customers
+                </button>
+                <button
+                  type="button"
+                  (click)="openStatement()"
+                  class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] text-[#17304f] hover:bg-[#e1e6ed]">
+                  Generate statement of accounts
+                </button>
+              </div>
+            }
+          </div>
         </div>
       </div>
 
@@ -432,6 +451,34 @@
     (click)="closeForm()">
     <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
       <app-new-customer-form (closed)="closeForm()" (saved)="addCustomer($event)" />
+    </div>
+  </div>
+}
+
+<!-- IMPORT CUSTOMERS MODAL -->
+@if (showImport()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeImport()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-import-customers-form
+        [existing]="customers()"
+        (closed)="closeImport()"
+        (imported)="importCustomers($event)" />
+    </div>
+  </div>
+}
+
+<!-- STATEMENT OF ACCOUNTS MODAL -->
+@if (showStatement()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeStatement()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-statement-form
+        [customers]="customers()"
+        [selected]="selected()"
+        (closed)="closeStatement()" />
     </div>
   </div>
 }

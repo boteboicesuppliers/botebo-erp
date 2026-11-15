@@ -3,15 +3,17 @@ import { CustomerModel } from '../../../../models/contracts/customer-model';
 import { NewCustomerFormModel } from '../../../../models/contracts/new-customer-form-model';
 import { DeleteCustomerForm } from '../delete-customer-form/delete-customer-form';
 import { EditCustomerForm } from '../edit-customer-form/edit-customer-form';
+import { ImportCustomersForm } from '../import-customers-form/import-customers-form';
 import { NewCustomerForm } from '../new-customer-form/new-customer-form';
+import { StatementForm } from '../statement-form/statement-form';
 
 @Component({
   selector: 'app-customer-list-widget',
-  imports: [NewCustomerForm, EditCustomerForm, DeleteCustomerForm],
+  imports: [NewCustomerForm, EditCustomerForm, DeleteCustomerForm, ImportCustomersForm, StatementForm],
   templateUrl: './customer-list-widget.html',
   host: {
-    '(document:keydown.escape)': 'closeDelete()',
-    '(document:click)': 'closeMore()',
+    '(document:keydown.escape)': 'closeTopModal()',
+    '(document:click)': 'closeMenus()',
   },
 })
 export class CustomerListWidget {
@@ -21,6 +23,8 @@ export class CustomerListWidget {
   showForm = signal(false);
   editingCustomer = signal<CustomerModel | null>(null);
   deletingCustomer = signal<CustomerModel | null>(null);
+  showImport = signal(false);
+  showStatement = signal(false);
 
   // CONTRACTED CUSTOMERS (mock data: 50 records)
   customers = signal<CustomerModel[]>([
@@ -80,6 +84,7 @@ export class CustomerListWidget {
   selected = signal<CustomerModel | null>(null);
   detailsOpen = signal(true);
   moreOpen = signal(false);
+  actionsOpen = signal(false);
 
   // FILTERS (draft values are applied on Find)
   draftSearch = signal('');
@@ -272,6 +277,26 @@ export class CustomerListWidget {
     this.moreOpen.set(false);
   }
 
+  toggleActions(event: Event): void {
+    event.stopPropagation();
+    this.moreOpen.set(false);
+    this.actionsOpen.update((v) => !v);
+  }
+
+  closeMenus(): void {
+    this.moreOpen.set(false);
+    this.actionsOpen.set(false);
+  }
+
+  // Escape closes only the top-most open modal
+  closeTopModal(): void {
+    if (this.deletingCustomer()) return this.closeDelete();
+    if (this.editingCustomer()) return this.closeEdit();
+    if (this.showImport()) return this.closeImport();
+    if (this.showStatement()) return this.closeStatement();
+    if (this.showForm()) return this.closeForm();
+  }
+
   print(): void {
     window.print();
   }
@@ -287,10 +312,41 @@ export class CustomerListWidget {
   }
 
   addCustomer(data: NewCustomerFormModel): void {
-    const id = `CUS-${String(this.customers().length + 1).padStart(3, '0')}`;
+    const id = this.formatId(this.nextIdNumber());
 
     this.customers.update((list) => [{ id, ...data }, ...list]);
     this.closeForm();
+  }
+
+  // ACTIONS: IMPORT
+
+  openImport(): void {
+    this.actionsOpen.set(false);
+    this.showImport.set(true);
+  }
+
+  closeImport(): void {
+    this.showImport.set(false);
+  }
+
+  importCustomers(rows: NewCustomerFormModel[]): void {
+    let next = this.nextIdNumber();
+    const created: CustomerModel[] = rows.map((r) => ({ id: this.formatId(next++), ...r }));
+
+    this.customers.update((list) => [...list, ...created]);
+    this.page.set(1);
+    this.closeImport();
+  }
+
+  // ACTIONS: STATEMENT OF ACCOUNTS
+
+  openStatement(): void {
+    this.actionsOpen.set(false);
+    this.showStatement.set(true);
+  }
+
+  closeStatement(): void {
+    this.showStatement.set(false);
   }
 
   // ACTIONS: EDIT
@@ -336,6 +392,16 @@ export class CustomerListWidget {
     }
 
     this.closeDelete();
+  }
+
+  // ID HELPERS (max-based so deletes and imports never produce duplicate ids)
+
+  private nextIdNumber(): number {
+    return Math.max(0, ...this.customers().map((c) => Number(c.id.replace(/\D/g, '')))) + 1;
+  }
+
+  private formatId(n: number): string {
+    return `CUS-${String(n).padStart(3, '0')}`;
   }
 
   // DISPLAY HELPERS
