@@ -1,20 +1,13 @@
-
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 import { NavBar } from './components/layout/nav-bar/nav-bar';
 import { Header } from './components/layout/header/header';
-import { Dashboard } from './components/main-view-components/dashboard/dashboard';
 
 @Component({
   selector: 'app-root',
-  imports: [
-    NavBar,
-    Header,
-    Dashboard
-  ],
+  imports: [NavBar, Header, RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
-export class App {
-
-}
+export class App {}

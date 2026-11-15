@@ -1,0 +1,217 @@
+<form
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+  class="rounded-xl border border-slate-300 bg-white shadow-xl">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between gap-3 border-b border-slate-200 px-6 py-4">
+    <h3 class="text-base font-semibold tracking-tight text-slate-900">Add New Customer</h3>
+    <button
+      type="button"
+      (click)="close()"
+      aria-label="Close"
+      class="cursor-pointer rounded-lg p-1.5 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="space-y-6 px-6 py-5">
+
+    <!-- BUSINESS DETAILS -->
+    <section>
+      <h4 class="mb-3 text-[11px] font-medium uppercase tracking-[0.035em] text-slate-600">Business Details</h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div class="sm:col-span-2">
+          <label for="businessName" class="mb-1 block text-sm font-medium text-slate-800">Business name</label>
+          <input id="businessName" type="text" formControlName="businessName" class="px-3 py-2" [class]="inputClass('businessName')" />
+          @if (hasError('businessName')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('businessName') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="address" class="mb-1 block text-sm font-medium text-slate-800">Address</label>
+          <input id="address" type="text" formControlName="address" class="px-3 py-2" [class]="inputClass('address')" />
+          @if (hasError('address')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('address') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="businessEmail" class="mb-1 block text-sm font-medium text-slate-800">
+            Business email <span class="font-normal text-slate-600">(optional)</span>
+          </label>
+          <input id="businessEmail" type="email" formControlName="businessEmail" class="px-3 py-2" [class]="inputClass('businessEmail')" />
+          @if (hasError('businessEmail')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('businessEmail') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="businessPhone" class="mb-1 block text-sm font-medium text-slate-800">
+            Business phone <span class="font-normal text-slate-600">(optional)</span>
+          </label>
+          <input id="businessPhone" type="tel" formControlName="businessPhone" class="px-3 py-2" [class]="inputClass('businessPhone')" />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="customerType" class="mb-1 block text-sm font-medium text-slate-800">Customer type</label>
+          <select id="customerType" formControlName="customerType" class="px-3 py-2" [class]="inputClass('customerType')">
+            <option value="" disabled>Select a type</option>
+            @for (type of customerTypes; track type) {
+              <option [value]="type">{{ type }}</option>
+            }
+          </select>
+          @if (hasError('customerType')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('customerType') }}</p>
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- KEY CONTACT -->
+    <section>
+      <h4 class="mb-3 text-[11px] font-medium uppercase tracking-[0.035em] text-slate-600">Key Contact</h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div>
+          <label for="contactFirstName" class="mb-1 block text-sm font-medium text-slate-800">First name</label>
+          <input id="contactFirstName" type="text" formControlName="contactFirstName" class="px-3 py-2" [class]="inputClass('contactFirstName')" />
+          @if (hasError('contactFirstName')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('contactFirstName') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="contactLastName" class="mb-1 block text-sm font-medium text-slate-800">Last name</label>
+          <input id="contactLastName" type="text" formControlName="contactLastName" class="px-3 py-2" [class]="inputClass('contactLastName')" />
+          @if (hasError('contactLastName')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('contactLastName') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="contactEmail" class="mb-1 block text-sm font-medium text-slate-800">Email</label>
+          <input id="contactEmail" type="email" formControlName="contactEmail" class="px-3 py-2" [class]="inputClass('contactEmail')" />
+          @if (hasError('contactEmail')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('contactEmail') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="contactPhone" class="mb-1 block text-sm font-medium text-slate-800">Phone</label>
+          <input id="contactPhone" type="tel" formControlName="contactPhone" class="px-3 py-2" [class]="inputClass('contactPhone')" />
+          @if (hasError('contactPhone')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('contactPhone') }}</p>
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VAT -->
+    <section>
+      <h4 class="mb-3 text-[11px] font-medium uppercase tracking-[0.035em] text-slate-600">VAT</h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div class="sm:col-span-2">
+          <div class="flex flex-wrap items-center gap-6">
+            <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-800">
+              <input type="radio" formControlName="vatStatus" value="registered"
+                class="h-4 w-4 cursor-pointer border-slate-500 text-blue-600 focus:ring-blue-600" />
+              VAT registered
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-800">
+              <input type="radio" formControlName="vatStatus" value="not-registered"
+                class="h-4 w-4 cursor-pointer border-slate-500 text-blue-600 focus:ring-blue-600" />
+              Not VAT registered
+            </label>
+          </div>
+          @if (hasError('vatStatus')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('vatStatus') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="vatNumber" class="mb-1 block text-sm font-medium text-slate-800">VAT number</label>
+          <input id="vatNumber" type="text" formControlName="vatNumber" class="px-3 py-2" [class]="inputClass('vatNumber')" />
+          @if (hasError('vatNumber')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('vatNumber') }}</p>
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CREDIT & PAYMENT -->
+    <section>
+      <h4 class="mb-3 text-[11px] font-medium uppercase tracking-[0.035em] text-slate-600">Credit &amp; Payment</h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div class="sm:col-span-2">
+          <label for="creditLimit" class="mb-1 block text-sm font-medium text-slate-800">Credit limit (R)</label>
+          <input id="creditLimit" type="text" inputmode="numeric" formControlName="creditLimit"
+            (input)="onCreditLimitInput($event)" class="px-3 py-2" [class]="inputClass('creditLimit')" />
+          @if (hasError('creditLimit')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('creditLimit') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <span class="mb-1 block text-sm font-medium text-slate-800">Payment term</span>
+          <div class="flex flex-wrap items-center gap-6">
+            <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-800">
+              <input type="checkbox"
+                [checked]="form.controls.paymentTerm.value === 'cod'"
+                (change)="selectPaymentTerm('cod', $event)"
+                class="h-4 w-4 cursor-pointer rounded border-slate-500 text-blue-600 focus:ring-blue-600" />
+              Cash on Delivery
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-800">
+              <input type="checkbox"
+                [checked]="form.controls.paymentTerm.value === 'custom'"
+                (change)="selectPaymentTerm('custom', $event)"
+                class="h-4 w-4 cursor-pointer rounded border-slate-500 text-blue-600 focus:ring-blue-600" />
+              Custom Term
+            </label>
+          </div>
+          @if (hasError('paymentTerm')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('paymentTerm') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="paymentDays" class="mb-1 block text-sm font-medium text-slate-800">Payment days</label>
+          <input id="paymentDays" type="text" inputmode="numeric" formControlName="paymentDays"
+            (input)="onDaysInput($event)" class="px-3 py-2" [class]="inputClass('paymentDays')" />
+          @if (hasError('paymentDays')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('paymentDays') }}</p>
+          }
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
+    <button
+      type="button"
+      (click)="close()"
+      class="cursor-pointer rounded-lg border border-slate-400 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600">
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
+      Save Customer
+    </button>
+  </div>
+
+</form>

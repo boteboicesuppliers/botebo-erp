@@ -1,0 +1,260 @@
+import { Component, inject, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SupplierType } from '../../../../models/suppliers/supplier-model';
+import { NewSupplierFormModel } from '../../../../models/suppliers/new-supplier-form-model';
+
+@Component({
+  selector: 'app-new-supplier-form',
+  imports: [ReactiveFormsModule],
+  templateUrl: './new-supplier-form.html',
+  host: { '(document:keydown.escape)': 'close()' },
+})
+export class NewSupplierForm {
+  private fb = inject(FormBuilder);
+
+  // EVENTS
+  closed = output<void>();
+  saved = output<NewSupplierFormModel>();
+
+  // STATE
+  submitted = signal(false);
+  kind = signal<'' | 'individual' | 'business'>('');
+
+  supplierTypes: SupplierType[] = ['Manufacturer', 'Distributor'];
+
+  // FORM
+  // Fields that only apply to one kind of supplier start disabled (and are
+  // excluded from validation) until that kind is selected.
+  form = this.fb.nonNullable.group({
+    supplierKind: ['', Validators.required],
+
+    // Individual only
+    firstName: [{ value: '', disabled: true }, Validators.required],
+    lastName: [{ value: '', disabled: true }, Validators.required],
+
+    // Business only
+    businessName: [{ value: '', disabled: true }, Validators.required],
+
+    // Both
+    address: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    phone: ['', Validators.required],
+    supplierType: ['', Validators.required],
+
+    // Key contact (business only)
+    contactFirstName: [{ value: '', disabled: true }, Validators.required],
+    contactLastName: [{ value: '', disabled: true }, Validators.required],
+    contactEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
+    contactPhone: [{ value: '', disabled: true }, Validators.required],
+
+    // VAT (business only)
+    vatStatus: [{ value: '', disabled: true }, Validators.required],
+    vatNumber: [{ value: '', disabled: true }],
+
+    // Credit (both)
+    creditOption: ['', Validators.required],
+    creditLimit: [{ value: '', disabled: true }],
+
+    // Payment (both)
+    paymentTerm: ['', Validators.required],
+    paymentDays: [{ value: '', disabled: true }],
+  });
+
+  private readonly inputBase =
+    'w-full rounded-lg border bg-slate-100 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-600 focus:bg-white focus:ring-2 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-200 disabled:text-slate-400 disabled:placeholder:text-slate-400';
+
+  constructor() {
+    const c = this.form.controls;
+
+    const individualOnly = [c.firstName, c.lastName];
+    const businessOnly = [
+      c.businessName,
+      c.contactFirstName,
+      c.contactLastName,
+      c.contactEmail,
+      c.contactPhone,
+      c.vatStatus,
+    ];
+
+    // Individual / Business decides which fields are active
+    c.supplierKind.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      const kind = value === 'individual' || value === 'business' ? value : '';
+
+      this.kind.set(kind);
+      this.toggle(individualOnly, kind === 'individual');
+      this.toggle(businessOnly, kind === 'business');
+
+      if (kind !== 'business') {
+        c.vatNumber.clearValidators();
+        c.vatNumber.reset('');
+        c.vatNumber.disable();
+      }
+    });
+
+    // VAT number is greyed out unless the business is VAT registered
+    c.vatStatus.valueChanges.pipe(takeUntilDestroyed()).subscribe((status) => {
+      if (status === 'registered') {
+        c.vatNumber.setValidators(Validators.required);
+        c.vatNumber.enable();
+      } else {
+        c.vatNumber.clearValidators();
+        c.vatNumber.reset('');
+        c.vatNumber.disable();
+      }
+
+      c.vatNumber.updateValueAndValidity();
+    });
+
+    // Credit limit field is only active when "Credit Limit" is selected
+    c.creditOption.valueChanges.pipe(takeUntilDestroyed()).subscribe((option) => {
+      if (option === 'limit') {
+        c.creditLimit.setValidators(Validators.required);
+        c.creditLimit.enable();
+      } else {
+        c.creditLimit.clearValidators();
+        c.creditLimit.reset('');
+        c.creditLimit.disable();
+      }
+
+      c.creditLimit.updateValueAndValidity();
+    });
+
+    // Days field is only active for a custom payment term
+    c.paymentTerm.valueChanges.pipe(takeUntilDestroyed()).subscribe((term) => {
+      if (term === 'custom') {
+        c.paymentDays.setValidators([Validators.required, Validators.min(1)]);
+        c.paymentDays.enable();
+      } else {
+        c.paymentDays.clearValidators();
+        c.paymentDays.reset('');
+        c.paymentDays.disable();
+      }
+
+      c.paymentDays.updateValueAndValidity();
+    });
+  }
+
+  private toggle(controls: AbstractControl[], enabled: boolean): void {
+    for (const control of controls) {
+      if (enabled) {
+        control.enable();
+      } else {
+        control.reset('');
+        control.disable();
+      }
+    }
+  }
+
+  // INPUT HANDLERS
+
+  onCreditLimitInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const caret = input.selectionStart ?? input.value.length;
+    const digitsBeforeCaret = input.value.slice(0, caret).replace(/\D/g, '').length;
+
+    const digits = input.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 12);
+    const formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    input.value = formatted;
+    this.form.controls.creditLimit.setValue(formatted);
+
+    // Keep the cursor where the user was typing
+    let position = 0;
+    let counted = 0;
+    while (position < formatted.length && counted < digitsBeforeCaret) {
+      if (/\d/.test(formatted[position])) {
+        counted++;
+      }
+      position++;
+    }
+    input.setSelectionRange(position, position);
+  }
+
+  onDaysInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 3);
+
+    input.value = digits;
+    this.form.controls.paymentDays.setValue(digits);
+  }
+
+  // VALIDATION HELPERS
+
+  hasError(name: string): boolean {
+    const control = this.form.get(name);
+    return !!control && control.invalid && (control.touched || this.submitted());
+  }
+
+  errorMessage(name: string): string {
+    const control = this.form.get(name);
+
+    if (control?.hasError('email')) {
+      return 'Enter a valid email address';
+    }
+
+    if (control?.hasError('min')) {
+      return 'Enter 1 day or more';
+    }
+
+    return 'This field is required';
+  }
+
+  inputClass(name: string): string {
+    return (
+      this.inputBase +
+      (this.hasError(name)
+        ? ' border-red-500 focus:border-red-500 focus:ring-red-100'
+        : ' border-slate-500 focus:border-blue-600 focus:ring-blue-200')
+    );
+  }
+
+  // ACTIONS
+
+  close(): void {
+    this.closed.emit();
+  }
+
+  submit(): void {
+    this.submitted.set(true);
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const v = this.form.getRawValue();
+
+    const isBusiness = v.supplierKind === 'business';
+    const vatRegistered = isBusiness && v.vatStatus === 'registered';
+    const hasCreditLimit = v.creditOption === 'limit';
+    const isCustomTerm = v.paymentTerm === 'custom';
+
+    this.saved.emit({
+      supplierKind: isBusiness ? 'Business' : 'Individual',
+
+      firstName: isBusiness ? '' : v.firstName.trim(),
+      lastName: isBusiness ? '' : v.lastName.trim(),
+      businessName: isBusiness ? v.businessName.trim() : '',
+
+      address: v.address.trim(),
+      email: v.email.trim(),
+      phone: v.phone.trim(),
+      supplierType: v.supplierType as SupplierType,
+
+      contactFirstName: isBusiness ? v.contactFirstName.trim() : '',
+      contactLastName: isBusiness ? v.contactLastName.trim() : '',
+      contactEmail: isBusiness ? v.contactEmail.trim() : '',
+      contactPhone: isBusiness ? v.contactPhone.trim() : '',
+
+      vatRegistered,
+      vatNumber: vatRegistered ? v.vatNumber.trim() : '',
+
+      hasCreditLimit,
+      creditLimit: hasCreditLimit ? Number(v.creditLimit.replace(/,/g, '')) : null,
+
+      paymentTerm: isCustomTerm ? 'Custom Term' : 'Cash on Delivery',
+      paymentDays: isCustomTerm ? Number(v.paymentDays) : null,
+    });
+  }
+}

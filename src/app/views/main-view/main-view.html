@@ -1,21 +1,15 @@
-
 <!-- DESKTOP APPLICATION -->
 <div class="hidden lg:block min-h-screen bg-slate-100">
 
-  <!-- Sidebar -->
   <app-nav-bar></app-nav-bar>
 
-  <!-- Main Application -->
   <main class="ml-64 min-h-screen">
 
-    <!-- Header -->
     <app-header></app-header>
 
-    <!-- Dashboard Content -->
+    <!-- ROUTED PAGE CONTENT -->
     <div class="p-8">
-
-      <app-dashboard></app-dashboard>
-
+      <router-outlet></router-outlet>
     </div>
 
   </main>
@@ -37,7 +31,8 @@
 
     <p class="text-sm leading-relaxed text-slate-600">
       <strong class="font-medium text-slate-800">Botebo ERP</strong>
-      is a professional management system optimized for desktop and laptop displays. Please open this application on a computer for the best experience.
+      is a professional management system optimized for desktop and laptop displays.
+      Please open this application on a computer for the best experience.
     </p>
 
     <div class="border-t border-slate-200 pt-4 text-xs font-mono text-slate-600">

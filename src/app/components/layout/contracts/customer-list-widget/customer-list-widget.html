@@ -1,0 +1,97 @@
+<article class="flex h-[calc(100dvh-12.9rem)] min-h-[24rem] min-w-0 flex-col rounded-xl border border-slate-400 bg-white p-5 shadow-sm max-md:p-4">
+
+  <!-- HEADING -->
+  <div class="flex shrink-0 flex-wrap items-center justify-end gap-3 border-b border-slate-100 pb-4">
+    <button
+      type="button"
+      (click)="openForm()"
+      class="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-150 hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      New Customer
+    </button>
+  </div>
+
+  @if (customers().length === 0) {
+    <!-- EMPTY STATE -->
+    <div class="flex flex-col items-center justify-center px-4 py-14 text-center">
+      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <p class="mt-4 text-sm font-medium text-slate-900">No contracted customers yet</p>
+      <p class="mt-1 text-xs text-slate-600">Use the New Customer button to add your first customer.</p>
+    </div>
+  } @else {
+    <!-- CUSTOMER TABLE (scrolls horizontally) -->
+    <div class="mt-6 min-h-0 w-full flex-1 overflow-auto [scrollbar-color:#cbd5e1_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-sm text-slate-700 [&_tbody_tr:hover]:bg-slate-50 [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-slate-300 [&_td]:px-8 [&_td]:py-6 [&_td]:align-middle [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:border-b [&_th]:border-slate-300 [&_th]:bg-slate-50 [&_th]:whitespace-nowrap [&_th]:px-8 [&_th]:py-5 [&_th]:text-xs [&_th]:font-medium [&_th]:uppercase [&_th]:tracking-[0.035em] [&_th]:text-slate-600 max-md:[&_td]:px-5 max-md:[&_td]:py-4 max-md:[&_th]:px-5 max-md:[&_th]:py-4">
+        <thead>
+          <tr>
+            <!-- Business Details -->
+            <th>Business Name</th>
+            <th>Address</th>
+            <th>Business Email</th>
+            <th>Business Phone</th>
+            <th>Customer Type</th>
+            <!-- Key Contact -->
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <!-- VAT -->
+            <th>VAT Status</th>
+            <th>VAT Number</th>
+            <!-- Credit & Payment -->
+            <th>Credit Limit</th>
+            <th>Payment Term</th>
+            <th>Payment Days</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (customer of customers(); track $index) {
+            <tr>
+              <!-- Business Details -->
+              <td class="font-semibold text-slate-900">{{ customer.businessName }}</td>
+              <td>{{ customer.address }}</td>
+              <td>{{ customer.businessEmail || '—' }}</td>
+              <td>{{ customer.businessPhone || '—' }}</td>
+              <td>{{ customer.customerType }}</td>
+
+              <!-- Key Contact -->
+              <td>{{ customer.contactFirstName }}</td>
+              <td>{{ customer.contactLastName }}</td>
+              <td>{{ customer.contactEmail }}</td>
+              <td>{{ customer.contactPhone }}</td>
+
+              <!-- VAT -->
+              <td>{{ customer.vatRegistered ? 'VAT registered' : 'Not VAT registered' }}</td>
+              <td>{{ customer.vatRegistered ? customer.vatNumber : '—' }}</td>
+
+              <!-- Credit & Payment -->
+              <td class="font-medium text-slate-900">{{ formatRand(customer.creditLimit) }}</td>
+              <td>{{ customer.paymentTerm }}</td>
+              <td>{{ customer.paymentTerm === 'Custom Term' ? customer.paymentDays + ' days' : '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</article>
+
+<!-- NEW CUSTOMER MODAL -->
+@if (showForm()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeForm()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-new-customer-form (closed)="closeForm()" (saved)="addCustomer($event)" />
+    </div>
+  </div>
+}

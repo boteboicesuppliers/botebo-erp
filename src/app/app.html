@@ -7,12 +7,12 @@
   <!-- Main Application -->
   <main class="ml-64 min-h-screen">
 
-    <!-- Header aligned with sidebar branding -->
-    <app-header></app-header>
+    <!-- Header aligned with sidebar branding (stays fixed at the top while scrolling) -->
+    <app-header class="sticky top-0 z-40 block"></app-header>
 
     <!-- Page Content -->
     <div class="p-8">
-      <app-dashboard></app-dashboard>
+      <router-outlet />
     </div>
 
   </main>
