@@ -1,6 +1,8 @@
-import { Component, ElementRef, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { CustomerModel, CustomerStatus } from '../../../../models/contracts/customer-model';
 import { NewCustomerFormModel } from '../../../../models/contracts/new-customer-form-model';
+import { AdvancedQuery, QueryGroup } from '../../../../services/customers/advanced-query';
+import { AdvancedQueryForm } from '../advanced-query-form/advanced-query-form';
 import { DeleteCustomerForm } from '../delete-customer-form/delete-customer-form';
 import { EditCustomerForm } from '../edit-customer-form/edit-customer-form';
 import { ImportCustomersForm } from '../import-customers-form/import-customers-form';
@@ -36,7 +38,7 @@ function withMockStatus(rows: Omit<CustomerModel, 'status'>[]): CustomerModel[] 
 
 @Component({
   selector: 'app-customer-list-widget',
-  imports: [NewCustomerForm, EditCustomerForm, DeleteCustomerForm, ImportCustomersForm, StatementForm],
+  imports: [NewCustomerForm, EditCustomerForm, DeleteCustomerForm, ImportCustomersForm, StatementForm, AdvancedQueryForm],
   templateUrl: './customer-list-widget.html',
   host: {
     '(document:keydown.escape)': 'closeTopModal()',
@@ -44,7 +46,10 @@ function withMockStatus(rows: Omit<CustomerModel, 'status'>[]): CustomerModel[] 
   },
 })
 export class CustomerListWidget {
-  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private querySvc = inject(AdvancedQuery);
+
+  // The scrolling table area (rows scroll under the fixed panel and sticky header)
+  private tableScroll = viewChild<ElementRef<HTMLElement>>('tableScroll');
 
   // MODAL STATE
   showForm = signal(false);
@@ -52,6 +57,8 @@ export class CustomerListWidget {
   deletingCustomer = signal<CustomerModel | null>(null);
   showImport = signal(false);
   showStatement = signal(false);
+  showAdvanced = signal(false);
+  advancedQuery = signal<QueryGroup | null>(null);
 
   // CONTRACTED CUSTOMERS (mock data: 50 records)
   customers = signal<CustomerModel[]>(withMockStatus([
@@ -133,8 +140,16 @@ export class CustomerListWidget {
 
   paymentTerms = computed(() => [...new Set(this.customers().map((c) => c.paymentTerm))].sort());
 
+  // "View:" label follows the Customer Type dropdown immediately
+  viewLabel = computed(() => {
+    const base = this.draftType() || 'All customers';
+
+    return this.advancedQuery() ? `${base} + advanced query` : base;
+  });
+
   filteredCustomers = computed(() => {
     const { search, type, vat, term } = this.appliedFilters();
+    const advanced = this.advancedQuery();
     const q = search.trim().toLowerCase();
 
     const filtered = this.customers().filter((c) => {
@@ -148,8 +163,10 @@ export class CustomerListWidget {
       const matchesVat =
         !vat || (vat === 'registered' ? c.vatRegistered : !c.vatRegistered);
       const matchesTerm = !term || c.paymentTerm === term;
+      const matchesAdvanced =
+        !advanced || this.querySvc.evaluateGroup(advanced, c, (x) => this.customerNumber(x));
 
-      return matchesSearch && matchesType && matchesVat && matchesTerm;
+      return matchesSearch && matchesType && matchesVat && matchesTerm && matchesAdvanced;
     });
 
     const dir = this.sortAsc() ? 1 : -1;
@@ -210,6 +227,7 @@ export class CustomerListWidget {
       term: this.draftTerm(),
     });
     this.page.set(1);
+    this.scrollToTop();
   }
 
   reset(): void {
@@ -218,7 +236,9 @@ export class CustomerListWidget {
     this.draftVat.set('');
     this.draftTerm.set('');
     this.appliedFilters.set({ search: '', type: '', vat: '', term: '' });
+    this.advancedQuery.set(null);
     this.page.set(1);
+    this.scrollToTop();
   }
 
   // ACTIONS: SORT + PAGINATION
@@ -235,24 +255,12 @@ export class CustomerListWidget {
   setPageSize(size: number): void {
     this.pageSize.set(size);
     this.page.set(1);
+    this.scrollToTop();
   }
 
-  // Scrolls whichever ancestor scrolls the page (or the window) back to the top
+  // Scrolls the table rows back to the top (the panel above never moves)
   private scrollToTop(): void {
-    let el: HTMLElement | null = this.host.nativeElement.parentElement;
-
-    while (el) {
-      const overflowY = getComputedStyle(el).overflowY;
-
-      if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
-        el.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
-
-      el = el.parentElement;
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.tableScroll()?.nativeElement.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // ACTIONS: SELECTION + TOOLBAR
@@ -318,6 +326,7 @@ export class CustomerListWidget {
 
   // Escape closes only the top-most open modal
   closeTopModal(): void {
+    if (this.showAdvanced()) return this.closeAdvanced();
     if (this.deletingCustomer()) return this.closeDelete();
     if (this.editingCustomer()) return this.closeEdit();
     if (this.showImport()) return this.closeImport();
@@ -327,6 +336,29 @@ export class CustomerListWidget {
 
   print(): void {
     window.print();
+  }
+
+  // ACTIONS: ADVANCED QUERY
+
+  openAdvanced(): void {
+    this.closeMenus();
+    this.showAdvanced.set(true);
+  }
+
+  closeAdvanced(): void {
+    this.showAdvanced.set(false);
+  }
+
+  runAdvanced(query: QueryGroup): void {
+    this.advancedQuery.set(this.querySvc.countActive(query) > 0 ? query : null);
+    this.page.set(1);
+    this.closeAdvanced();
+    this.scrollToTop();
+  }
+
+  clearAdvanced(): void {
+    this.advancedQuery.set(null);
+    this.page.set(1);
   }
 
   // ACTIONS: ADD

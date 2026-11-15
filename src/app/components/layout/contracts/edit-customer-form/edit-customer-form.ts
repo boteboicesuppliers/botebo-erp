@@ -42,8 +42,15 @@ export class EditCustomerForm implements OnInit {
     paymentDays: [{ value: '', disabled: true }],
   });
 
+  // Same field look as the filter bar on the customer list (square, bevelled, 32px high)
   private readonly inputBase =
-    'w-full rounded-lg border bg-slate-100 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-600 focus:bg-white focus:ring-2 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-200 disabled:text-slate-400 disabled:placeholder:text-slate-400';
+    'h-8 w-full border bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] outline-none transition-colors placeholder:text-[#6b7280] focus:ring-1 disabled:cursor-not-allowed disabled:border-[#cfd7e1] disabled:bg-[#e1e6ed] disabled:text-[#9ca3af] disabled:shadow-none';
+
+  private readonly inputNormal =
+    'border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] focus:border-[#1b5a9a] focus:ring-[#1b5a9a]';
+
+  private readonly inputInvalid =
+    'border-t-red-500 border-l-red-500 border-b-red-600 border-r-red-600 focus:border-red-600 focus:ring-red-600';
 
   constructor() {
     // VAT number is greyed out unless the business is VAT registered
@@ -176,12 +183,7 @@ export class EditCustomerForm implements OnInit {
   }
 
   inputClass(name: string): string {
-    return (
-      this.inputBase +
-      (this.hasError(name)
-        ? ' border-red-500 focus:border-red-500 focus:ring-red-100'
-        : ' border-slate-500 focus:border-blue-600 focus:ring-blue-200')
-    );
+    return `${this.inputBase} ${this.hasError(name) ? this.inputInvalid : this.inputNormal}`;
   }
 
   // ACTIONS
@@ -202,6 +204,7 @@ export class EditCustomerForm implements OnInit {
 
     this.saved.emit({
       id: this.customer().id,
+      status: this.customer().status,
       businessName: value.businessName.trim(),
       contactFirstName: value.contactFirstName.trim(),
       contactLastName: value.contactLastName.trim(),

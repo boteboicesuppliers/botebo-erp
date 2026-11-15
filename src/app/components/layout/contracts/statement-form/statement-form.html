@@ -1,13 +1,15 @@
-<div class="border border-[#c5ced9] bg-white text-[13px] text-[#1f2933]">
+<div class="border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-xl">
   <!-- HEADER -->
-  <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-3.5">
-    <h2 class="text-[14px] font-semibold text-[#17304f]">Generate statement of accounts</h2>
+  <div class="flex items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-4">
+    <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Generate statement of accounts</h2>
     <button
       type="button"
       (click)="closed.emit()"
       aria-label="Close"
-      class="cursor-pointer px-1 text-[#4b5563] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
-      ✕
+      class="cursor-pointer p-1.5 text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
     </button>
   </div>
 
@@ -20,15 +22,15 @@
           type="button"
           [disabled]="!selected()"
           (click)="scopeChoice.set('selected')"
-          class="h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:border-[#9fb3c8] disabled:bg-white disabled:text-[#9ca3af]"
-          [class]="scope() === 'selected' ? 'border-[#1b5a9a] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-[#9fb3c8] bg-white text-[#17304f] hover:bg-[#e1e6ed]'">
+          class="h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="scope() === 'selected' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
           Selected customer{{ selected() ? ': ' + selected()!.businessName : '' }}
         </button>
         <button
           type="button"
           (click)="scopeChoice.set('all')"
-          class="h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]"
-          [class]="scope() === 'all' ? 'border-[#1b5a9a] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-[#9fb3c8] bg-white text-[#17304f] hover:bg-[#e1e6ed]'">
+          class="h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="scope() === 'all' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
           All contracted customers ({{ customers().length }})
         </button>
       </div>
@@ -47,7 +49,7 @@
             #periodSel
             [value]="period()"
             (change)="period.set($any(periodSel.value))"
-            class="h-8 w-full cursor-pointer appearance-none border border-[#b8c4d2] bg-white px-3 pr-8 text-[13px] text-[#4b5563] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+            class="cursor-pointer appearance-none pr-8 h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
             @for (p of periods; track p.value) {
               <option [value]="p.value">{{ p.label }}</option>
             }
@@ -65,7 +67,7 @@
             type="date"
             [value]="customFrom()"
             (input)="customFrom.set(fromBox.value)"
-            class="h-8 w-full border border-[#b8c4d2] bg-white px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
         </div>
         <div class="min-w-[10rem] flex-1">
           <label class="mb-1.5 block text-xs text-[#374151]" for="stmt-to">To</label>
@@ -75,7 +77,7 @@
             type="date"
             [value]="customTo()"
             (input)="customTo.set(toBox.value)"
-            class="h-8 w-full border border-[#b8c4d2] bg-white px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
         </div>
       }
     </div>
@@ -90,22 +92,22 @@
         <button
           type="button"
           (click)="format.set('pdf')"
-          class="h-8 min-w-[5rem] cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]"
-          [class]="format() === 'pdf' ? 'border-[#1b5a9a] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-[#9fb3c8] bg-white text-[#17304f] hover:bg-[#e1e6ed]'">
+          class="min-w-[5rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'pdf' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
           PDF
         </button>
         <button
           type="button"
           (click)="format.set('csv')"
-          class="h-8 min-w-[5rem] cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]"
-          [class]="format() === 'csv' ? 'border-[#1b5a9a] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-[#9fb3c8] bg-white text-[#17304f] hover:bg-[#e1e6ed]'">
+          class="min-w-[5rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'csv' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
           CSV
         </button>
         <button
           type="button"
           (click)="format.set('xlsx')"
-          class="h-8 min-w-[5rem] cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]"
-          [class]="format() === 'xlsx' ? 'border-[#1b5a9a] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-[#9fb3c8] bg-white text-[#17304f] hover:bg-[#e1e6ed]'">
+          class="min-w-[5rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'xlsx' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
           XLSX
         </button>
       </div>
@@ -120,18 +122,18 @@
   </div>
 
   <!-- FOOTER -->
-  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3">
+  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3.5">
     <button
       type="button"
       (click)="closed.emit()"
-      class="h-8 min-w-[5.5rem] cursor-pointer border border-[#9fb3c8] bg-white px-5 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      class="h-8 min-w-[5.5rem] cursor-pointer px-5 text-[13px] border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
       Cancel
     </button>
     <button
       type="button"
       [disabled]="!canGenerate()"
       (click)="generate()"
-      class="h-8 min-w-[6.5rem] cursor-pointer border border-[#17304f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border-[#9ca3af] disabled:bg-[#9ca3af] disabled:hover:bg-[#9ca3af]">
+      class="h-8 min-w-[6.5rem] cursor-pointer px-5 text-[13px] border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:bg-[#1b5a9a]">
       {{ busy() ? 'Generating…' : 'Generate' }}
     </button>
   </div>

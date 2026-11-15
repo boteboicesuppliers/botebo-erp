@@ -1,13 +1,15 @@
-<div class="border border-[#c5ced9] bg-white text-[13px] text-[#1f2933]">
+<div class="border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-xl">
   <!-- HEADER -->
-  <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-3.5">
-    <h2 class="text-[14px] font-semibold text-[#17304f]">Import customers</h2>
+  <div class="flex items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-4">
+    <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Import customers</h2>
     <button
       type="button"
       (click)="closed.emit()"
       aria-label="Close"
-      class="cursor-pointer px-1 text-[#4b5563] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
-      ✕
+      class="cursor-pointer p-1.5 text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
     </button>
   </div>
 
@@ -19,15 +21,15 @@
         <button
           type="button"
           (click)="setFormat('csv')"
-          class="h-8 min-w-[6rem] cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]"
-          [class]="format() === 'csv' ? 'border-[#1b5a9a] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-[#9fb3c8] bg-white text-[#17304f] hover:bg-[#e1e6ed]'">
+          class="min-w-[6rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'csv' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
           CSV
         </button>
         <button
           type="button"
           (click)="setFormat('xlsx')"
-          class="h-8 min-w-[6rem] cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]"
-          [class]="format() === 'xlsx' ? 'border-[#1b5a9a] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-[#9fb3c8] bg-white text-[#17304f] hover:bg-[#e1e6ed]'">
+          class="min-w-[6rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'xlsx' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
           XLSX
         </button>
       </div>
@@ -39,7 +41,7 @@
       <button
         type="button"
         (click)="downloadTemplate()"
-        class="inline-flex h-8 cursor-pointer items-center gap-2 border border-[#9fb3c8] bg-white px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+        class="inline-flex h-8 cursor-pointer items-center gap-2 px-4 text-[13px] border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
         Download {{ format() === 'csv' ? 'CSV' : 'XLSX' }} template ↓
       </button>
       <p class="mt-1.5 text-xs text-[#4b5563]">
@@ -52,7 +54,7 @@
     <div>
       <p class="mb-1.5 text-xs text-[#374151]">3. Upload your {{ format() === 'csv' ? 'CSV' : 'XLSX' }} file</p>
       <label
-        class="flex h-8 w-fit cursor-pointer items-center border border-[#17304f] bg-[#1b5a9a] px-4 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus-within:ring-2 focus-within:ring-[#1b5a9a] focus-within:ring-offset-2">
+        class="flex h-8 w-fit cursor-pointer items-center px-4 text-[13px] border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] font-medium text-white transition-colors hover:bg-[#164b82] focus-within:ring-2 focus-within:ring-[#1b5a9a] focus-within:ring-offset-2">
         {{ busy() ? 'Reading file…' : 'Choose file' }}
         <input
           type="file"
@@ -79,7 +81,7 @@
         </div>
 
         <div class="max-h-64 overflow-auto border border-[#c5ced9]">
-          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] [&_td]:border-b [&_td]:border-[#c5ced9] [&_td]:px-2.5 [&_td]:py-2 [&_td]:align-top [&_th]:sticky [&_th]:top-0 [&_th]:border-b [&_th]:border-[#c5ced9] [&_th]:bg-[#e1e6ed] [&_th]:px-2.5 [&_th]:py-2 [&_th]:font-normal [&_th]:text-[#374151]">
+          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_tbody_tr:nth-child(even)_td]:bg-[#e6eaf0] [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:bg-white [&_td]:px-2.5 [&_td]:py-2 [&_td]:align-top [&_th]:sticky [&_th]:top-0 [&_th]:border-b [&_th]:border-r [&_th]:border-b-[#bcc7d4] [&_th]:border-r-[#a9b7c8] [&_th]:bg-[#e1e6ed] [&_th]:px-2.5 [&_th]:py-2 [&_th]:font-normal [&_th]:text-[#374151]">
             <thead>
               <tr>
                 <th class="w-14">Row</th>
@@ -117,18 +119,18 @@
   </div>
 
   <!-- FOOTER -->
-  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3">
+  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3.5">
     <button
       type="button"
       (click)="closed.emit()"
-      class="h-8 min-w-[5.5rem] cursor-pointer border border-[#9fb3c8] bg-white px-5 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      class="h-8 min-w-[5.5rem] cursor-pointer px-5 text-[13px] border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
       Cancel
     </button>
     <button
       type="button"
       [disabled]="validRows().length === 0"
       (click)="submit()"
-      class="h-8 min-w-[6.5rem] cursor-pointer border border-[#17304f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border-[#9ca3af] disabled:bg-[#9ca3af] disabled:hover:bg-[#9ca3af]">
+      class="h-8 min-w-[6.5rem] cursor-pointer px-5 text-[13px] border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:bg-[#1b5a9a]">
       Import {{ validRows().length }} {{ validRows().length === 1 ? 'customer' : 'customers' }}
     </button>
   </div>

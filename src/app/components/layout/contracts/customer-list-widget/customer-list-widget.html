@@ -1,10 +1,10 @@
 <div class="flex min-h-[calc(100vh-7rem)] flex-col gap-3.5 text-[13px] text-[#1f2933]">
 
   <!-- MAIN CARD -->
-  <div class="flex flex-1 flex-col border border-[#c5ced9] bg-white">
+  <div class="flex h-[calc(100vh-7rem)] min-h-[40rem] flex-col border border-[#c5ced9] bg-white">
 
     <!-- PAGE HEADER -->
-    <section class="px-5 pt-5">
+    <section class="shrink-0 px-5 pt-5">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <h1 class="text-[30px] leading-9 font-bold tracking-tight text-[#17304f]">Customers</h1>
         <div class="flex items-center gap-3">
@@ -52,7 +52,7 @@
     </section>
 
     <!-- FILTER BAR -->
-    <section class="border-b border-[#c5ced9] bg-white px-5 pt-4 pb-3">
+    <section class="shrink-0 border-b border-[#c5ced9] bg-white px-5 pt-4 pb-3">
       <div class="flex flex-wrap items-end gap-4">
         <div class="min-w-[16rem] flex-[1.6]">
           <label class="mb-1.5 block text-xs text-[#374151]">Search customers</label>
@@ -134,10 +134,16 @@
 
       <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-[13px]">
         <div class="flex items-center gap-10">
-          <button type="button" class="cursor-pointer text-[#1b5a9a] hover:underline">
+          <button type="button" (click)="openAdvanced()" class="cursor-pointer text-[#1b5a9a] hover:underline">
             Advanced <span class="text-[8px]">▾</span>
           </button>
-          <span class="text-[#4b5563]">View: All customers</span>
+          <span class="text-[#4b5563]">View: {{ viewLabel() }}</span>
+          @if (advancedQuery()) {
+            <span class="text-[#4b5563]">
+              Advanced query active ·
+              <button type="button" (click)="clearAdvanced()" class="cursor-pointer text-[#1b5a9a] hover:underline">Clear</button>
+            </span>
+          }
         </div>
         <div class="text-[#4b5563]">
           Saved query:
@@ -149,10 +155,10 @@
     </section>
 
     <!-- TABLE SECTION -->
-    <section class="flex flex-1 flex-col bg-white">
+    <section class="flex min-h-0 flex-1 flex-col bg-white">
 
       <!-- TOOLBAR -->
-      <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+      <div class="flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 py-3">
         <div class="flex items-center gap-4">
           <button
             type="button"
@@ -211,8 +217,8 @@
         </div>
       } @else {
         <!-- CUSTOMER TABLE (scrolls horizontally) -->
-        <div class="w-full overflow-x-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
-          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151]">
+        <div #tableScroll class="min-h-0 w-full flex-1 overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151]">
             <thead>
               <tr>
                 <th class="w-10 text-center">
@@ -297,10 +303,10 @@
           </table>
         </div>
 
-        <p class="mt-3 text-center text-xs text-[#4b5563]">Scroll horizontally for tax, credit and payment columns →</p>
+        <p class="mt-3 shrink-0 text-center text-xs text-[#4b5563]">Scroll horizontally for tax, credit and payment columns →</p>
 
         <!-- PAGINATION -->
-        <div class="mt-auto flex flex-wrap items-center justify-between gap-3 px-5 pt-1 pb-5 text-[13px] text-[#4b5563]">
+        <div class="mt-auto flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 pt-1 pb-5 text-[13px] text-[#4b5563]">
           <span>Showing {{ rangeStart() }}–{{ rangeEnd() }} of {{ filteredCustomers().length }} customers</span>
 
           <div class="flex items-center gap-10">
@@ -523,6 +529,21 @@
     (click)="closeDelete()">
     <div class="max-h-full w-full max-w-md overflow-y-auto" (click)="$event.stopPropagation()">
       <app-delete-customer-form [customer]="customer" (closed)="closeDelete()" (confirmed)="confirmDelete()" />
+    </div>
+  </div>
+}
+
+<!-- ADVANCED QUERY MODAL -->
+@if (showAdvanced()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeAdvanced()">
+    <div class="max-h-full w-full max-w-4xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-advanced-query-form
+        [initial]="advancedQuery()"
+        (closed)="closeAdvanced()"
+        (run)="runAdvanced($event)"
+        (cleared)="clearAdvanced()" />
     </div>
   </div>
 }
