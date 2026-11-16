@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SalesOrders } from './sales-orders';
+import { DeleteSalesOrderForm } from './delete-sales-order-form';
 
-describe('SalesOrders', () => {
-  let component: SalesOrders;
-  let fixture: ComponentFixture<SalesOrders>;
+describe('DeleteSalesOrderForm', () => {
+  let component: DeleteSalesOrderForm;
+  let fixture: ComponentFixture<DeleteSalesOrderForm>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SalesOrders]
+      imports: [DeleteSalesOrderForm]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SalesOrders);
+    fixture = TestBed.createComponent(DeleteSalesOrderForm);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

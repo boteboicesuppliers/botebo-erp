@@ -1,0 +1,89 @@
+<section class="w-full text-[13px] text-[#1f2933]">
+  <div class="mb-3">
+    <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Pipeline Conversion & Bottlenecks</h3>
+    <p class="mt-1 text-xs text-[#4b5563]">Stage-to-stage progression ratios and opportunities exceeding SLA dwell time.</p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3.5 xl:grid-cols-2">
+
+    <!-- STAGE CONVERSION FUNNEL -->
+    <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+        <div>
+          <h4 class="text-[14px] font-semibold text-[#17304f]">Stage Conversion Breakdown</h4>
+          <p class="mt-0.5 text-xs text-[#4b5563]">Deal volume and step conversion efficiency</p>
+        </div>
+        <span class="inline-flex shrink-0 items-center bg-[#e1e6ed] px-2.5 py-0.5 text-xs font-medium text-[#374151]">5 stages</span>
+      </div>
+
+      <div class="space-y-4 px-5 py-5">
+        @for (item of funnelStages; track item.label) {
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="h-2.5 w-2.5 shrink-0" [style.background]="item.color"></span>
+                <span class="font-medium text-[#17304f]">{{ item.label }}</span>
+                <span class="text-[#4b5563]">({{ item.count }} deals)</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-medium text-[#1f2933]">{{ zar(item.value) }}</span>
+                <span class="w-14 text-right font-medium text-[#1b5a9a]">{{ item.conversion }}%</span>
+              </div>
+            </div>
+
+            <div class="mt-2 h-2 overflow-hidden bg-[#e1e6ed]">
+              <div class="h-full" [style.width.%]="(item.count / 34) * 100" [style.background]="item.color"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </article>
+
+    <!-- STALLED OPPORTUNITIES WATCHLIST -->
+    <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+        <div>
+          <h4 class="text-[14px] font-semibold text-[#17304f]">Stalled Opportunities Watchlist</h4>
+          <p class="mt-0.5 text-xs text-[#4b5563]">Active deals exceeding stage dwell threshold</p>
+        </div>
+        <span class="inline-flex shrink-0 items-center rounded-[2px] bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-900">
+          {{ stalledDeals.length }} stalled
+        </span>
+      </div>
+
+      <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+        <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+          <thead>
+            <tr>
+              <th>Opportunity</th>
+              <th>Stage & Blocker</th>
+              <th>Dwell Time</th>
+              <th class="pr-5">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (deal of stalledDeals; track deal.id; let odd = $odd) {
+              <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+                <td>
+                  <span class="font-medium text-[#1b5a9a]">{{ deal.id }}</span>
+                  <span class="block text-xs text-[#4b5563]">{{ deal.client }} · {{ deal.owner }}</span>
+                </td>
+                <td>
+                  <span class="font-medium text-[#17304f]">{{ deal.stage }}</span>
+                  <span class="block text-xs text-[#4b5563]">{{ deal.blocker }}</span>
+                </td>
+                <td>
+                  <span class="inline-flex items-center rounded-[2px] bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
+                    {{ deal.daysIdle }}d (SLA {{ deal.slaLimit }}d)
+                  </span>
+                </td>
+                <td class="pr-5 font-medium text-[#17304f]">{{ zar(deal.value) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+  </div>
+</section>

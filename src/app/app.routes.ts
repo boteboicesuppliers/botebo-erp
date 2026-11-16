@@ -5,8 +5,8 @@ import { Contracts } from './components/main-view-components/contracts/contracts
 import { Suppliers } from './components/main-view-components/suppliers/suppliers';
 import { SalesPrimary } from './components/main-view-components/sales-module/sales-primary/sales-primary';
 import { Quotations } from './components/main-view-components/sales-module/quotations/quotations';
-import { SalesPipeline } from './components/layout/sales-module/sales-pipeline/sales-pipeline';
-import { SalesOrders } from './components/layout/sales-module/sales-orders/sales-orders';
+import { SalesPipeline } from './components/main-view-components/sales-module/sales-pipeline/sales-pipeline';
+import { SalesOrders } from './components/main-view-components/sales-module/sales-orders/sales-orders';
 import { Invoices } from './components/layout/sales-module/invoices/invoices';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';

@@ -1,0 +1,135 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-2xl border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Edit Sales Order · {{ order().id }}</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Update fulfillment status, delivery date, or warehouse hub</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form (submit)="$event.preventDefault(); submitEdit()" class="space-y-5 px-5 py-5">
+
+      <div>
+        <h3 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Client Details</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Customer Number</label>
+            <input
+              type="text"
+              [value]="order().customerCode"
+              disabled
+              class="h-8 w-full border border-[#cfd7e1] bg-[#e1e6ed] px-3 text-[13px] text-[#9ca3af]" />
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Pricing Tier</label>
+            <select
+              [value]="tier()"
+              (change)="tier.set($any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="Tier 1 · Bulk Wholesale">Tier 1 · Bulk Wholesale</option>
+              <option value="Tier 2 · Contract">Tier 2 · Contract</option>
+              <option value="Tier 3 · Standard">Tier 3 · Standard</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Client Business Name</label>
+            <input
+              type="text"
+              [value]="client()"
+              (input)="client.set($any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-[#c5ced9] pt-5">
+        <h3 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Fulfillment Parameters</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Order Status</label>
+            <select
+              [value]="status()"
+              (change)="status.set($any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="Draft">Draft</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Processing">Processing</option>
+              <option value="Dispatched">Dispatched</option>
+              <option value="Fulfilled">Fulfilled</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Fulfillment Hub</label>
+            <select
+              [value]="warehouse()"
+              (change)="warehouse.set($any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="Johannesburg Cold Store">Johannesburg Cold Store</option>
+              <option value="Midrand Depot">Midrand Depot</option>
+              <option value="Centurion Hub">Centurion Hub</option>
+              <option value="Pretoria Central">Pretoria Central</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Order Value (ZAR)</label>
+            <input
+              type="number"
+              [value]="value()"
+              (input)="value.set(+$any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+          </div>
+
+          <div class="flex items-center pt-5">
+            <label class="flex cursor-pointer items-center gap-2 text-xs text-[#1f2933]">
+              <input
+                type="checkbox"
+                [checked]="isUrgent()"
+                (change)="isUrgent.set($any($event.target).checked)"
+                class="h-3.5 w-3.5 border border-[#c9d4e1] accent-[#1b5a9a]" />
+              <span>Flag as Urgent / Expedited Dispatch</span>
+            </label>
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Scheduled Delivery Date</label>
+            <input
+              type="date"
+              [value]="deliveryDate()"
+              (input)="deliveryDate.set($any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-[#c5ced9] pt-3.5">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 min-w-[5.5rem] items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-4 text-[13px] font-normal text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 min-w-[6rem] items-center justify-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] hover:bg-[#164b82]">
+          Save Changes
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

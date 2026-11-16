@@ -1,0 +1,57 @@
+<section class="w-full text-[13px] text-[#1f2933]">
+  <div class="mb-3 flex items-center justify-between">
+    <div>
+      <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Time-Critical & Urgent Dispatch Queue</h3>
+      <p class="mt-1 text-xs text-[#4b5563]">Expedited wholesale orders requiring priority staging and trucking departure.</p>
+    </div>
+    <span class="inline-flex items-center rounded-[2px] bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-900">
+      {{ urgentOrders.length }} Urgent Orders
+    </span>
+  </div>
+
+  <div class="border border-t-[3px] border-[#c5ced9] border-t-red-600 bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer #</th>
+            <th>Client & Destination</th>
+            <th>Required Delivery</th>
+            <th>Fulfillment Status</th>
+            <th>Order Value</th>
+            <th class="pr-5 text-right">Priority Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of urgentOrders; track order.id; let odd = $odd) {
+            <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+              <td class="font-medium text-[#1b5a9a]">{{ order.id }}</td>
+              <td class="font-medium text-[#1b5a9a]">{{ order.customerCode }}</td>
+              <td>
+                <span class="font-medium text-[#17304f]">{{ order.client }}</span>
+                <span class="block text-xs text-[#4b5563]">{{ order.destination }}</span>
+              </td>
+              <td>
+                <span class="font-medium text-red-700">{{ order.requiredDate }}</span>
+              </td>
+              <td>
+                <span class="inline-flex items-center rounded-[2px] bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-900">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td class="font-medium text-[#17304f]">{{ zar(order.value) }}</td>
+              <td class="pr-5 text-right">
+                <button
+                  type="button"
+                  class="inline-flex h-7 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-3 text-xs font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] hover:bg-[#164b82]">
+                  Expedite Staging
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

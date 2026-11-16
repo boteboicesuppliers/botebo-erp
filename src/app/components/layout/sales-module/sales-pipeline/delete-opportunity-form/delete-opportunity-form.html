@@ -1,0 +1,56 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#17304f]/40 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-md border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Close / Remove Opportunity</h2>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="space-y-4 px-5 py-5">
+      <p class="text-[13px] text-[#1f2933]">
+        You are removing <span class="font-medium text-[#1b5a9a]">{{ opportunity().id }}</span>
+        (<span class="font-semibold text-[#17304f]">{{ opportunity().client }}</span>) from the active sales pipeline.
+      </p>
+
+      <div>
+        <label class="mb-1 block text-xs font-normal text-[#374151]">Closure / Loss Reason</label>
+        <select
+          [value]="reason()"
+          (change)="reason.set($any($event.target).value)"
+          class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+          <option value="Price / margin floor constraint">Price / margin floor constraint</option>
+          <option value="Lost to competing supplier">Lost to competing supplier</option>
+          <option value="Client project postponed / cancelled">Client project postponed / cancelled</option>
+          <option value="Duplicate opportunity record">Duplicate opportunity record</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="flex items-center justify-end gap-2.5 border-t border-[#c5ced9] px-5 py-3.5">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="inline-flex h-8 min-w-[5.5rem] items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-4 text-[13px] font-normal text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] transition-colors hover:bg-[#e1e6ed]">
+        Cancel
+      </button>
+      <button
+        type="button"
+        (click)="confirmDelete.emit(opportunity().id)"
+        class="inline-flex h-8 min-w-[6rem] items-center justify-center border border-t-red-600 border-l-red-600 border-b-red-900 border-r-red-900 bg-red-700 px-4 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] transition-colors hover:bg-red-800">
+        Confirm Remove
+      </button>
+    </div>
+
+  </div>
+</div>

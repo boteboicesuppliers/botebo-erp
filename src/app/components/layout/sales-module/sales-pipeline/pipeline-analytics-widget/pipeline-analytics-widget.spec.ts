@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SalesPipeline } from './sales-pipeline';
+import { PipelineAnalyticsWidget } from './pipeline-analytics-widget';
 
-describe('SalesPipeline', () => {
-  let component: SalesPipeline;
-  let fixture: ComponentFixture<SalesPipeline>;
+describe('PipelineAnalyticsWidget', () => {
+  let component: PipelineAnalyticsWidget;
+  let fixture: ComponentFixture<PipelineAnalyticsWidget>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SalesPipeline]
+      imports: [PipelineAnalyticsWidget]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SalesPipeline);
+    fixture = TestBed.createComponent(PipelineAnalyticsWidget);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

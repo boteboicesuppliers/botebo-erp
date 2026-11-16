@@ -1,0 +1,204 @@
+<div class="flex w-full flex-col gap-3.5 text-[13px] text-[#1f2933]">
+
+  <!-- FILTER & ACTION TOOLBAR -->
+  <article class="border border-[#c5ced9] bg-white p-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+
+      <!-- Search & Dropdown Filters -->
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-normal text-[#374151]">Search</label>
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value); currentPage.set(1)"
+            placeholder="SO #, client, warehouse..."
+            class="h-8 w-60 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-normal text-[#374151]">Status</label>
+          <select
+            [value]="selectedStatus()"
+            (change)="selectedStatus.set($any($event.target).value); currentPage.set(1)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#4b5563] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+            <option value="All">All statuses</option>
+            <option value="Draft">Draft</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Processing">Processing</option>
+            <option value="Dispatched">Dispatched</option>
+            <option value="Fulfilled">Fulfilled</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-normal text-[#374151]">Pricing Tier</label>
+          <select
+            [value]="selectedTier()"
+            (change)="selectedTier.set($any($event.target).value); currentPage.set(1)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#4b5563] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+            <option value="All">All tiers</option>
+            <option value="Tier 1 · Bulk Wholesale">Tier 1 · Bulk Wholesale</option>
+            <option value="Tier 2 · Contract">Tier 2 · Contract</option>
+            <option value="Tier 3 · Standard">Tier 3 · Standard</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Primary Action CTA -->
+      <button
+        type="button"
+        (click)="showNewModal.set(true)"
+        class="inline-flex h-8 min-w-[6.5rem] items-center justify-center gap-1.5 border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] transition-colors hover:bg-[#164b82]">
+        <span class="text-[14px] leading-none">+</span>
+        <span>New Sales Order</span>
+      </button>
+
+    </div>
+  </article>
+
+  <!-- TABLE REGISTER -->
+  <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+      <div>
+        <h4 class="text-[14px] font-semibold text-[#17304f]">Sales Orders Register</h4>
+        <p class="mt-0.5 text-xs text-[#4b5563]">All confirmed wholesale orders, warehouse fulfillment tracking, and dispatch schedules</p>
+      </div>
+      <span class="inline-flex shrink-0 items-center bg-[#e1e6ed] px-2.5 py-0.5 text-xs font-medium text-[#374151]">
+        {{ filteredOrders().length }} records
+      </span>
+    </div>
+
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer #</th>
+            <th>Client & Tier</th>
+            <th>Status</th>
+            <th>Fulfillment Hub</th>
+            <th>Order Date</th>
+            <th>Delivery Date</th>
+            <th>Order Value</th>
+            <th class="pr-5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of paginatedOrders(); track order.id; let odd = $odd) {
+            <tr
+              (click)="selectedOrderId.set(order.id)"
+              class="cursor-pointer transition-colors duration-150"
+              [class]="selectedOrderId() === order.id
+                ? '[&_td]:border-b-[#9fb3c8] [&_td]:bg-[#cfe0f5] [&_td]:font-medium [&_td]:text-[#1b5a9a]'
+                : odd
+                  ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]'
+                  : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+              <td class="font-medium text-[#1b5a9a]">
+                {{ order.id }}
+                @if (order.isUrgent) {
+                  <span class="ml-1.5 inline-flex items-center rounded-[2px] bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-900">Urgent</span>
+                }
+              </td>
+              <td class="font-medium text-[#1b5a9a]">{{ order.customerCode }}</td>
+              <td>
+                <span class="font-medium text-[#17304f]">{{ order.client }}</span>
+                <span class="block text-xs text-[#4b5563]">{{ order.tier }}</span>
+              </td>
+              <td>
+                <span class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium" [class]="getStatusBadgeClass(order.status)">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td>{{ order.warehouse }}</td>
+              <td>{{ order.orderDate }}</td>
+              <td>{{ order.deliveryDate }}</td>
+              <td class="font-medium text-[#17304f]">{{ zar(order.value) }}</td>
+              <td class="pr-5 text-right">
+                <div class="inline-flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    (click)="editingOrder.set(order); $event.stopPropagation()"
+                    class="inline-flex h-7 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2.5 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deletingOrder.set(order); $event.stopPropagation()"
+                    class="inline-flex h-7 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2.5 text-xs font-medium text-red-700 hover:bg-red-50">
+                    Cancel
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="h-24 text-center text-[#4b5563]">
+                No sales orders match your filter selection.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION FOOTER -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#c5ced9] px-5 py-3">
+      <span class="text-xs text-[#4b5563]">
+        Showing {{ startIndex() }} to {{ endIndex() }} of {{ filteredOrders().length }} sales orders
+      </span>
+      <div class="flex items-center gap-1">
+        <button
+          type="button"
+          (click)="goToPage(currentPage() - 1)"
+          [disabled]="currentPage() === 1"
+          class="inline-flex h-8 w-8 items-center justify-center border border-[#b9c7d6] bg-white text-xs text-[#1f2933] hover:bg-[#e1e6ed] disabled:text-[#9ca3af]">
+          <
+        </button>
+
+        @for (p of totalPagesArray(); track p) {
+          <button
+            type="button"
+            (click)="goToPage(p)"
+            class="inline-flex h-8 w-9 items-center justify-center border text-xs transition-colors"
+            [class]="currentPage() === p
+              ? 'border-[#8ba0b7] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+              : 'border-[#b9c7d6] bg-white text-[#1f2933] hover:bg-[#e1e6ed]'">
+            {{ p }}
+          </button>
+        }
+
+        <button
+          type="button"
+          (click)="goToPage(currentPage() + 1)"
+          [disabled]="currentPage() === totalPages()"
+          class="inline-flex h-8 w-8 items-center justify-center border border-[#b9c7d6] bg-white text-xs text-[#1f2933] hover:bg-[#e1e6ed] disabled:text-[#9ca3af]">
+          >
+        </button>
+      </div>
+    </div>
+  </article>
+
+  <!-- MODALS -->
+  @if (showNewModal()) {
+    <app-new-sales-order-form
+      (close)="showNewModal.set(false)"
+      (save)="handleCreateOrder($event)" />
+  }
+
+  @if (editingOrder(); as order) {
+    <app-edit-sales-order-form
+      [order]="order"
+      (close)="editingOrder.set(null)"
+      (save)="handleUpdateOrder($event)" />
+  }
+
+  @if (deletingOrder(); as order) {
+    <app-delete-sales-order-form
+      [order]="order"
+      (close)="deletingOrder.set(null)"
+      (confirmDelete)="handleDeleteOrder($event)" />
+  }
+
+</div>
