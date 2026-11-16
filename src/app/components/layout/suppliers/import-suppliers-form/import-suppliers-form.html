@@ -1,1 +1,138 @@
-<p>import-suppliers-form works!</p>
+<div class="border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-xl">
+  <!-- HEADER -->
+  <div class="flex items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-4">
+    <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Import suppliers</h2>
+    <button
+      type="button"
+      (click)="closed.emit()"
+      aria-label="Close"
+      class="cursor-pointer p-1.5 text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="space-y-5 px-5 py-5">
+    <!-- STEP 1: FORMAT -->
+    <div>
+      <p class="mb-1.5 text-xs text-[#374151]">1. File format</p>
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          (click)="setFormat('csv')"
+          class="min-w-[6rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'csv' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
+          CSV
+        </button>
+        <button
+          type="button"
+          (click)="setFormat('xlsx')"
+          class="min-w-[6rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'xlsx' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
+          XLSX
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: TEMPLATE -->
+    <div>
+      <p class="mb-1.5 text-xs text-[#374151]">2. Download the template and fill it in</p>
+      <button
+        type="button"
+        (click)="downloadTemplate()"
+        class="inline-flex h-8 cursor-pointer items-center gap-2 px-4 text-[13px] border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+        Download {{ format() === 'csv' ? 'CSV' : 'XLSX' }} template ↓
+      </button>
+      <p class="mt-1.5 text-xs text-[#4b5563]">
+        Supplier Type: Business or Individual. For Individual suppliers, Name must be first name and surname, and the
+        contact and VAT columns are left blank (VAT Registered: No). Payment Term: Cash on Delivery or Custom Term
+        (Custom Term needs Payment Days). Currency: ZAR, USD, EUR or GBP. VAT Registered: Yes or No.
+      </p>
+    </div>
+
+    <!-- STEP 3: UPLOAD -->
+    <div>
+      <p class="mb-1.5 text-xs text-[#374151]">3. Upload your {{ format() === 'csv' ? 'CSV' : 'XLSX' }} file</p>
+      <label
+        class="flex h-8 w-fit cursor-pointer items-center px-4 text-[13px] border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] font-medium text-white transition-colors hover:bg-[#164b82] focus-within:ring-2 focus-within:ring-[#1b5a9a] focus-within:ring-offset-2">
+        {{ busy() ? 'Reading file…' : 'Choose file' }}
+        <input
+          type="file"
+          class="sr-only"
+          [accept]="format() === 'csv' ? '.csv' : '.xlsx'"
+          [disabled]="busy()"
+          (change)="onFile($event)" />
+      </label>
+
+      @if (fileError()) {
+        <p class="mt-2 text-xs text-red-700">{{ fileError() }}</p>
+      }
+    </div>
+
+    <!-- PREVIEW -->
+    @if (result(); as res) {
+      <div>
+        <div class="mb-2 flex flex-wrap items-center gap-x-6 gap-y-1">
+          <span class="font-semibold text-[#17304f]">{{ res.fileName }}</span>
+          <span class="text-[#1b5a9a]">{{ validRows().length }} ready to import</span>
+          @if (errorRows().length) {
+            <span class="text-red-700">{{ errorRows().length }} with errors (will be skipped)</span>
+          }
+        </div>
+
+        <div class="max-h-64 overflow-auto border border-[#c5ced9]">
+          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_tbody_tr:nth-child(even)_td]:bg-[#e6eaf0] [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:bg-white [&_td]:px-2.5 [&_td]:py-2 [&_td]:align-top [&_th]:sticky [&_th]:top-0 [&_th]:border-b [&_th]:border-r [&_th]:border-b-[#bcc7d4] [&_th]:border-r-[#a9b7c8] [&_th]:bg-[#e1e6ed] [&_th]:px-2.5 [&_th]:py-2 [&_th]:font-normal [&_th]:text-[#374151]">
+            <thead>
+              <tr>
+                <th class="w-14">Row</th>
+                <th>Name</th>
+                <th>Supplier Type</th>
+                <th>Credit Limit</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of res.rows; track row.rowNumber) {
+                <tr>
+                  <td>{{ row.rowNumber }}</td>
+                  <td>{{ row.raw['name'] || '—' }}</td>
+                  <td>{{ row.raw['suppliertype'] || '—' }}</td>
+                  <td>{{ row.data ? formatMoney(row.data.creditLimit, row.data.currency) : (row.raw['creditlimit'] || '—') }}</td>
+                  <td>
+                    @if (row.data) {
+                      <span class="text-[#1b5a9a]">OK</span>
+                    } @else {
+                      <ul class="list-disc pl-4 text-red-700">
+                        @for (err of row.errors; track err) {
+                          <li>{{ err }}</li>
+                        }
+                      </ul>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- FOOTER -->
+  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3.5">
+    <button
+      type="button"
+      (click)="closed.emit()"
+      class="h-8 min-w-[5.5rem] cursor-pointer px-5 text-[13px] border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      Cancel
+    </button>
+    <button
+      type="button"
+      [disabled]="validRows().length === 0"
+      (click)="submit()"
+      class="h-8 min-w-[6.5rem] cursor-pointer px-5 text-[13px] border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:bg-[#1b5a9a]">
+      Import {{ validRows().length }} {{ validRows().length === 1 ? 'supplier' : 'suppliers' }}
+    </button>
+  </div>
+</div>

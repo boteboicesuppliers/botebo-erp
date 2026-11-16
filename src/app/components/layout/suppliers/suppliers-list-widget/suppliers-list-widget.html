@@ -1,1 +1,620 @@
-<p>suppliers-list-widget works!</p>
+<div class="flex min-h-[calc(100vh-7rem)] flex-col gap-3.5 text-[13px] text-[#1f2933]">
+
+  <!-- MAIN CARD -->
+  <div class="flex h-[calc(100vh-7rem)] min-h-[40rem] flex-col border border-[#c5ced9] bg-white">
+
+    <!-- PAGE HEADER -->
+    <section class="shrink-0 px-5 pt-5">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <h1 class="text-[30px] leading-9 font-bold tracking-tight text-[#17304f]">Suppliers</h1>
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="openForm()"
+            class="inline-flex h-8 cursor-pointer items-center gap-2 border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] px-4 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2">
+            <span class="text-sm leading-none">+</span>
+            Add supplier
+          </button>
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleActions($event)"
+              class="inline-flex h-8 cursor-pointer items-center gap-1.5 border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] disabled:shadow-none px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+              Actions
+              <span class="text-[9px]">▾</span>
+            </button>
+            @if (actionsOpen()) {
+              <div class="absolute top-9 right-0 z-30 w-64 border border-[#b8c4d2] bg-white py-1 shadow-lg" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  (click)="openImport()"
+                  class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] text-[#17304f] hover:bg-[#e1e6ed]">
+                  Import suppliers
+                </button>
+                <button
+                  type="button"
+                  (click)="openStatement()"
+                  class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] text-[#17304f] hover:bg-[#e1e6ed]">
+                  Generate statement of accounts
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS STRIP (divider runs full card width) -->
+      <div class="-mx-5 mt-3 flex flex-wrap items-center gap-y-2 border-b border-[#c5ced9] px-5 pb-4 text-[13px] text-[#4b5563]">
+        <span class="pr-14">Registered Suppliers</span>
+        <span class="pr-5 font-semibold text-[#1f2933]">{{ suppliers().length }} suppliers</span>
+        <span class="border-l border-[#c5ced9] px-5">{{ businessCount() }} businesses</span>
+        <span class="border-l border-[#c5ced9] px-5">{{ individualCount() }} individuals</span>
+        <span class="border-l border-[#c5ced9] pl-5">{{ vatCount() }} VAT registered</span>
+      </div>
+    </section>
+
+    <!-- FILTER BAR -->
+    <section class="shrink-0 border-b border-[#c5ced9] bg-white px-5 pt-4 pb-3">
+      <div class="flex flex-wrap items-end gap-4">
+        <div class="min-w-[16rem] flex-[1.6]">
+          <label class="mb-1.5 block text-xs text-[#374151]">Search suppliers</label>
+          <input
+            #searchBox
+            type="text"
+            [value]="draftSearch()"
+            (input)="draftSearch.set(searchBox.value)"
+            (keydown.enter)="find()"
+            placeholder="Supplier no., name, email or phone"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+        </div>
+
+        <!-- CATEGORY VIEW SWITCHER (applies instantly) -->
+        <div class="min-w-[11rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]">Supplier Type</label>
+          <div class="relative">
+            <select
+              #typeSel
+              [value]="draftType()"
+              (change)="changeType(typeSel.value)"
+              class="h-8 w-full cursor-pointer appearance-none border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 pr-8 text-[13px] text-[#4b5563] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="">All suppliers</option>
+              @for (t of supplierTypes; track t) {
+                <option [value]="t">{{ t }} suppliers</option>
+              }
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+        </div>
+
+        <div class="min-w-[11rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]">VAT Status</label>
+          <div class="relative">
+            <select
+              #vatSel
+              [value]="draftVat()"
+              (change)="draftVat.set(vatSel.value)"
+              class="h-8 w-full cursor-pointer appearance-none border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 pr-8 text-[13px] text-[#4b5563] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="">All statuses</option>
+              <option value="registered">VAT registered</option>
+              <option value="not-registered">Not VAT registered</option>
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+        </div>
+
+        <div class="min-w-[11rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]">Payment Term</label>
+          <div class="relative">
+            <select
+              #termSel
+              [value]="draftTerm()"
+              (change)="draftTerm.set(termSel.value)"
+              class="h-8 w-full cursor-pointer appearance-none border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 pr-8 text-[13px] text-[#4b5563] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="">All terms</option>
+              @for (t of paymentTerms(); track t) {
+                <option [value]="t">{{ t }}</option>
+              }
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="find()"
+            class="h-8 min-w-[6.5rem] cursor-pointer border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] px-5 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2">
+            Find
+          </button>
+          <button
+            type="button"
+            (click)="reset()"
+            class="h-8 min-w-[5.5rem] cursor-pointer border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] disabled:shadow-none px-5 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-5 flex flex-wrap items-center justify-between gap-3 text-[13px]">
+        <div class="flex items-center gap-10">
+          <button type="button" (click)="openAdvanced()" class="cursor-pointer text-[#1b5a9a] hover:underline">
+            Advanced <span class="text-[8px]">▾</span>
+          </button>
+          <span class="text-[#4b5563]">View: {{ viewLabel() }}</span>
+          @if (advancedQuery()) {
+            <span class="text-[#4b5563]">
+              Advanced query active ·
+              <button type="button" (click)="clearAdvanced()" class="cursor-pointer text-[#1b5a9a] hover:underline">Clear</button>
+            </span>
+          }
+        </div>
+
+        <!-- SAVED QUERY DROPDOWN -->
+        <div class="relative text-[#4b5563]">
+          Saved query:
+          <button
+            type="button"
+            (click)="toggleSaved($event)"
+            class="cursor-pointer text-[#1b5a9a] hover:underline">
+            {{ activeSavedName() ?? 'All suppliers' }} <span class="text-[8px]">▾</span>
+          </button>
+          @if (savedOpen()) {
+            <div class="absolute top-7 right-0 z-30 max-h-72 w-72 overflow-y-auto border border-[#b8c4d2] bg-white py-1 shadow-lg" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                (click)="clearSaved()"
+                class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] hover:bg-[#e1e6ed]"
+                [class]="activeSavedId() === null ? 'font-semibold text-[#1b5a9a]' : 'text-[#17304f]'">
+                All suppliers
+              </button>
+
+              @for (s of savedQueries(); track s.id) {
+                <div class="flex items-center hover:bg-[#e1e6ed]">
+                  <button
+                    type="button"
+                    (click)="applySaved(s.id)"
+                    class="min-w-0 flex-1 cursor-pointer truncate px-4 py-2 text-left text-[13px]"
+                    [class]="activeSavedId() === s.id ? 'font-semibold text-[#1b5a9a]' : 'text-[#17304f]'">
+                    {{ s.name }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deleteSaved(s.id, $event)"
+                    [attr.aria-label]="'Delete saved query ' + s.name"
+                    class="cursor-pointer px-3 py-2 text-base leading-none text-[#4b5563] hover:text-red-700">×</button>
+                </div>
+              } @empty {
+                <p class="border-t border-[#c5ced9] px-4 py-2 text-xs text-[#4b5563]">
+                  No saved queries yet. Build one under Advanced and click Save query.
+                </p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLE SECTION -->
+    <section class="flex min-h-0 flex-1 flex-col bg-white">
+
+      <!-- TOOLBAR -->
+      <div class="flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 py-3">
+        <div class="flex items-center gap-4">
+          <button
+            type="button"
+            (click)="selectFirst()"
+            class="h-8 min-w-[5rem] cursor-pointer border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] disabled:shadow-none px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+            Select
+          </button>
+          <button
+            type="button"
+            [disabled]="!selected()"
+            (click)="editSelected()"
+            class="h-8 min-w-[5rem] cursor-pointer border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] disabled:shadow-none px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:hover:bg-white">
+            Edit
+          </button>
+          <div class="relative">
+            <button
+              type="button"
+              (click)="toggleMore($event)"
+              class="inline-flex h-8 min-w-[5rem] cursor-pointer items-center justify-center gap-1.5 border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] disabled:shadow-none px-4 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+              More <span class="text-[8px]">▾</span>
+            </button>
+            @if (moreOpen()) {
+              <div class="absolute top-9 left-0 z-30 w-44 border border-[#b8c4d2] bg-white py-1 shadow-lg" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  [disabled]="!selected()"
+                  (click)="deleteSelected()"
+                  class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:hover:bg-white">
+                  Delete supplier
+                </button>
+              </div>
+            }
+          </div>
+          <span class="text-[13px] text-[#4b5563]">{{ selected() ? 1 : 0 }} selected</span>
+        </div>
+
+        <div class="flex items-center gap-8 text-[13px] text-[#17304f]">
+          <button type="button" class="cursor-pointer hover:underline">Export ↓</button>
+          <button type="button" (click)="print()" class="cursor-pointer hover:underline">Print</button>
+          <button type="button" class="cursor-pointer hover:underline">Columns <span class="text-[8px]">▾</span></button>
+        </div>
+      </div>
+
+      @if (suppliers().length === 0) {
+        <!-- EMPTY STATE -->
+        <div class="flex flex-col items-center justify-center border-t border-[#c5ced9] px-4 py-14 text-center">
+          <div class="flex h-11 w-11 items-center justify-center bg-[#e1e6ed] text-[#4b5563]">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <p class="mt-4 text-sm font-medium text-[#17304f]">No suppliers yet</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Use the Add supplier button to add your first supplier.</p>
+        </div>
+      } @else {
+        <!-- SUPPLIER TABLE (scrolls horizontally) -->
+        <div #tableScroll class="min-h-0 w-full flex-1 overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151]">
+            <thead>
+              <tr>
+                <th class="w-10 text-center">
+                  <input
+                    type="checkbox"
+                    [checked]="!!selected()"
+                    (change)="clearSelection()"
+                    aria-label="Clear selection"
+                    class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+                </th>
+                <th class="min-w-[9rem]">Supplier Number</th>
+                <th class="min-w-[13rem]">
+                  <button type="button" (click)="toggleSort()" class="inline-flex cursor-pointer items-center gap-1.5 hover:text-[#17304f]">
+                    Business / Individual Name
+                    <span class="text-[11px]">{{ sortAsc() ? '↑' : '↓' }}</span>
+                  </button>
+                </th>
+                <th class="min-w-[11rem]">Status</th>
+                <th class="min-w-[18rem]">Address</th>
+                <th class="min-w-[14rem]">Supplier Email</th>
+                <th class="min-w-[12rem]">Supplier Phone</th>
+                <th class="min-w-[10rem]">Supplier Type</th>
+                <th class="min-w-[9rem]">Contact First Name</th>
+                <th class="min-w-[9rem]">Contact Last Name</th>
+                <th class="min-w-[14rem]">Contact Email</th>
+                <th class="min-w-[10rem]">VAT Status</th>
+                <th class="min-w-[9rem]">VAT Number</th>
+                <th class="min-w-[9rem]">Credit Limit</th>
+                <th class="min-w-[10rem]">Payment Term</th>
+                <th class="min-w-[9rem]">Payment Days</th>
+                <th class="min-w-[8rem]">Currency</th>
+                <th class="min-w-[11rem]">Bank Name</th>
+                <th class="min-w-[11rem]">Bank Account Number</th>
+                <th class="min-w-[9rem]">Branch Code</th>
+                <th class="min-w-[9rem]">Lead Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (supplier of pagedSuppliers(); track supplier; let odd = $odd) {
+                <tr
+                  (click)="toggleRow(supplier)"
+                  class="cursor-pointer transition-colors duration-150"
+                  [class]="isSelected(supplier)
+                    ? '[&_td]:bg-[#cfe0f5] [&_td]:font-medium [&_td]:text-[#1b5a9a] [&_td]:border-b-[#9fb3c8]'
+                    : odd
+                      ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]'
+                      : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+                  <td class="text-center">
+                    <input
+                      type="checkbox"
+                      [checked]="isSelected(supplier)"
+                      (click)="$event.stopPropagation()"
+                      (change)="toggleRow(supplier)"
+                      [attr.aria-label]="'Select ' + supplier.name"
+                      class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+                  </td>
+                  <td class="font-medium text-[#1b5a9a]">{{ supplierNumber(supplier) }}</td>
+                  <td>{{ supplier.name }}</td>
+                  <td>
+                    <span
+                      class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium"
+                      [class]="statusClass(supplier.status)">
+                      {{ supplier.status }}
+                    </span>
+                  </td>
+                  <td>{{ supplier.address }}</td>
+                  <td>{{ supplier.email || '—' }}</td>
+                  <td>{{ supplier.phone || '—' }}</td>
+                  <td>{{ supplier.supplierType }}</td>
+                  <td>{{ isBusiness(supplier) ? (supplier.contactFirstName || '—') : '—' }}</td>
+                  <td>{{ isBusiness(supplier) ? (supplier.contactLastName || '—') : '—' }}</td>
+                  <td>{{ isBusiness(supplier) ? (supplier.contactEmail || '—') : '—' }}</td>
+                  <td>{{ supplier.vatRegistered ? 'VAT registered' : 'Not VAT registered' }}</td>
+                  <td>{{ supplier.vatRegistered ? supplier.vatNumber : '—' }}</td>
+                  <td>{{ formatMoney(supplier.creditLimit, supplier.currency) }}</td>
+                  <td>{{ supplier.paymentTerm }}</td>
+                  <td>{{ supplier.paymentTerm === 'Custom Term' ? supplier.paymentDays + ' days' : '—' }}</td>
+                  <td>{{ supplier.currency }}</td>
+                  <td>{{ supplier.bankName || '—' }}</td>
+                  <td>{{ supplier.bankAccountNumber || '—' }}</td>
+                  <td>{{ supplier.branchCode || '—' }}</td>
+                  <td>{{ supplier.leadTimeDays }} days</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="21" class="!h-24 bg-white text-center text-[#4b5563]">No suppliers match your search.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <p class="mt-3 shrink-0 text-center text-xs text-[#4b5563]">Scroll horizontally for tax, credit, banking and procurement columns →</p>
+
+        <!-- PAGINATION -->
+        <div class="mt-auto flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 pt-1 pb-5 text-[13px] text-[#4b5563]">
+          <span>Showing {{ rangeStart() }}–{{ rangeEnd() }} of {{ filteredSuppliers().length }} suppliers</span>
+
+          <div class="flex items-center gap-10">
+            <label class="flex items-center gap-2">
+              Rows per page:
+              <span class="relative">
+                <select
+                  #sizeSel
+                  [value]="pageSize()"
+                  (change)="setPageSize(+sizeSel.value)"
+                  class="h-8 cursor-pointer appearance-none border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white pr-7 pl-2.5 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:outline-none">
+                  <option value="8">8</option>
+                  <option value="16">16</option>
+                  <option value="32">32</option>
+                </select>
+                <span class="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-[8px]">▾</span>
+              </span>
+            </label>
+
+            <div class="flex items-center gap-1.5">
+              <button
+                type="button"
+                (click)="goTo(safePage() - 1)"
+                [disabled]="safePage() === 1"
+                aria-label="Previous page"
+                class="flex h-8 w-8 cursor-pointer items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#1f2933] hover:bg-[#e1e6ed] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white">
+                ‹
+              </button>
+              @for (p of pageNumbers(); track $index) {
+                @if (p === '...') {
+                  <span class="flex h-8 w-8 items-center justify-center">...</span>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="goTo(+p)"
+                    class="flex h-8 w-9 cursor-pointer items-center justify-center transition-colors"
+                    [class]="p === safePage() ? 'border border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#1f2933] hover:bg-[#e1e6ed]'">
+                    {{ p }}
+                  </button>
+                }
+              }
+              <button
+                type="button"
+                (click)="goTo(safePage() + 1)"
+                [disabled]="safePage() === totalPages()"
+                aria-label="Next page"
+                class="flex h-8 w-8 cursor-pointer items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#1f2933] hover:bg-[#e1e6ed] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white">
+                ›
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+  </div>
+
+  <!-- SUPPLIER DETAILS CARD -->
+  @if (selected(); as sel) {
+    <section class="border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+        <div class="flex flex-wrap items-center gap-x-10 gap-y-1">
+          <button
+            type="button"
+            (click)="detailsOpen.set(!detailsOpen())"
+            class="flex cursor-pointer items-center gap-2 text-[14px] font-semibold text-[#17304f]">
+            <span class="text-[9px]">{{ detailsOpen() ? '▾' : '▸' }}</span>
+            Supplier details
+          </button>
+          <span class="text-[14px] font-semibold text-[#1b5a9a]">{{ sel.name }}</span>
+          <span class="text-[13px] text-[#4b5563]">Supplier {{ supplierNumber(sel) }}</span>
+        </div>
+        <button type="button" (click)="editSelected()" class="cursor-pointer text-[13px] text-[#1b5a9a] hover:underline">
+          Edit supplier
+        </button>
+      </div>
+
+      @if (detailsOpen()) {
+        <div class="grid grid-cols-1 gap-y-6 px-5 py-5 md:grid-cols-2 xl:grid-cols-5 xl:gap-y-0">
+
+          <div class="space-y-4 xl:border-r xl:border-[#c5ced9] xl:pr-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">
+              {{ isBusiness(sel) ? 'Business Information' : 'Individual Information' }}
+            </h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">{{ isBusiness(sel) ? 'Business Name' : 'Full Name' }}</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.name }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Address</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.address }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">{{ isBusiness(sel) ? 'Business Email' : 'Email' }}</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.email || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">{{ isBusiness(sel) ? 'Business Phone' : 'Phone' }}</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.phone || '—' }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 xl:border-r xl:border-[#c5ced9] xl:px-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Key Point of Contact</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">First Name</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ isBusiness(sel) ? (sel.contactFirstName || '—') : '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Last Name</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ isBusiness(sel) ? (sel.contactLastName || '—') : '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Email</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ isBusiness(sel) ? (sel.contactEmail || '—') : '—' }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 xl:border-r xl:border-[#c5ced9] xl:px-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Classification &amp; Tax</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">Status</p>
+              <p class="mt-1">
+                <span class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium" [class]="statusClass(sel.status)">
+                  {{ sel.status }}
+                </span>
+              </p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Supplier Type</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.supplierType }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">VAT Status</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.vatRegistered ? 'VAT registered' : 'Not VAT registered' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">VAT Number</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.vatRegistered ? sel.vatNumber : '—' }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 xl:border-r xl:border-[#c5ced9] xl:px-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Credit &amp; Payment</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">Credit Limit</p>
+              <p class="mt-1 text-[14px] font-semibold text-[#17304f]">{{ formatMoney(sel.creditLimit, sel.currency) }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Payment Term</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.paymentTerm }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Payment Days</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.paymentTerm === 'Custom Term' ? sel.paymentDays + ' days' : '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Currency</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.currency }}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4 xl:pl-5">
+            <h4 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Banking &amp; Procurement</h4>
+            <div>
+              <p class="text-xs text-[#4b5563]">Bank Name</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.bankName || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Bank Account Number</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.bankAccountNumber || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Branch Code</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.branchCode || '—' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-[#4b5563]">Lead Time</p>
+              <p class="mt-1 text-[14px] text-[#17304f]">{{ sel.leadTimeDays }} days</p>
+            </div>
+          </div>
+
+        </div>
+      }
+    </section>
+  }
+</div>
+
+<!-- NEW SUPPLIER MODAL -->
+@if (showForm()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeForm()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-new-supplier-form (closed)="closeForm()" (saved)="addSupplier($event)" />
+    </div>
+  </div>
+}
+
+<!-- IMPORT SUPPLIERS MODAL -->
+@if (showImport()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeImport()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-import-suppliers-form
+        [existing]="suppliers()"
+        (closed)="closeImport()"
+        (imported)="importSuppliers($event)" />
+    </div>
+  </div>
+}
+
+<!-- STATEMENT OF ACCOUNTS MODAL -->
+@if (showStatement()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeStatement()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-statement-form
+        [suppliers]="suppliers()"
+        [selected]="selected()"
+        (closed)="closeStatement()" />
+    </div>
+  </div>
+}
+
+<!-- EDIT SUPPLIER MODAL -->
+@if (editingSupplier(); as supplier) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeEdit()">
+    <div class="max-h-full w-full max-w-2xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-edit-supplier-form [supplier]="supplier" (closed)="closeEdit()" (saved)="updateSupplier($event)" />
+    </div>
+  </div>
+}
+
+<!-- DELETE SUPPLIER MODAL -->
+@if (deletingSupplier(); as supplier) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-[#17304f]/40 p-4 backdrop-blur-sm"
+    (click)="closeDelete()">
+    <div class="max-h-full w-full max-w-md overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-delete-supplier-form [supplier]="supplier" (closed)="closeDelete()" (confirmed)="confirmDelete()" />
+    </div>
+  </div>
+}
+
+<!-- ADVANCED QUERY MODAL -->
+@if (showAdvanced()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4 backdrop-blur-sm"
+    (click)="closeAdvanced()">
+    <div class="max-h-full w-full max-w-4xl overflow-y-auto" (click)="$event.stopPropagation()">
+      <app-advanced-query-form
+        [initial]="advancedQuery()"
+        [initialSavedId]="activeSavedId()"
+        (closed)="closeAdvanced()"
+        (run)="runAdvanced($event)"
+        (cleared)="clearAdvanced()" />
+    </div>
+  </div>
+}

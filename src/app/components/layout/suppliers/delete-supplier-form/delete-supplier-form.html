@@ -1,1 +1,58 @@
-<p>delete-supplier-form works!</p>
+<div
+  class="w-full max-w-md border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-xl"
+  role="alertdialog"
+  aria-modal="true"
+  aria-labelledby="delete-supplier-title">
+
+  <div class="px-5 py-5">
+    <div class="flex items-start gap-4">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center bg-[#dde9f7] text-[#1b5a9a]">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"/>
+          <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/>
+          <path d="m19 6-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+        </svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 id="delete-supplier-title" class="text-[14px] font-semibold text-[#17304f]">Delete supplier?</h3>
+        <p class="mt-1 text-[13px] text-[#4b5563]">
+          You're about to delete
+          <span class="font-semibold text-[#17304f]">{{ supplier().name }}</span>.
+          This action cannot be undone.
+        </p>
+
+        <label for="confirm-supplier-name" class="mt-4 mb-1.5 block text-xs text-[#374151]">
+          Enter supplier name to confirm
+        </label>
+        <input
+          #nameInput
+          id="confirm-supplier-name"
+          type="text"
+          autocomplete="off"
+          [value]="typedName()"
+          (input)="typedName.set(nameInput.value)"
+          (keydown.enter)="confirm()"
+          [placeholder]="supplier().name"
+          class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3.5">
+    <button
+      type="button"
+      (click)="closed.emit()"
+      class="h-8 min-w-[5.5rem] cursor-pointer border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] px-5 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      Cancel
+    </button>
+    <button
+      type="button"
+      [disabled]="!nameMatches()"
+      (click)="confirm()"
+      class="h-8 min-w-[6.5rem] cursor-pointer border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] px-5 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:bg-[#1b5a9a]">
+      Delete
+    </button>
+  </div>
+
+</div>

@@ -1,1 +1,286 @@
-<p>edit-supplier-form works!</p>
+<form
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+  class="border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-xl">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-4">
+    <h3 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Edit Supplier</h3>
+    <button
+      type="button"
+      (click)="close()"
+      aria-label="Close"
+      class="cursor-pointer p-1.5 text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="space-y-5 px-5 py-5">
+
+    <!-- SUPPLIER DETAILS -->
+    <section>
+      <h4 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">
+        {{ isIndividual() ? 'Individual Details' : 'Business Details' }}
+      </h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div class="sm:col-span-2">
+          <label for="supplierType" class="mb-1.5 block text-xs text-[#374151]">Supplier type</label>
+          <div class="relative">
+            <select id="supplierType" formControlName="supplierType" class="cursor-pointer appearance-none pr-8" [class]="inputClass('supplierType')">
+              <option value="" disabled>Select a type</option>
+              @for (type of supplierTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+          @if (hasError('supplierType')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('supplierType') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="name" class="mb-1.5 block text-xs text-[#374151]">
+            {{ isIndividual() ? 'Full name (first name and surname)' : 'Business name' }}
+          </label>
+          <input id="name" type="text" formControlName="name" [class]="inputClass('name')" />
+          @if (hasError('name')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('name') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="address" class="mb-1.5 block text-xs text-[#374151]">Address</label>
+          <input id="address" type="text" formControlName="address" [class]="inputClass('address')" />
+          @if (hasError('address')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('address') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="email" class="mb-1.5 block text-xs text-[#374151]">
+            {{ isIndividual() ? 'Email' : 'Business email' }}
+            @if (!isIndividual()) {
+              <span class="text-[#6b7280]">(optional)</span>
+            }
+          </label>
+          <input id="email" type="email" formControlName="email" [class]="inputClass('email')" />
+          @if (hasError('email')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('email') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="phone" class="mb-1.5 block text-xs text-[#374151]">
+            {{ isIndividual() ? 'Phone' : 'Business phone' }}
+            @if (!isIndividual()) {
+              <span class="text-[#6b7280]">(optional)</span>
+            }
+          </label>
+          <input id="phone" type="tel" formControlName="phone" [class]="inputClass('phone')" />
+          @if (hasError('phone')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('phone') }}</p>
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- KEY CONTACT (business suppliers only) -->
+    @if (!isIndividual()) {
+      <section class="border-t border-[#c5ced9] pt-5">
+        <h4 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Key Contact</h4>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+          <div>
+            <label for="contactFirstName" class="mb-1.5 block text-xs text-[#374151]">First name</label>
+            <input id="contactFirstName" type="text" formControlName="contactFirstName" [class]="inputClass('contactFirstName')" />
+            @if (hasError('contactFirstName')) {
+              <p class="mt-1 text-xs text-red-700">{{ errorMessage('contactFirstName') }}</p>
+            }
+          </div>
+
+          <div>
+            <label for="contactLastName" class="mb-1.5 block text-xs text-[#374151]">Last name</label>
+            <input id="contactLastName" type="text" formControlName="contactLastName" [class]="inputClass('contactLastName')" />
+            @if (hasError('contactLastName')) {
+              <p class="mt-1 text-xs text-red-700">{{ errorMessage('contactLastName') }}</p>
+            }
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="contactEmail" class="mb-1.5 block text-xs text-[#374151]">Email</label>
+            <input id="contactEmail" type="email" formControlName="contactEmail" [class]="inputClass('contactEmail')" />
+            @if (hasError('contactEmail')) {
+              <p class="mt-1 text-xs text-red-700">{{ errorMessage('contactEmail') }}</p>
+            }
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VAT (business suppliers only) -->
+      <section class="border-t border-[#c5ced9] pt-5">
+        <h4 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">VAT</h4>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+          <div class="sm:col-span-2">
+            <div class="flex flex-wrap items-center gap-6">
+              <label class="flex cursor-pointer items-center gap-2 text-[13px] text-[#1f2933]">
+                <input type="radio" formControlName="vatStatus" value="registered"
+                  class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+                VAT registered
+              </label>
+              <label class="flex cursor-pointer items-center gap-2 text-[13px] text-[#1f2933]">
+                <input type="radio" formControlName="vatStatus" value="not-registered"
+                  class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+                Not VAT registered
+              </label>
+            </div>
+            @if (hasError('vatStatus')) {
+              <p class="mt-1 text-xs text-red-700">{{ errorMessage('vatStatus') }}</p>
+            }
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="vatNumber" class="mb-1.5 block text-xs text-[#374151]">VAT number</label>
+            <input id="vatNumber" type="text" formControlName="vatNumber" [class]="inputClass('vatNumber')" />
+            @if (hasError('vatNumber')) {
+              <p class="mt-1 text-xs text-red-700">{{ errorMessage('vatNumber') }}</p>
+            }
+          </div>
+
+        </div>
+      </section>
+    }
+
+    <!-- CREDIT & PAYMENT -->
+    <section class="border-t border-[#c5ced9] pt-5">
+      <h4 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Credit &amp; Payment</h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div>
+          <label for="currency" class="mb-1.5 block text-xs text-[#374151]">Currency</label>
+          <div class="relative">
+            <select id="currency" formControlName="currency" class="cursor-pointer appearance-none pr-8" [class]="inputClass('currency')">
+              <option value="" disabled>Select a currency</option>
+              @for (code of currencies; track code) {
+                <option [value]="code">{{ code }}</option>
+              }
+            </select>
+            <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+          </div>
+          @if (hasError('currency')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('currency') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="creditLimit" class="mb-1.5 block text-xs text-[#374151]">Credit limit ({{ currencySymbol() }})</label>
+          <input id="creditLimit" type="text" inputmode="numeric" formControlName="creditLimit"
+            (input)="onCreditLimitInput($event)" [class]="inputClass('creditLimit')" />
+          @if (hasError('creditLimit')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('creditLimit') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <span class="mb-1.5 block text-xs text-[#374151]">Payment term</span>
+          <div class="flex flex-wrap items-center gap-6">
+            <label class="flex cursor-pointer items-center gap-2 text-[13px] text-[#1f2933]">
+              <input type="checkbox"
+                [checked]="form.controls.paymentTerm.value === 'cod'"
+                (change)="selectPaymentTerm('cod', $event)"
+                class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+              Cash on Delivery
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 text-[13px] text-[#1f2933]">
+              <input type="checkbox"
+                [checked]="form.controls.paymentTerm.value === 'custom'"
+                (change)="selectPaymentTerm('custom', $event)"
+                class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+              Custom Term
+            </label>
+          </div>
+          @if (hasError('paymentTerm')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('paymentTerm') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="paymentDays" class="mb-1.5 block text-xs text-[#374151]">Payment days</label>
+          <input id="paymentDays" type="text" inputmode="numeric" formControlName="paymentDays"
+            (input)="onDigitsInput($event, 'paymentDays', 3)" [class]="inputClass('paymentDays')" />
+          @if (hasError('paymentDays')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('paymentDays') }}</p>
+          }
+        </div>
+
+      </div>
+    </section>
+
+    <!-- BANKING & PROCUREMENT -->
+    <section class="border-t border-[#c5ced9] pt-5">
+      <h4 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Banking &amp; Procurement</h4>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+        <div class="sm:col-span-2">
+          <label for="bankName" class="mb-1.5 block text-xs text-[#374151]">Bank name</label>
+          <input id="bankName" type="text" formControlName="bankName" [class]="inputClass('bankName')" />
+          @if (hasError('bankName')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('bankName') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="bankAccountNumber" class="mb-1.5 block text-xs text-[#374151]">Bank account number</label>
+          <input id="bankAccountNumber" type="text" inputmode="numeric" formControlName="bankAccountNumber"
+            (input)="onDigitsInput($event, 'bankAccountNumber', 20)" [class]="inputClass('bankAccountNumber')" />
+          @if (hasError('bankAccountNumber')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('bankAccountNumber') }}</p>
+          }
+        </div>
+
+        <div>
+          <label for="branchCode" class="mb-1.5 block text-xs text-[#374151]">Branch code</label>
+          <input id="branchCode" type="text" inputmode="numeric" formControlName="branchCode"
+            (input)="onDigitsInput($event, 'branchCode', 10)" [class]="inputClass('branchCode')" />
+          @if (hasError('branchCode')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('branchCode') }}</p>
+          }
+        </div>
+
+        <div class="sm:col-span-2">
+          <label for="leadTimeDays" class="mb-1.5 block text-xs text-[#374151]">Lead time (days)</label>
+          <input id="leadTimeDays" type="text" inputmode="numeric" formControlName="leadTimeDays"
+            (input)="onDigitsInput($event, 'leadTimeDays', 3)" [class]="inputClass('leadTimeDays')" />
+          @if (hasError('leadTimeDays')) {
+            <p class="mt-1 text-xs text-red-700">{{ errorMessage('leadTimeDays') }}</p>
+          }
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3.5">
+    <button
+      type="button"
+      (click)="close()"
+      class="h-8 min-w-[5.5rem] cursor-pointer border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] px-5 text-[13px] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="h-8 min-w-[6.5rem] cursor-pointer border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] px-5 text-[13px] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2">
+      Save Changes
+    </button>
+  </div>
+
+</form>
