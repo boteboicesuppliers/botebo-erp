@@ -105,7 +105,7 @@
 
                 @case ('production') {
                   <circle cx="12" cy="12" r="3"/>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                 }
 
                 @case ('quality') {
@@ -197,7 +197,7 @@
               aria-label="Toggle submenu"
               class="absolute right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#6b7280] transition-colors hover:bg-[#e5ecf5] hover:text-[#17304f] focus:outline-none">
               <svg
-                class="h-3.5 w-3.5 transition-transform duration-150"
+                class="h-3.5 w-3.5 transition-transform duration-200"
                 [class.rotate-90]="isExpanded(item.name)"
                 fill="none"
                 stroke="currentColor"
@@ -211,41 +211,57 @@
           }
         </div>
 
-        <!-- Expandable Sub-Items -->
-        @if (item.children && item.children.length > 0 && isExpanded(item.name)) {
-          <div class="bg-[#fafbfd] py-0.5">
-            @for (sub of item.children; track sub.route) {
-              <div class="group/sub relative flex h-9 w-full items-center">
-                <a
-                  [routerLink]="sub.route"
-                  (click)="trackRecent(sub.name, sub.route)"
-                  routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex h-full w-full cursor-pointer items-center border-l-[3px] border-transparent pr-8 pl-12 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
-                  <span class="truncate">{{ sub.name }}</span>
-                </a>
+        <!-- Pure Tailwind Grid Accordion & Item Slide Animation with Tree Scope Lines -->
+        @if (item.children && item.children.length > 0) {
+          <div class="grid transition-all duration-200 ease-in-out"
+               [class.grid-rows-[1fr]]="isExpanded(item.name)"
+               [class.grid-rows-[0fr]]="!isExpanded(item.name)">
+            <div class="overflow-hidden">
+              <div class="relative bg-[#fafbfd] py-0.5 transition-all duration-200 ease-in-out"
+                   [class.opacity-100]="isExpanded(item.name)"
+                   [class.opacity-0]="!isExpanded(item.name)"
+                   [class.translate-y-0]="isExpanded(item.name)"
+                   [class.-translate-y-1]="!isExpanded(item.name)">
+                <!-- Vertical Scope Guide Line -->
+                <div class="absolute left-[31px] top-0 bottom-2 w-[1px] bg-[#c5ced9]"></div>
 
-                <!-- Pin/Unpin Favorite Star on Sub-Item Hover -->
-                <button
-                  type="button"
-                  (click)="toggleFavorite(sub, $event)"
-                  [title]="isFavorite(sub.route) ? 'Remove from favorites' : 'Add to favorites'"
-                  class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#6b7280] opacity-0 transition-opacity group-hover/sub:opacity-100 hover:bg-[#e5ecf5] hover:text-[#1b5a9a] focus:opacity-100 focus:outline-none"
-                  [class.!opacity-100]="isFavorite(sub.route)"
-                  [class.!text-[#1b5a9a]]="isFavorite(sub.route)">
-                  <svg
-                    class="h-3.5 w-3.5"
-                    [attr.fill]="isFavorite(sub.route) ? 'currentColor' : 'none'"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    viewBox="0 0 24 24">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                </button>
+                @for (sub of item.children; track sub.route) {
+                  <div class="group/sub relative flex h-9 w-full items-center">
+                    <!-- Horizontal Branch Line -->
+                    <div class="absolute left-[31px] top-1/2 h-[1px] w-4 bg-[#c5ced9]"></div>
+
+                    <a
+                      [routerLink]="sub.route"
+                      (click)="trackRecent(sub.name, sub.route)"
+                      routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      class="flex h-full w-full cursor-pointer items-center border-l-[3px] border-transparent pr-8 pl-12 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+                      <span class="truncate">{{ sub.name }}</span>
+                    </a>
+
+                    <!-- Pin/Unpin Favorite Star on Sub-Item Hover -->
+                    <button
+                      type="button"
+                      (click)="toggleFavorite(sub, $event)"
+                      [title]="isFavorite(sub.route) ? 'Remove from favorites' : 'Add to favorites'"
+                      class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#6b7280] opacity-0 transition-opacity group-hover/sub:opacity-100 hover:bg-[#e5ecf5] hover:text-[#1b5a9a] focus:opacity-100 focus:outline-none"
+                      [class.!opacity-100]="isFavorite(sub.route)"
+                      [class.!text-[#1b5a9a]]="isFavorite(sub.route)">
+                      <svg
+                        class="h-3.5 w-3.5"
+                        [attr.fill]="isFavorite(sub.route) ? 'currentColor' : 'none'"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        viewBox="0 0 24 24">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                      </svg>
+                    </button>
+                  </div>
+                }
               </div>
-            }
+            </div>
           </div>
         }
       </div>

@@ -127,7 +127,7 @@ export class NavBar {
     },
     {
       name: 'Customers',
-      route: '/customers', // Restored original main route
+      route: '/contracts', // Updated main route to /contracts
       icon: 'customers',
       children: [
         { name: 'Customer Pricing & Discounts', route: '/customers/pricing' },
