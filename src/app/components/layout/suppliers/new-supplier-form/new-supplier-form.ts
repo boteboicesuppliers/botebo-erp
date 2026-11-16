@@ -1,7 +1,12 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SupplierType } from '../../../../models/suppliers/supplier-model';
+import {
+  SUPPLIER_CURRENCIES,
+  SUPPLIER_TYPES,
+  SupplierModel,
+  SupplierType,
+} from '../../../../models/suppliers/supplier-model';
 import { NewSupplierFormModel } from '../../../../models/suppliers/new-supplier-form-model';
 
 @Component({
@@ -19,15 +24,16 @@ export class NewSupplierForm {
 
   // STATE
   submitted = signal(false);
-  kind = signal<'' | 'individual' | 'business'>('');
+  kind = signal<'' | SupplierType>('');
 
-  supplierTypes: SupplierType[] = ['Manufacturer', 'Distributor'];
+  readonly supplierTypes: readonly string[] = SUPPLIER_TYPES;
+  readonly currencies: readonly string[] = SUPPLIER_CURRENCIES;
 
   // FORM
-  // Fields that only apply to one kind of supplier start disabled (and are
-  // excluded from validation) until that kind is selected.
+  // Fields that only apply to one type of supplier start disabled (and are
+  // excluded from validation) until that type is selected.
   form = this.fb.nonNullable.group({
-    supplierKind: ['', Validators.required],
+    supplierType: ['', Validators.required],
 
     // Individual only
     firstName: [{ value: '', disabled: true }, Validators.required],
@@ -40,13 +46,11 @@ export class NewSupplierForm {
     address: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', Validators.required],
-    supplierType: ['', Validators.required],
 
-    // Key contact (business only)
+    // Key point of contact (business only)
     contactFirstName: [{ value: '', disabled: true }, Validators.required],
     contactLastName: [{ value: '', disabled: true }, Validators.required],
     contactEmail: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-    contactPhone: [{ value: '', disabled: true }, Validators.required],
 
     // VAT (business only)
     vatStatus: [{ value: '', disabled: true }, Validators.required],
@@ -59,6 +63,13 @@ export class NewSupplierForm {
     // Payment (both)
     paymentTerm: ['', Validators.required],
     paymentDays: [{ value: '', disabled: true }],
+    currency: ['ZAR', Validators.required],
+
+    // Banking + procurement (both)
+    bankName: [''],
+    bankAccountNumber: [''],
+    branchCode: [''],
+    leadTimeDays: ['', Validators.required],
   });
 
   private readonly inputBase =
@@ -73,19 +84,18 @@ export class NewSupplierForm {
       c.contactFirstName,
       c.contactLastName,
       c.contactEmail,
-      c.contactPhone,
       c.vatStatus,
     ];
 
     // Individual / Business decides which fields are active
-    c.supplierKind.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      const kind = value === 'individual' || value === 'business' ? value : '';
+    c.supplierType.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      const kind = value === 'Individual' || value === 'Business' ? value : '';
 
       this.kind.set(kind);
-      this.toggle(individualOnly, kind === 'individual');
-      this.toggle(businessOnly, kind === 'business');
+      this.toggle(individualOnly, kind === 'Individual');
+      this.toggle(businessOnly, kind === 'Business');
 
-      if (kind !== 'business') {
+      if (kind !== 'Business') {
         c.vatNumber.clearValidators();
         c.vatNumber.reset('');
         c.vatNumber.disable();
@@ -179,6 +189,14 @@ export class NewSupplierForm {
     this.form.controls.paymentDays.setValue(digits);
   }
 
+  onLeadTimeInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 3);
+
+    input.value = digits;
+    this.form.controls.leadTimeDays.setValue(digits);
+  }
+
   // VALIDATION HELPERS
 
   hasError(name: string): boolean {
@@ -225,36 +243,37 @@ export class NewSupplierForm {
 
     const v = this.form.getRawValue();
 
-    const isBusiness = v.supplierKind === 'business';
+    const isBusiness = v.supplierType === 'Business';
     const vatRegistered = isBusiness && v.vatStatus === 'registered';
     const hasCreditLimit = v.creditOption === 'limit';
     const isCustomTerm = v.paymentTerm === 'custom';
 
     this.saved.emit({
-      supplierKind: isBusiness ? 'Business' : 'Individual',
-
-      firstName: isBusiness ? '' : v.firstName.trim(),
-      lastName: isBusiness ? '' : v.lastName.trim(),
-      businessName: isBusiness ? v.businessName.trim() : '',
+      supplierType: v.supplierType as SupplierType,
+      name: isBusiness ? v.businessName.trim() : `${v.firstName.trim()} ${v.lastName.trim()}`,
 
       address: v.address.trim(),
       email: v.email.trim(),
       phone: v.phone.trim(),
-      supplierType: v.supplierType as SupplierType,
 
       contactFirstName: isBusiness ? v.contactFirstName.trim() : '',
       contactLastName: isBusiness ? v.contactLastName.trim() : '',
       contactEmail: isBusiness ? v.contactEmail.trim() : '',
-      contactPhone: isBusiness ? v.contactPhone.trim() : '',
 
       vatRegistered,
       vatNumber: vatRegistered ? v.vatNumber.trim() : '',
 
-      hasCreditLimit,
-      creditLimit: hasCreditLimit ? Number(v.creditLimit.replace(/,/g, '')) : null,
+      // 0 means no credit extended by this supplier
+      creditLimit: hasCreditLimit ? Number(v.creditLimit.replace(/,/g, '')) : 0,
 
       paymentTerm: isCustomTerm ? 'Custom Term' : 'Cash on Delivery',
       paymentDays: isCustomTerm ? Number(v.paymentDays) : null,
+      currency: v.currency as SupplierModel['currency'],
+
+      bankName: v.bankName.trim(),
+      bankAccountNumber: v.bankAccountNumber.trim(),
+      branchCode: v.branchCode.trim(),
+      leadTimeDays: Number(v.leadTimeDays),
     });
   }
 }

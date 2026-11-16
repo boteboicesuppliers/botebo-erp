@@ -1,3 +1,4 @@
+
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -34,12 +35,19 @@ export class LoginForm {
 
     try {
       const { email, password } = this.form.getRawValue();
+
       await this.auth.signInWithEmail(email.trim(), password);
-      this.router.navigate(['/dashboard']); // change to your post-login route
+
+      this.router.navigate(['/dashboard']);
+
     } catch (e: any) {
+
       this.error.set(this.toMessage(e?.code));
+
     } finally {
+
       this.loading.set(false);
+
     }
   }
 
@@ -48,33 +56,47 @@ export class LoginForm {
     this.error.set(null);
 
     try {
+
       await this.auth.signInWithGoogle();
-      this.router.navigate(['/dashboard']); // change to your post-login route
+
+      this.router.navigate(['/dashboard']);
+
     } catch (e: any) {
+
       if (e?.code !== 'auth/popup-closed-by-user') {
         this.error.set(this.toMessage(e?.code));
       }
+
     } finally {
+
       this.loading.set(false);
+
     }
   }
 
   private toMessage(code?: string): string {
     switch (code) {
+
       case 'auth/invalid-email':
         return 'Please enter a valid email address.';
+
       case 'auth/invalid-credential':
       case 'auth/wrong-password':
       case 'auth/user-not-found':
         return 'Incorrect email or password.';
+
       case 'auth/user-disabled':
         return 'This account has been disabled.';
+
       case 'auth/too-many-requests':
         return 'Too many attempts. Please try again later.';
+
       case 'auth/network-request-failed':
         return 'Network error. Check your connection and try again.';
+
       default:
         return 'Something went wrong. Please try again.';
+
     }
   }
 }

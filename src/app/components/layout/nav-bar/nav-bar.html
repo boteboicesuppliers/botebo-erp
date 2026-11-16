@@ -1,5 +1,8 @@
 <!-- Starts below the 96px header (56px brand bar + 40px menu bar) -->
-<aside class="fixed top-24 bottom-0 left-0 z-40 flex w-64 flex-col border-r border-[#c5ced9] bg-white text-[13px] text-[#374151] antialiased">
+<aside
+  class="fixed top-24 bottom-0 left-0 z-40 flex flex-col border-r border-[#c5ced9] bg-white text-[13px] text-[#374151] antialiased"
+  [style.width.px]="sidebarWidth()"
+  [class.select-none]="resizing()">
 
   <!-- Scrollable Navigation Area -->
   <nav class="flex-1 overflow-y-auto py-3">
@@ -211,31 +214,41 @@
           }
         </div>
 
-        <!-- Pure Tailwind Grid Accordion & Item Slide Animation with Tree Scope Lines -->
+        <!--
+          Sub-items as a tree:
+          - the trunk runs down from the parent icon (x = 31px, the icon's centre line)
+          - every row has a rounded elbow connector into its label
+          - rows that are not last also continue the trunk past their elbow
+          - the last row ends in an elbow only, so the tree visibly closes
+        -->
         @if (item.children && item.children.length > 0) {
           <div class="grid transition-all duration-200 ease-in-out"
                [class.grid-rows-[1fr]]="isExpanded(item.name)"
                [class.grid-rows-[0fr]]="!isExpanded(item.name)">
             <div class="overflow-hidden">
-              <div class="relative bg-[#fafbfd] py-0.5 transition-all duration-200 ease-in-out"
+              <div class="relative bg-[#fafbfd] pb-1 transition-all duration-200 ease-in-out"
                    [class.opacity-100]="isExpanded(item.name)"
                    [class.opacity-0]="!isExpanded(item.name)"
                    [class.translate-y-0]="isExpanded(item.name)"
                    [class.-translate-y-1]="!isExpanded(item.name)">
-                <!-- Vertical Scope Guide Line -->
-                <div class="absolute left-[31px] top-0 bottom-2 w-[1px] bg-[#c5ced9]"></div>
 
-                @for (sub of item.children; track sub.route) {
+                @for (sub of item.children; track sub.route; let last = $last) {
                   <div class="group/sub relative flex h-9 w-full items-center">
-                    <!-- Horizontal Branch Line -->
-                    <div class="absolute left-[31px] top-1/2 h-[1px] w-4 bg-[#c5ced9]"></div>
+
+                    <!-- Elbow: down from the trunk, curving into the label -->
+                    <div class="pointer-events-none absolute top-0 left-[31px] h-1/2 w-5 rounded-bl-md border-b border-l border-[#8fa3b8]"></div>
+
+                    <!-- Trunk continues below the elbow for every row except the last -->
+                    @if (!last) {
+                      <div class="pointer-events-none absolute top-1/2 bottom-0 left-[31px] w-px bg-[#8fa3b8]"></div>
+                    }
 
                     <a
                       [routerLink]="sub.route"
                       (click)="trackRecent(sub.name, sub.route)"
                       routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
                       [routerLinkActiveOptions]="{ exact: true }"
-                      class="flex h-full w-full cursor-pointer items-center border-l-[3px] border-transparent pr-8 pl-12 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+                      class="flex h-full w-full cursor-pointer items-center border-l-[3px] border-transparent pr-8 pl-[60px] text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
                       <span class="truncate">{{ sub.name }}</span>
                     </a>
 
@@ -317,6 +330,25 @@
 
     </button>
 
+  </div>
+
+  <!-- RESIZE HANDLE: drag the right edge, double-click to reset, or use Left/Right arrows when focused -->
+  <div
+    role="separator"
+    aria-orientation="vertical"
+    aria-label="Resize sidebar"
+    tabindex="0"
+    [attr.aria-valuenow]="sidebarWidth()"
+    [attr.aria-valuemin]="MIN_WIDTH"
+    [attr.aria-valuemax]="MAX_WIDTH"
+    title="Drag to resize (double-click to reset)"
+    (pointerdown)="startResize($event)"
+    (dblclick)="resetWidth()"
+    (keydown)="onResizeKey($event)"
+    class="group/handle absolute inset-y-0 -right-1 z-50 flex w-2 cursor-col-resize touch-none justify-center focus:outline-none">
+    <div
+      class="h-full w-[3px] transition-colors duration-150 group-hover/handle:bg-[#1b5a9a]/60 group-focus-visible/handle:bg-[#1b5a9a]"
+      [class.bg-[#1b5a9a]]="resizing()"></div>
   </div>
 
 </aside>

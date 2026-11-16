@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth';
 
@@ -37,6 +37,15 @@ export class NavBar {
 
   private readonly FAVORITES_STORAGE_KEY = 'botebo_erp_favorites';
   private readonly RECENT_STORAGE_KEY = 'botebo_erp_recent';
+  private readonly WIDTH_STORAGE_KEY = 'botebo_erp_sidebar_width';
+
+  // SIDEBAR WIDTH (px). Drag the right edge to resize; the width is remembered.
+  readonly DEFAULT_WIDTH = 300;
+  readonly MIN_WIDTH = 256;
+  readonly MAX_WIDTH = 480;
+
+  sidebarWidth = signal<number>(this.loadWidth());
+  resizing = signal(false);
 
   expandedSections = signal<Record<string, boolean>>({
     'Overview & Analytics': true,
@@ -194,6 +203,90 @@ export class NavBar {
       ],
     },
   ];
+
+  constructor() {
+    // Publish the width as a CSS variable so the page content can follow the sidebar:
+    // margin-left: var(--sidebar-width)
+    effect(() => {
+      document.documentElement.style.setProperty('--sidebar-width', `${this.sidebarWidth()}px`);
+    });
+  }
+
+  // RESIZE
+
+  startResize(event: PointerEvent): void {
+    event.preventDefault();
+
+    const startX = event.clientX;
+    const startWidth = this.sidebarWidth();
+
+    this.resizing.set(true);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    const onMove = (e: PointerEvent) => this.setWidth(startWidth + (e.clientX - startX));
+
+    const onUp = () => {
+      this.resizing.set(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      this.saveWidth();
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  }
+
+  // Keyboard resizing for the drag handle (Left / Right arrows, Home to reset)
+  onResizeKey(event: KeyboardEvent): void {
+    const step = event.shiftKey ? 48 : 16;
+
+    if (event.key === 'ArrowLeft') {
+      this.setWidth(this.sidebarWidth() - step);
+    } else if (event.key === 'ArrowRight') {
+      this.setWidth(this.sidebarWidth() + step);
+    } else if (event.key === 'Home') {
+      this.resetWidth();
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    this.saveWidth();
+  }
+
+  resetWidth(): void {
+    this.setWidth(this.DEFAULT_WIDTH);
+    this.saveWidth();
+  }
+
+  private setWidth(width: number): void {
+    this.sidebarWidth.set(Math.min(this.MAX_WIDTH, Math.max(this.MIN_WIDTH, Math.round(width))));
+  }
+
+  private loadWidth(): number {
+    try {
+      const saved = Number(localStorage.getItem(this.WIDTH_STORAGE_KEY));
+
+      if (saved >= this.MIN_WIDTH && saved <= this.MAX_WIDTH) {
+        return saved;
+      }
+    } catch {}
+
+    return this.DEFAULT_WIDTH;
+  }
+
+  private saveWidth(): void {
+    try {
+      localStorage.setItem(this.WIDTH_STORAGE_KEY, String(this.sidebarWidth()));
+    } catch {}
+  }
+
+  // SECTIONS
 
   isExpanded(sectionName: string): boolean {
     return !!this.expandedSections()[sectionName];
