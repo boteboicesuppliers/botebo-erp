@@ -1,1 +1,107 @@
-<p>orders-and-shipping-overview works!</p>
+<div class="w-full text-[13px] text-[#1f2933]">
+  <section>
+    <div class="mb-3 mt-2">
+      <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Orders &amp; Shipping</h3>
+      <p class="mt-1 text-xs text-[#4b5563]">Live dispatch status and loading bay capacity.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-3.5 xl:grid-cols-3">
+
+      <!-- ACTIVE DISPATCH FEED -->
+      <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white xl:col-span-2">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+          <div>
+            <h4 class="text-[14px] font-semibold text-[#17304f]">Active Dispatch Feed</h4>
+            <p class="mt-0.5 text-xs text-[#4b5563]">Orders moving from packing to delivery</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center bg-[#e1e6ed] px-2.5 py-0.5 text-xs font-medium text-[#374151]">{{ rows().length }} {{ rows().length === 1 ? 'order' : 'orders' }}</span>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5 border-b border-[#c5ced9] px-5 py-3">
+          @for (tab of tabs; track tab) {
+            <button type="button" class="inline-flex h-8 items-center gap-1.5 border px-3 text-[13px] transition-colors" [class]="tab === status() ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-transparent text-[#17304f] hover:bg-[#e1e6ed]'" (click)="status.set(tab)">
+              {{ tab }}
+              <span class="text-xs text-[#4b5563]">{{ counts()[tab] }}</span>
+            </button>
+          }
+        </div>
+
+        <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Client</th>
+                <th>Warehouse / Zone</th>
+                <th>Driver / Carrier</th>
+                <th>Milestone</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of rows(); track s.id; let odd = $odd) {
+                <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+                  <td class="font-medium text-[#1b5a9a]">{{ s.id }}</td>
+                  <td>{{ s.client }}</td>
+                  <td>{{ s.zone }}</td>
+                  <td>
+                    <span>{{ s.driver }}</span>
+                    <span class="block text-xs text-[#4b5563]">{{ s.carrier }}</span>
+                  </td>
+                  <td><span class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium" [class]="badge(s.stage)">{{ s.milestone }}</span></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="5" class="!bg-white py-10 text-center text-[#4b5563]">No orders in this stage.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- LOADING BAY CAPACITY -->
+      <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white xl:col-span-1">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+          <div>
+            <h4 class="text-[14px] font-semibold text-[#17304f]">Loading Bay Capacity</h4>
+            <p class="mt-0.5 text-xs text-[#4b5563]">Dock utilisation and truck turnaround</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center bg-[#e1e6ed] px-2.5 py-0.5 text-xs font-medium text-[#374151]">{{ docks.length }} docks</span>
+        </div>
+
+        <div class="px-5 py-5">
+          <div class="flex items-end justify-between">
+            <div>
+              <p class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ utilisation() }}%</p>
+              <p class="text-xs text-[#4b5563]">Dock utilisation</p>
+            </div>
+            <p class="text-xs text-[#4b5563]">{{ busy() }} of {{ docks.length }} in use</p>
+          </div>
+          <div class="mt-3 h-2.5 overflow-hidden bg-[#e1e6ed]">
+            <div class="h-full bg-[#1b5a9a]" [style.width.%]="utilisation()"></div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 gap-2">
+            @for (d of docks; track d.name) {
+              <div class="border border-[#c5ced9] px-2.5 py-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-medium text-[#17304f]">{{ d.name }}</span>
+                  <span class="inline-flex items-center rounded-[2px] px-2 py-0.5 text-xs font-medium" [class]="dockClass(d.state)">{{ d.state }}</span>
+                </div>
+                <p class="mt-1 text-xs text-[#4b5563]">{{ d.ref }}</p>
+              </div>
+            }
+          </div>
+
+          <div class="mt-5 space-y-2.5 border-t border-[#c5ced9] pt-4">
+            @for (m of bayMetrics; track m.label) {
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-[#1f2933]">{{ m.label }}</span>
+                <span class="text-right"><span class="font-semibold text-[#17304f]">{{ m.value }}</span> <span class="text-xs text-[#4b5563]">{{ m.note }}</span></span>
+              </div>
+            }
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</div>

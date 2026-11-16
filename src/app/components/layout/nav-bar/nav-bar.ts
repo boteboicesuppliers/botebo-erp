@@ -136,7 +136,7 @@ export class NavBar {
     },
     {
       name: 'Customers',
-      route: '/contracts', // Updated main route to /contracts
+      route: '/contracts',
       icon: 'customers',
       children: [
         { name: 'Customer Pricing & Discounts', route: '/customers/pricing' },
@@ -206,14 +206,10 @@ export class NavBar {
   ];
 
   constructor() {
-    // Publish the width as a CSS variable so the page content can follow the sidebar:
-    // margin-left: var(--sidebar-width)
     effect(() => {
       document.documentElement.style.setProperty('--sidebar-width', `${this.sidebarWidth()}px`);
     });
   }
-
-  // RESIZE
 
   startResize(event: PointerEvent): void {
     event.preventDefault();
@@ -242,7 +238,6 @@ export class NavBar {
     window.addEventListener('pointercancel', onUp);
   }
 
-  // Keyboard resizing for the drag handle (Left / Right arrows, Home to reset)
   onResizeKey(event: KeyboardEvent): void {
     const step = event.shiftKey ? 48 : 16;
 
@@ -286,8 +281,6 @@ export class NavBar {
       localStorage.setItem(this.WIDTH_STORAGE_KEY, String(this.sidebarWidth()));
     } catch {}
   }
-
-  // SECTIONS
 
   isExpanded(sectionName: string): boolean {
     return !!this.expandedSections()[sectionName];

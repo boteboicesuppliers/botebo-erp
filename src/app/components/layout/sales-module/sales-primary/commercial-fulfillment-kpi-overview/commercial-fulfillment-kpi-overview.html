@@ -1,1 +1,116 @@
-<p>commercial-fulfillment-kpi-overview works!</p>
+<div class="w-full text-[13px] text-[#1f2933]">
+  <section>
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+
+      <!-- GROSS SALES -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-xs text-[#4b5563]">Gross Sales</p>
+            <div class="flex gap-1">
+              @for (p of periods; track p) {
+                <button type="button" class="inline-flex h-6 items-center border px-2 text-xs transition-colors" [class]="period() === p ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-transparent text-[#17304f] hover:bg-[#e1e6ed]'" (click)="period.set(p)">{{ p }}</button>
+              }
+            </div>
+          </div>
+          <p class="mt-2 break-words text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ zar(sales().value) }}</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Target {{ zar(sales().target) }}</p>
+
+          <div class="mt-4 h-2 overflow-hidden bg-[#e1e6ed]">
+            <div class="h-full bg-[#1b5a9a]" [style.width.%]="sales().progress"></div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-medium" [class]="sales().variance >= 0 ? 'text-green-700' : 'text-red-700'">{{ sales().variance >= 0 ? '+' : '' }}{{ sales().variance }}% vs target</span>
+          <span class="text-xs text-[#4b5563]">{{ sales().progress }}% of target</span>
+        </div>
+      </article>
+
+      <!-- ORDER-TO-FULFILMENT CYCLE TIME -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <p class="text-xs text-[#4b5563]">Order-to-Fulfilment Cycle Time</p>
+          <p class="mt-2 text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ cycle.total }} hrs</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Confirmation to dispatch bay loading</p>
+
+          <div class="mt-4 flex h-2 overflow-hidden bg-[#e1e6ed]">
+            @for (s of cycle.stages; track s.label) {
+              <div class="h-full" [style.width.%]="(s.hours / cycle.total) * 100" [style.background]="s.color" [title]="s.label + ': ' + s.hours + ' hrs'"></div>
+            }
+          </div>
+          <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5">
+            @for (s of cycle.stages; track s.label) {
+              <div class="flex items-center gap-2 text-xs text-[#4b5563]">
+                <span class="h-2.5 w-2.5 shrink-0" [style.background]="s.color"></span>
+                <span class="truncate">{{ s.label }}</span>
+                <span class="ml-auto font-medium text-[#1f2933]">{{ s.hours }}h</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-medium text-green-700">{{ cycle.change }} hrs vs last month</span>
+          <span class="text-xs text-[#4b5563]">Target {{ cycle.target }} hrs</span>
+        </div>
+      </article>
+
+      <!-- ORDER FULFILMENT RATE -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <p class="text-xs text-[#4b5563]">Order Fulfilment Rate</p>
+          <p class="mt-2 text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ rate() }}%</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Picked, packed and shipped without backorder delay</p>
+
+          <div class="mt-4 h-2 overflow-hidden bg-[#e1e6ed]">
+            <div class="h-full bg-[#1b5a9a]" [style.width.%]="rate()"></div>
+          </div>
+          <div class="mt-3 space-y-1.5 text-xs">
+            <div class="flex justify-between"><span class="text-[#4b5563]">Shipped in full</span><span class="font-medium text-[#1f2933]">{{ fulfilment.full }} orders</span></div>
+            <div class="flex justify-between"><span class="text-[#4b5563]">Delayed by backorder</span><span class="font-medium text-red-700">{{ fulfilment.delayed }} orders</span></div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-medium text-green-700">{{ fulfilment.change }} pts vs last month</span>
+          <span class="text-xs text-[#4b5563]">Target {{ fulfilment.target }}%</span>
+        </div>
+      </article>
+
+      <!-- GROSS PROFIT MARGIN TRACKER -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <p class="text-xs text-[#4b5563]">Gross Profit Margin</p>
+          <p class="mt-2 text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ margin.current }}%</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Raw material input costs {{ margin.inputCost }} this month</p>
+
+          <div class="relative mt-4 h-2 bg-[#e1e6ed]">
+            <div class="h-full bg-[#1b5a9a]" [style.width.%]="(margin.current / margin.scale) * 100"></div>
+            <span class="absolute -top-1 h-4 w-0.5 bg-red-600" [style.left.%]="(margin.floor / margin.scale) * 100" title="Margin floor"></span>
+            <span class="absolute -top-1 h-4 w-0.5 bg-[#17304f]" [style.left.%]="(margin.target / margin.scale) * 100" title="Target"></span>
+          </div>
+          <div class="mt-1.5 flex justify-between text-xs text-[#4b5563]">
+            <span>Floor {{ margin.floor }}%</span>
+            <span>Target {{ margin.target }}%</span>
+          </div>
+
+          <div class="mt-3 space-y-1.5 text-xs">
+            @for (t of margin.tiers; track t.label) {
+              <div class="flex justify-between">
+                <span class="text-[#4b5563]">{{ t.label }}</span>
+                <span class="font-medium" [class]="t.value < margin.floor ? 'text-red-700' : 'text-[#1f2933]'">{{ t.value }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs font-medium text-red-700">{{ margin.change }} pts vs last month</span>
+          <span class="text-xs text-[#4b5563]">By wholesale pricing tier</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</div>

@@ -1,1 +1,96 @@
-<p>urgent-stock-and-sales-alerts works!</p>
+<div class="w-full text-[13px] text-[#1f2933]">
+  <section>
+    <div class="mb-3 mt-2">
+      <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Urgent Stock &amp; Sales Alerts</h3>
+      <p class="mt-1 text-xs text-[#4b5563]">Items that need action today to protect orders and revenue.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-3.5 xl:grid-cols-3">
+
+      <!-- CRITICAL STOCK WARNINGS -->
+      <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+          <div>
+            <h4 class="text-[14px] font-semibold text-[#17304f]">Critical Stock Warnings</h4>
+            <p class="mt-0.5 text-xs text-[#4b5563]">Below safety level for active orders</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-[2px] bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-900">{{ stockAlerts.length }} items</span>
+        </div>
+        <div class="divide-y divide-[#cfd7e1]">
+          @for (s of stockAlerts; track s.sku) {
+            <div class="px-5 py-3.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate font-medium text-[#17304f]">{{ s.item }}</p>
+                  <p class="text-xs text-[#4b5563]">{{ s.sku }} · {{ s.kind }}</p>
+                </div>
+                <span class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium shrink-0" [class]="stockPct(s) < 50 ? 'bg-red-100 text-red-900' : 'bg-orange-100 text-orange-900'">{{ stockPct(s) < 50 ? 'Critical' : 'Low' }}</span>
+              </div>
+              <div class="mt-2.5 h-1.5 bg-[#e1e6ed]">
+                <div class="h-full" [class]="stockPct(s) < 50 ? 'bg-red-600' : 'bg-orange-500'" [style.width.%]="stockPct(s)"></div>
+              </div>
+              <div class="mt-1.5 flex justify-between gap-2 text-xs text-[#4b5563]">
+                <span>{{ s.onHand }} on hand · safety level {{ s.safety }}</span>
+                <span class="text-right">{{ s.orders }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+
+      <!-- EXPIRING QUOTATIONS -->
+      <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+          <div>
+            <h4 class="text-[14px] font-semibold text-[#17304f]">Expiring Quotations</h4>
+            <p class="mt-0.5 text-xs text-[#4b5563]">Expire within 48 hours, no customer reply</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-[2px] bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-900">{{ quotes.length }} quotes</span>
+        </div>
+        <div class="divide-y divide-[#cfd7e1]">
+          @for (q of quotes; track q.ref) {
+            <div class="px-5 py-3.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate"><span class="font-medium text-[#1b5a9a]">{{ q.ref }}</span> <span class="text-[#4b5563]">· {{ q.client }}</span></p>
+                  <p class="mt-0.5 text-xs text-[#4b5563]">{{ q.note }}</p>
+                </div>
+                <span class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium shrink-0 bg-red-100 text-red-900">{{ hoursLeft(q) }}h left</span>
+              </div>
+              <p class="mt-2 text-[14px] font-semibold text-[#17304f]">{{ zar(q.value) }}</p>
+            </div>
+          }
+        </div>
+      </article>
+
+      <!-- FULFILMENT BLOCKERS -->
+      <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+          <div>
+            <h4 class="text-[14px] font-semibold text-[#17304f]">Fulfilment Blockers</h4>
+            <p class="mt-0.5 text-xs text-[#4b5563]">Orders stalled before dispatch</p>
+          </div>
+          <span class="inline-flex shrink-0 items-center rounded-[2px] bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-900">{{ blockers.length }} orders</span>
+        </div>
+        <div class="divide-y divide-[#cfd7e1]">
+          @for (b of blockers; track b.order) {
+            <div class="px-5 py-3.5">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate"><span class="font-medium text-[#1b5a9a]">{{ b.order }}</span> <span class="text-[#4b5563]">· {{ b.client }}</span></p>
+                  <p class="mt-0.5 text-xs text-[#4b5563]">{{ b.detail }}</p>
+                </div>
+                <span class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium shrink-0" [class]="b.reason === 'Credit limit approval' ? 'bg-amber-100 text-amber-900' : 'bg-purple-100 text-purple-900'">{{ b.reason }}</span>
+              </div>
+              <div class="mt-2 flex items-center justify-between text-xs">
+                <span class="text-[14px] font-semibold text-[#17304f]">{{ zar(b.value) }}</span>
+                <span class="font-medium text-red-700">Stalled {{ b.days }} {{ b.days === 1 ? 'day' : 'days' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+
+    </div>
+  </section>
+</div>
