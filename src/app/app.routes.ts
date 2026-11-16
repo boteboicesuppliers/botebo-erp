@@ -4,6 +4,7 @@ import { Dashboard } from './components/main-view-components/dashboard/dashboard
 import { Contracts } from './components/main-view-components/contracts/contracts';
 import { Suppliers } from './components/main-view-components/suppliers/suppliers';
 import { SalesPrimary } from './components/main-view-components/sales-module/sales-primary/sales-primary';
+import { Quotations } from './components/main-view-components/sales-module/quotations/quotations';
 import { SalesPipeline } from './components/layout/sales-module/sales-pipeline/sales-pipeline';
 import { SalesOrders } from './components/layout/sales-module/sales-orders/sales-orders';
 import { Invoices } from './components/layout/sales-module/invoices/invoices';
@@ -26,6 +27,7 @@ export const routes: Routes = [
       // Sales Module Routes
       { path: 'sales', component: SalesPrimary },
       { path: 'sales/sales-pipeline', component: SalesPipeline },
+      { path: 'sales/quotations', component: Quotations },
       { path: 'sales/sales-orders', component: SalesOrders },
       { path: 'sales/invoices', component: Invoices },
     ],

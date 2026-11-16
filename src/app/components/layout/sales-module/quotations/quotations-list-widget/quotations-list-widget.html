@@ -1,1 +1,135 @@
-<p>quotations-list-widget works!</p>
+<div class="flex w-full flex-col gap-3.5 text-[13px] text-[#1f2933]">
+
+  <!-- FILTER & ACTION BAR -->
+  <article class="border border-[#c5ced9] bg-white p-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Filter controls -->
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-medium text-[#374151]">Search</label>
+          <input 
+            type="text" 
+            [value]="searchQuery()" 
+            (input)="searchQuery.set($any($event.target).value)"
+            placeholder="Quote # or client name..." 
+            class="h-8 w-60 border border-[#c9d4e1] bg-white px-3 text-xs text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-medium text-[#374151]">Status</label>
+          <select 
+            [value]="selectedStatus()"
+            (change)="selectedStatus.set($any($event.target).value)"
+            class="h-8 border border-[#c9d4e1] bg-white px-3 text-xs text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+            <option value="All">All Statuses</option>
+            <option value="Draft">Draft</option>
+            <option value="Sent">Sent</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Expired">Expired</option>
+            <option value="Converted">Converted</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex items-center gap-2">
+        <button 
+          type="button" 
+          class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-4 text-xs font-medium text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] transition-colors hover:bg-[#e1e6ed]">
+          Export / Print
+        </button>
+        <button 
+          type="button" 
+          class="inline-flex h-8 items-center border border-[#2c5282] bg-[#1b5a9a] px-4 text-xs font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] transition-colors hover:bg-[#164b82]">
+          + New Wholesale Quote
+        </button>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- QUOTATIONS TABLE CARD -->
+  <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-3.5">
+      <div>
+        <h4 class="text-[14px] font-semibold text-[#17304f]">Wholesale Quotations List</h4>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Manage price proposals, track expiration status, and review margin safety limits</p>
+      </div>
+      <span class="inline-flex shrink-0 items-center bg-[#e1e6ed] px-2.5 py-0.5 text-xs font-medium text-[#374151]">{{ filteredQuotations().length }} records</span>
+    </div>
+
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>Quote Ref</th>
+            <th>Client Name</th>
+            <th>Created Date</th>
+            <th>Expiry Date</th>
+            <th>Total Value</th>
+            <th>Gross Margin</th>
+            <th>Status</th>
+            <th class="text-right pr-5">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (q of filteredQuotations(); track q.id; let odd = $odd) {
+            <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+              <td class="font-medium text-[#1b5a9a]">{{ q.id }}</td>
+              <td>
+                <span class="font-medium text-[#17304f]">{{ q.client }}</span>
+                <span class="block text-xs text-[#4b5563]">{{ q.tier }}</span>
+              </td>
+              <td>{{ q.createdDate }}</td>
+              <td>
+                <span [class.text-red-700]="q.isExpiringSoon" [class.font-medium]="q.isExpiringSoon">{{ q.expiryDate }}</span>
+                @if (q.isExpiringSoon) {
+                  <span class="block text-xs text-red-700 font-medium">Expiring <48h</span>
+                }
+              </td>
+              <td class="font-medium text-[#17304f]">{{ zar(q.value) }}</td>
+              <td>
+                <span [class.text-red-700]="q.margin < 18" [class.font-medium]="q.margin < 18">
+                  {{ q.margin }}%
+                </span>
+                @if (q.margin < 18) {
+                  <span class="block text-xs text-red-700 font-medium">Below Floor (18%)</span>
+                }
+              </td>
+              <td>
+                <span class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium" [class]="getStatusClass(q.status)">
+                  {{ q.status }}
+                </span>
+              </td>
+              <td class="text-right pr-5">
+                <div class="inline-flex items-center gap-1.5">
+                  <button type="button" class="inline-flex h-7 items-center border border-[#b9c7d6] bg-white px-2.5 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">View</button>
+                  <button type="button" class="inline-flex h-7 items-center border border-[#b9c7d6] bg-white px-2.5 text-xs font-medium text-[#1b5a9a] hover:bg-[#e1e6ed]">Convert</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="h-24 text-center text-[#4b5563]">
+                No quotations found matching your filter criteria.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FOOTER / PAGINATION BAR -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#c5ced9] px-5 py-3">
+      <span class="text-xs text-[#4b5563]">Showing {{ filteredQuotations().length }} of {{ quotations().length }} quotations</span>
+      <div class="flex items-center gap-1">
+        <button type="button" class="inline-flex h-8 w-8 items-center justify-center border border-[#b9c7d6] bg-white text-xs text-[#9ca3af]" disabled><</button>
+        <button type="button" class="inline-flex h-8 w-9 items-center border border-[#8ba0b7] bg-[#dde9f7] text-xs font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]">1</button>
+        <button type="button" class="inline-flex h-8 w-9 items-center border border-[#b9c7d6] bg-white text-xs text-[#1f2933] hover:bg-[#e1e6ed]">2</button>
+        <button type="button" class="inline-flex h-8 w-8 items-center justify-center border border-[#b9c7d6] bg-white text-xs text-[#1f2933] hover:bg-[#e1e6ed]">></button>
+      </div>
+    </div>
+  </article>
+
+</div>
