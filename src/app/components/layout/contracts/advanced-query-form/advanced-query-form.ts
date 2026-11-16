@@ -5,6 +5,7 @@ import {
   QueryCondition,
   QueryGroup,
   QueryOperator,
+  QueryRun,
 } from '../../../../services/customers/advanced-query';
 
 @Component({
@@ -17,9 +18,10 @@ export class AdvancedQueryForm implements OnInit {
 
   // Previously applied query (so reopening the form shows it again)
   initial = input<QueryGroup | null>(null);
+  initialSavedId = input<string | null>(null);
 
   closed = output<void>();
-  run = output<QueryGroup>();
+  run = output<QueryRun>();
   cleared = output<void>();
 
   // Used by the template
@@ -30,6 +32,12 @@ export class AdvancedQueryForm implements OnInit {
 
   root = signal<QueryGroup>(this.seed());
 
+  // SAVE QUERY STATE
+  saveOpen = signal(false);
+  saveName = signal('');
+  savedMessage = signal('');
+  savedId = signal<string | null>(null);
+
   activeCount = computed(() => this.q.countActive(this.root()));
   preview = computed(() => this.q.describeGroup(this.root()));
 
@@ -38,10 +46,11 @@ export class AdvancedQueryForm implements OnInit {
 
     if (initial) {
       this.root.set(structuredClone(initial));
+      this.savedId.set(this.initialSavedId());
     }
   }
 
-  // ACTIONS
+  // ACTIONS: BUILDER
 
   addCondition(groupId: string): void {
     this.mutate((root) => this.find(root, groupId)?.conditions.push(this.q.createCondition()));
@@ -99,11 +108,39 @@ export class AdvancedQueryForm implements OnInit {
 
   clearAll(): void {
     this.root.set(this.seed());
+    this.savedId.set(null);
+    this.savedMessage.set('');
+    this.saveOpen.set(false);
     this.cleared.emit();
   }
 
   runQuery(): void {
-    this.run.emit(structuredClone(this.root()));
+    this.run.emit({ query: structuredClone(this.root()), savedId: this.savedId() });
+  }
+
+  // ACTIONS: SAVE QUERY
+
+  openSave(): void {
+    this.savedMessage.set('');
+    this.saveOpen.set(true);
+  }
+
+  cancelSave(): void {
+    this.saveOpen.set(false);
+    this.saveName.set('');
+  }
+
+  confirmSave(): void {
+    const name = this.saveName().trim();
+
+    if (!name || this.activeCount() === 0) return;
+
+    const entry = this.q.saveQuery(name, this.root());
+
+    this.savedId.set(entry.id);
+    this.savedMessage.set(`Saved as “${entry.name}”. It now appears under Saved query.`);
+    this.saveOpen.set(false);
+    this.saveName.set('');
   }
 
   // HELPERS
@@ -116,11 +153,14 @@ export class AdvancedQueryForm implements OnInit {
     return g;
   }
 
+  // Any edit means the query no longer matches the saved version
   private mutate(fn: (root: QueryGroup) => void): void {
     const copy = structuredClone(this.root());
 
     fn(copy);
     this.root.set(copy);
+    this.savedId.set(null);
+    this.savedMessage.set('');
   }
 
   private updateCondition(groupId: string, conditionId: string, fn: (c: QueryCondition) => void): void {

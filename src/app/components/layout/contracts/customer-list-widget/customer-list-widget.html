@@ -145,11 +145,48 @@
             </span>
           }
         </div>
-        <div class="text-[#4b5563]">
+
+        <!-- SAVED QUERY DROPDOWN -->
+        <div class="relative text-[#4b5563]">
           Saved query:
-          <button type="button" class="cursor-pointer text-[#1b5a9a] hover:underline">
-            All customers <span class="text-[8px]">▾</span>
+          <button
+            type="button"
+            (click)="toggleSaved($event)"
+            class="cursor-pointer text-[#1b5a9a] hover:underline">
+            {{ activeSavedName() ?? 'All customers' }} <span class="text-[8px]">▾</span>
           </button>
+          @if (savedOpen()) {
+            <div class="absolute top-7 right-0 z-30 max-h-72 w-72 overflow-y-auto border border-[#b8c4d2] bg-white py-1 shadow-lg" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                (click)="clearSaved()"
+                class="block w-full cursor-pointer px-4 py-2 text-left text-[13px] hover:bg-[#e1e6ed]"
+                [class]="activeSavedId() === null ? 'font-semibold text-[#1b5a9a]' : 'text-[#17304f]'">
+                All customers
+              </button>
+
+              @for (s of savedQueries(); track s.id) {
+                <div class="flex items-center hover:bg-[#e1e6ed]">
+                  <button
+                    type="button"
+                    (click)="applySaved(s.id)"
+                    class="min-w-0 flex-1 cursor-pointer truncate px-4 py-2 text-left text-[13px]"
+                    [class]="activeSavedId() === s.id ? 'font-semibold text-[#1b5a9a]' : 'text-[#17304f]'">
+                    {{ s.name }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deleteSaved(s.id, $event)"
+                    [attr.aria-label]="'Delete saved query ' + s.name"
+                    class="cursor-pointer px-3 py-2 text-base leading-none text-[#4b5563] hover:text-red-700">×</button>
+                </div>
+              } @empty {
+                <p class="border-t border-[#c5ced9] px-4 py-2 text-xs text-[#4b5563]">
+                  No saved queries yet. Build one under Advanced and click Save query.
+                </p>
+              }
+            </div>
+          }
         </div>
       </div>
     </section>
@@ -541,6 +578,7 @@
     <div class="max-h-full w-full max-w-4xl overflow-y-auto" (click)="$event.stopPropagation()">
       <app-advanced-query-form
         [initial]="advancedQuery()"
+        [initialSavedId]="activeSavedId()"
         (closed)="closeAdvanced()"
         (run)="runAdvanced($event)"
         (cleared)="clearAdvanced()" />

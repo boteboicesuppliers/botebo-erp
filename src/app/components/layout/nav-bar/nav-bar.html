@@ -1,106 +1,274 @@
 <!-- Starts below the 96px header (56px brand bar + 40px menu bar) -->
 <aside class="fixed top-24 bottom-0 left-0 z-40 flex w-64 flex-col border-r border-[#c5ced9] bg-white text-[13px] text-[#374151] antialiased">
 
-  <!-- Navigation -->
+  <!-- Scrollable Navigation Area -->
   <nav class="flex-1 overflow-y-auto py-3">
 
+    <!-- FAVORITES SECTION -->
+    @if (favorites().length > 0) {
+      <div class="mb-3 border-b border-[#c5ced9] pb-2">
+        <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
+          Favorites
+        </div>
+
+        @for (fav of favorites(); track fav.route) {
+          <div class="group relative flex h-9 w-full items-center">
+            <a
+              [routerLink]="fav.route"
+              (click)="trackRecent(fav.name, fav.route)"
+              routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="flex h-full w-full cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent pr-8 pl-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+
+              <!-- Star Icon -->
+              <svg
+                class="h-[15px] w-[15px] shrink-0 text-[#1b5a9a]"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                viewBox="0 0 24 24">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+
+              <span class="flex-1 truncate">{{ fav.name }}</span>
+
+              @if (fav.badge) {
+                <span class="rounded bg-[#dde9f7] px-1.5 py-0.5 text-[11px] font-medium text-[#1b5a9a]">
+                  {{ fav.badge }}
+                </span>
+              }
+            </a>
+
+            <!-- Remove Favorite (X) Button -->
+            <button
+              type="button"
+              (click)="removeFavorite(fav.route, $event)"
+              title="Remove from favorites"
+              class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#6b7280] opacity-70 transition-colors hover:bg-[#e5ecf5] hover:text-red-600 hover:opacity-100 focus:outline-none">
+              <svg
+                class="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                viewBox="0 0 24 24">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- APPLICATIONS / MAIN MODULES -->
+    <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
+      Applications
+    </div>
+
     @for (item of navigation; track item.route) {
+      <div>
+        <!-- Main Item Row -->
+        <div class="group relative flex h-10 w-full items-center">
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="onMainItemClick(item)"
+            class="flex h-full w-full cursor-pointer items-center gap-3 border-l-[3px] border-transparent pr-9 pl-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
 
-      <a
-        [routerLink]="item.route"
-        routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="flex h-10 w-full cursor-pointer items-center gap-3 border-l-[3px] border-transparent px-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+            <!-- Navigation Icons -->
+            <svg
+              class="h-[18px] w-[18px] shrink-0 text-current"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              viewBox="0 0 24 24">
 
-        <!-- Navigation Icons -->
-        <svg
-          class="h-[18px] w-[18px] shrink-0 text-current"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          viewBox="0 0 24 24">
+              @switch (item.icon) {
 
-          @switch (item.name) {
+                @case ('overview') {
+                  <rect x="3" y="3" width="8" height="8" rx="1.5"/>
+                  <rect x="13" y="3" width="8" height="5" rx="1.5"/>
+                  <rect x="13" y="10" width="8" height="11" rx="1.5"/>
+                  <rect x="3" y="13" width="8" height="8" rx="1.5"/>
+                }
 
-            @case ('Dashboard') {
-              <rect x="3" y="3" width="8" height="8" rx="1.5"/>
-              <rect x="13" y="3" width="8" height="5" rx="1.5"/>
-              <rect x="13" y="10" width="8" height="11" rx="1.5"/>
-              <rect x="3" y="13" width="8" height="8" rx="1.5"/>
-            }
+                @case ('products') {
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                  <line x1="7" y1="7" x2="7.01" y2="7"/>
+                }
 
-            @case ('Inventory') {
-              <path d="m3 7 9-4 9 4-9 4-9-4Z"/>
-              <path d="M3 7v10l9 4 9-4V7"/>
-              <path d="M12 11v10"/>
-            }
+                @case ('production') {
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                }
 
-            @case ('Sales Orders') {
-              <path d="M8 3h8l4 4v14H4V3h4Z"/>
-              <path d="M16 3v5h4"/>
-              <path d="M8 13h8M8 17h8"/>
-            }
+                @case ('quality') {
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="m9 12 2 2 4-4"/>
+                }
 
-            @case ('Purchases') {
-              <path d="M3 4h2l2.4 11h10.2L20 7H6"/>
-              <circle cx="9.5" cy="19.5" r="1.5"/>
-              <circle cx="17" cy="19.5" r="1.5"/>
-            }
+                @case ('inventory') {
+                  <path d="m3 7 9-4 9 4-9 4-9-4Z"/>
+                  <path d="M3 7v10l9 4 9-4V7"/>
+                  <path d="M12 11v10"/>
+                }
 
-            @case ('Invoices') {
-              <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/>
-              <path d="M9 8h6M9 12h6M9 16h3"/>
-            }
+                @case ('warehouses') {
+                  <path d="M3 21V9l9-6 9 6v12"/>
+                  <path d="M9 21v-8h6v8"/>
+                  <path d="M3 13h18"/>
+                }
 
-            @case ('Quotations') {
-              <rect x="5" y="4" width="14" height="17" rx="2"/>
-              <path d="M9 4h6v3H9z"/>
-              <path d="m9 14 2 2 4-4"/>
-            }
+                @case ('purchases') {
+                  <path d="M3 4h2l2.4 11h10.2L20 7H6"/>
+                  <circle cx="9.5" cy="19.5" r="1.5"/>
+                  <circle cx="17" cy="19.5" r="1.5"/>
+                }
 
-            @case ('Contracts') {
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
-            }
+                @case ('suppliers') {
+                  <path d="M3 21h18M5 21V7l7-4 7 4v14"/>
+                  <path d="M9 21v-5h6v5M9 9h.01M15 9h.01M9 12h.01M15 12h.01"/>
+                }
 
-            @case ('Suppliers') {
-              <path d="M3 21h18M5 21V7l7-4 7 4v14"/>
-              <path d="M9 21v-5h6v5M9 9h.01M15 9h.01M9 12h.01M15 12h.01"/>
-            }
+                @case ('customers') {
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                }
 
-            @case ('Logistics') {
-              <path d="M3 7h11v11H3z"/>
-              <path d="M14 11h4l3 3v4h-7z"/>
-              <circle cx="7.5" cy="19" r="2"/>
-              <circle cx="17.5" cy="19" r="2"/>
-              <path d="M14 14h7"/>
-            }
+                @case ('sales') {
+                  <path d="M8 3h8l4 4v14H4V3h4Z"/>
+                  <path d="M16 3v5h4"/>
+                  <path d="M8 13h8M8 17h8"/>
+                }
 
-            @case ('Financials') {
-              <rect x="3" y="5" width="18" height="14" rx="2"/>
-              <path d="M3 10h18"/>
-              <path d="M7 15h4"/>
-            }
+                @case ('invoices') {
+                  <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/>
+                  <path d="M9 8h6M9 12h6M9 16h3"/>
+                }
 
-            @case ('Analytics') {
-              <path d="M3 3v18h18"/>
-              <path d="m7 14 4-4 4 3 6-7"/>
-            }
+                @case ('logistics') {
+                  <path d="M3 7h11v11H3z"/>
+                  <path d="M14 11h4l3 3v4h-7z"/>
+                  <circle cx="7.5" cy="19" r="2"/>
+                  <circle cx="17.5" cy="19" r="2"/>
+                  <path d="M14 14h7"/>
+                }
 
+                @case ('accounting') {
+                  <rect x="3" y="5" width="18" height="14" rx="2"/>
+                  <path d="M3 10h18"/>
+                  <path d="M7 15h4"/>
+                }
+
+                @case ('staff') {
+                  <rect x="3" y="4" width="18" height="16" rx="2"/>
+                  <circle cx="9" cy="10" r="2"/>
+                  <path d="M15 9h3M15 13h3M6 16c0-1.5 1.5-2 3-2s3 .5 3 2"/>
+                }
+
+                @case ('reports') {
+                  <path d="M3 3v18h18"/>
+                  <path d="m7 14 4-4 4 3 6-7"/>
+                }
+
+              }
+
+            </svg>
+
+            <!-- Navigation Label -->
+            <span class="flex-1 truncate">
+              {{ item.name }}
+            </span>
+
+          </a>
+
+          <!-- Expand / Collapse Chevron Button -->
+          @if (item.children && item.children.length > 0) {
+            <button
+              type="button"
+              (click)="toggleExpand(item.name, $event)"
+              aria-label="Toggle submenu"
+              class="absolute right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#6b7280] transition-colors hover:bg-[#e5ecf5] hover:text-[#17304f] focus:outline-none">
+              <svg
+                class="h-3.5 w-3.5 transition-transform duration-150"
+                [class.rotate-90]="isExpanded(item.name)"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
           }
+        </div>
 
-        </svg>
+        <!-- Expandable Sub-Items -->
+        @if (item.children && item.children.length > 0 && isExpanded(item.name)) {
+          <div class="bg-[#fafbfd] py-0.5">
+            @for (sub of item.children; track sub.route) {
+              <div class="group/sub relative flex h-9 w-full items-center">
+                <a
+                  [routerLink]="sub.route"
+                  (click)="trackRecent(sub.name, sub.route)"
+                  routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  class="flex h-full w-full cursor-pointer items-center border-l-[3px] border-transparent pr-8 pl-12 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+                  <span class="truncate">{{ sub.name }}</span>
+                </a>
 
-        <!-- Navigation Label -->
-        <span class="flex-1">
-          {{ item.name }}
-        </span>
+                <!-- Pin/Unpin Favorite Star on Sub-Item Hover -->
+                <button
+                  type="button"
+                  (click)="toggleFavorite(sub, $event)"
+                  [title]="isFavorite(sub.route) ? 'Remove from favorites' : 'Add to favorites'"
+                  class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#6b7280] opacity-0 transition-opacity group-hover/sub:opacity-100 hover:bg-[#e5ecf5] hover:text-[#1b5a9a] focus:opacity-100 focus:outline-none"
+                  [class.!opacity-100]="isFavorite(sub.route)"
+                  [class.!text-[#1b5a9a]]="isFavorite(sub.route)">
+                  <svg
+                    class="h-3.5 w-3.5"
+                    [attr.fill]="isFavorite(sub.route) ? 'currentColor' : 'none'"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    viewBox="0 0 24 24">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
 
-      </a>
+    <!-- RECENTLY USED SECTION -->
+    @if (recentlyUsed().length > 0) {
+      <div class="mt-3 border-t border-[#c5ced9] pt-2">
+        <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
+          Recently Used
+        </div>
 
+        @for (recent of recentlyUsed(); track recent.route) {
+          <a
+            [routerLink]="recent.route"
+            (click)="trackRecent(recent.name, recent.route)"
+            routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="flex h-8 w-full cursor-pointer items-center gap-1.5 border-l-[3px] border-transparent px-5 text-[12px] text-[#4b5563] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+            <span class="truncate">{{ recent.name }}</span>
+          </a>
+        }
+      </div>
     }
 
   </nav>

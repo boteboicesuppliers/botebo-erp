@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { CustomerModel, CUSTOMER_STATUSES } from '../../models/contracts/customer-model';
 
 export type FieldType = 'text' | 'number' | 'enum';
@@ -30,7 +30,21 @@ export interface QueryFieldDef {
   options?: { value: string; label: string }[];
 }
 
+export interface SavedQuery {
+  id: string;
+  name: string;
+  query: QueryGroup;
+}
+
+// What the form hands back when the user clicks "Run query"
+export interface QueryRun {
+  query: QueryGroup;
+  savedId: string | null;
+}
+
 type NumberFn = (c: CustomerModel) => string;
+
+const STORAGE_KEY = 'botebo-erp.customer-saved-queries';
 
 const toOptions = (values: string[]) => values.map((v) => ({ value: v, label: v }));
 
@@ -92,10 +106,57 @@ export class AdvancedQuery {
     ],
   };
 
+  // SAVED QUERIES (persisted in localStorage)
+  readonly savedQueries = signal<SavedQuery[]>(this.loadSaved());
+
   private idCounter = 0;
 
   private uid(): string {
     return `q${Date.now().toString(36)}${(this.idCounter++).toString(36)}`;
+  }
+
+  // SAVED QUERIES: ACTIONS
+
+  // Saving under an existing name (case-insensitive) overwrites that query
+  saveQuery(name: string, query: QueryGroup): SavedQuery {
+    const trimmed = name.trim();
+    const existing = this.savedQueries().find((s) => s.name.toLowerCase() === trimmed.toLowerCase());
+    const entry: SavedQuery = {
+      id: existing?.id ?? this.uid(),
+      name: trimmed,
+      query: structuredClone(query),
+    };
+
+    this.savedQueries.update((list) =>
+      existing ? list.map((s) => (s.id === existing.id ? entry : s)) : [...list, entry],
+    );
+    this.persistSaved();
+
+    return entry;
+  }
+
+  deleteSaved(id: string): void {
+    this.savedQueries.update((list) => list.filter((s) => s.id !== id));
+    this.persistSaved();
+  }
+
+  private loadSaved(): SavedQuery[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+
+      return Array.isArray(parsed) ? (parsed as SavedQuery[]) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private persistSaved(): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.savedQueries()));
+    } catch {
+      // Storage unavailable or full: queries still work for this session
+    }
   }
 
   // BUILDERS

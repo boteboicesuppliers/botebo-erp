@@ -1,7 +1,7 @@
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { CustomerModel, CustomerStatus } from '../../../../models/contracts/customer-model';
 import { NewCustomerFormModel } from '../../../../models/contracts/new-customer-form-model';
-import { AdvancedQuery, QueryGroup } from '../../../../services/customers/advanced-query';
+import { AdvancedQuery, QueryGroup, QueryRun } from '../../../../services/customers/advanced-query';
 import { AdvancedQueryForm } from '../advanced-query-form/advanced-query-form';
 import { DeleteCustomerForm } from '../delete-customer-form/delete-customer-form';
 import { EditCustomerForm } from '../edit-customer-form/edit-customer-form';
@@ -58,7 +58,12 @@ export class CustomerListWidget {
   showImport = signal(false);
   showStatement = signal(false);
   showAdvanced = signal(false);
+
+  // ADVANCED + SAVED QUERIES
   advancedQuery = signal<QueryGroup | null>(null);
+  activeSavedId = signal<string | null>(null);
+  savedOpen = signal(false);
+  savedQueries = this.querySvc.savedQueries;
 
   // CONTRACTED CUSTOMERS (mock data: 50 records)
   customers = signal<CustomerModel[]>(withMockStatus([
@@ -140,9 +145,19 @@ export class CustomerListWidget {
 
   paymentTerms = computed(() => [...new Set(this.customers().map((c) => c.paymentTerm))].sort());
 
+  // Name of the saved query currently applied (null when none, or if it was deleted)
+  activeSavedName = computed(() => {
+    const id = this.activeSavedId();
+
+    return id ? (this.savedQueries().find((s) => s.id === id)?.name ?? null) : null;
+  });
+
   // "View:" label follows the Customer Type dropdown immediately
   viewLabel = computed(() => {
     const base = this.draftType() || 'All customers';
+    const saved = this.activeSavedName();
+
+    if (saved) return `${base} · ${saved}`;
 
     return this.advancedQuery() ? `${base} + advanced query` : base;
   });
@@ -237,6 +252,7 @@ export class CustomerListWidget {
     this.draftTerm.set('');
     this.appliedFilters.set({ search: '', type: '', vat: '', term: '' });
     this.advancedQuery.set(null);
+    this.activeSavedId.set(null);
     this.page.set(1);
     this.scrollToTop();
   }
@@ -306,6 +322,8 @@ export class CustomerListWidget {
 
   toggleMore(event: Event): void {
     event.stopPropagation();
+    this.actionsOpen.set(false);
+    this.savedOpen.set(false);
     this.moreOpen.update((v) => !v);
   }
 
@@ -316,12 +334,14 @@ export class CustomerListWidget {
   toggleActions(event: Event): void {
     event.stopPropagation();
     this.moreOpen.set(false);
+    this.savedOpen.set(false);
     this.actionsOpen.update((v) => !v);
   }
 
   closeMenus(): void {
     this.moreOpen.set(false);
     this.actionsOpen.set(false);
+    this.savedOpen.set(false);
   }
 
   // Escape closes only the top-most open modal
@@ -349,8 +369,11 @@ export class CustomerListWidget {
     this.showAdvanced.set(false);
   }
 
-  runAdvanced(query: QueryGroup): void {
-    this.advancedQuery.set(this.querySvc.countActive(query) > 0 ? query : null);
+  runAdvanced(run: QueryRun): void {
+    const active = this.querySvc.countActive(run.query) > 0;
+
+    this.advancedQuery.set(active ? run.query : null);
+    this.activeSavedId.set(active ? run.savedId : null);
     this.page.set(1);
     this.closeAdvanced();
     this.scrollToTop();
@@ -358,7 +381,45 @@ export class CustomerListWidget {
 
   clearAdvanced(): void {
     this.advancedQuery.set(null);
+    this.activeSavedId.set(null);
     this.page.set(1);
+  }
+
+  // ACTIONS: SAVED QUERIES
+
+  toggleSaved(event: Event): void {
+    event.stopPropagation();
+    this.moreOpen.set(false);
+    this.actionsOpen.set(false);
+    this.savedOpen.update((v) => !v);
+  }
+
+  applySaved(id: string): void {
+    const saved = this.savedQueries().find((s) => s.id === id);
+
+    if (!saved) return;
+
+    this.advancedQuery.set(structuredClone(saved.query));
+    this.activeSavedId.set(saved.id);
+    this.savedOpen.set(false);
+    this.page.set(1);
+    this.scrollToTop();
+  }
+
+  // "All customers" entry: drops the advanced/saved query
+  clearSaved(): void {
+    this.clearAdvanced();
+    this.savedOpen.set(false);
+    this.scrollToTop();
+  }
+
+  deleteSaved(id: string, event: Event): void {
+    event.stopPropagation();
+    this.querySvc.deleteSaved(id);
+
+    if (this.activeSavedId() === id) {
+      this.clearAdvanced();
+    }
   }
 
   // ACTIONS: ADD
