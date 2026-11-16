@@ -66,9 +66,48 @@
       </div>
     }
 
-    <!-- APPLICATIONS / MAIN MODULES -->
-    <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">
-      Applications
+    <!-- APPLICATIONS / MAIN MODULES HEADER + COLLAPSE/EXPAND ALL BUTTON -->
+    <div class="flex items-center justify-between pr-2 pl-5 py-1.5">
+      <span class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">
+        Applications
+      </span>
+
+      <button
+        type="button"
+        (click)="toggleAllMenus()"
+        [title]="hasAnyExpanded() ? 'Collapse all menus' : 'Expand all menus'"
+        [attr.aria-label]="hasAnyExpanded() ? 'Collapse all menus' : 'Expand all menus'"
+        class="flex h-6 cursor-pointer items-center gap-1 rounded-[2px] px-1.5 text-[11px] font-medium text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#1b5a9a] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+        @if (hasAnyExpanded()) {
+          <!-- Collapse All Icon (Chevrons Up) -->
+          <svg
+            class="h-3.5 w-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            viewBox="0 0 24 24">
+            <polyline points="17 11 12 6 7 11"/>
+            <polyline points="17 18 12 13 7 18"/>
+          </svg>
+          <span>Collapse all</span>
+        } @else {
+          <!-- Expand All Icon (Chevrons Down) -->
+          <svg
+            class="h-3.5 w-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            viewBox="0 0 24 24">
+            <polyline points="7 13 12 18 17 13"/>
+            <polyline points="7 6 12 11 17 6"/>
+          </svg>
+          <span>Expand all</span>
+        }
+      </button>
     </div>
 
     @for (item of navigation; track item.route) {

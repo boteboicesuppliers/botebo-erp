@@ -149,9 +149,10 @@ export class NavBar {
       route: '/sales',
       icon: 'sales',
       children: [
+        { name: 'Sales Pipeline', route: '/sales/sales-pipeline' },
         { name: 'Quotations', route: '/sales/quotations' },
-        { name: 'Sales Contracts', route: '/sales/contracts' },
-        { name: 'Customer Returns', route: '/sales/returns' },
+        { name: 'Sales Orders', route: '/sales/sales-orders' },
+        { name: 'Invoices', route: '/sales/invoices' },
       ],
     },
     {
@@ -290,6 +291,26 @@ export class NavBar {
 
   isExpanded(sectionName: string): boolean {
     return !!this.expandedSections()[sectionName];
+  }
+
+  hasAnyExpanded(): boolean {
+    return this.navigation.some(
+      (item) => item.children && item.children.length > 0 && this.isExpanded(item.name)
+    );
+  }
+
+  toggleAllMenus(): void {
+    if (this.hasAnyExpanded()) {
+      this.expandedSections.set({});
+    } else {
+      const allExpanded: Record<string, boolean> = {};
+      for (const item of this.navigation) {
+        if (item.children && item.children.length > 0) {
+          allExpanded[item.name] = true;
+        }
+      }
+      this.expandedSections.set(allExpanded);
+    }
   }
 
   toggleExpand(sectionName: string, event: Event): void {
