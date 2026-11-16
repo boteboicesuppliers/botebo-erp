@@ -1,1 +1,140 @@
-<p>statement-form works!</p>
+<div class="border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-xl">
+  <!-- HEADER -->
+  <div class="flex items-center justify-between gap-3 border-b border-[#c5ced9] px-5 py-4">
+    <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Generate statement of accounts</h2>
+    <button
+      type="button"
+      (click)="closed.emit()"
+      aria-label="Close"
+      class="cursor-pointer p-1.5 text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="space-y-5 px-5 py-5">
+    <!-- SUPPLIERS -->
+    <div>
+      <p class="mb-1.5 text-xs text-[#374151]">Suppliers</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          [disabled]="!selected()"
+          (click)="scopeChoice.set('selected')"
+          class="h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="scope() === 'selected' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
+          Selected supplier{{ selected() ? ': ' + selected()!.name : '' }}
+        </button>
+        <button
+          type="button"
+          (click)="scopeChoice.set('all')"
+          class="h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="scope() === 'all' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
+          All suppliers ({{ suppliers().length }})
+        </button>
+      </div>
+      @if (!selected()) {
+        <p class="mt-1.5 text-xs text-[#4b5563]">Select a supplier in the table to generate a statement for just that supplier.</p>
+      }
+    </div>
+
+    <!-- PERIOD -->
+    <div class="flex flex-wrap items-end gap-4">
+      <div class="min-w-[12rem] flex-1">
+        <label class="mb-1.5 block text-xs text-[#374151]" for="stmt-period">Period</label>
+        <div class="relative">
+          <select
+            id="stmt-period"
+            #periodSel
+            [value]="period()"
+            (change)="period.set($any(periodSel.value))"
+            class="cursor-pointer appearance-none pr-8 h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+            @for (p of periods; track p.value) {
+              <option [value]="p.value">{{ p.label }}</option>
+            }
+          </select>
+          <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[9px] text-[#374151]">▾</span>
+        </div>
+      </div>
+
+      @if (period() === 'custom') {
+        <div class="min-w-[10rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]" for="stmt-from">From</label>
+          <input
+            id="stmt-from"
+            #fromBox
+            type="date"
+            [value]="customFrom()"
+            (input)="customFrom.set(fromBox.value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+        </div>
+        <div class="min-w-[10rem] flex-1">
+          <label class="mb-1.5 block text-xs text-[#374151]" for="stmt-to">To</label>
+          <input
+            id="stmt-to"
+            #toBox
+            type="date"
+            [value]="customTo()"
+            (input)="customTo.set(toBox.value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)] px-3 text-[13px] text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+        </div>
+      }
+    </div>
+    @if (period() === 'custom' && !range()) {
+      <p class="-mt-3 text-xs text-red-700">Choose a start and end date, with the start on or before the end.</p>
+    }
+
+    <!-- FORMAT -->
+    <div>
+      <p class="mb-1.5 text-xs text-[#374151]">Output format</p>
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          (click)="format.set('pdf')"
+          class="min-w-[5rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'pdf' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
+          PDF
+        </button>
+        <button
+          type="button"
+          (click)="format.set('csv')"
+          class="min-w-[5rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'csv' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
+          CSV
+        </button>
+        <button
+          type="button"
+          (click)="format.set('xlsx')"
+          class="min-w-[5rem] h-8 cursor-pointer border px-4 text-[13px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] disabled:cursor-not-allowed disabled:text-[#9ca3af] disabled:shadow-none disabled:hover:bg-white"
+          [class]="format() === 'xlsx' ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]' : 'border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]'">
+          XLSX
+        </button>
+      </div>
+      <p class="mt-1.5 text-xs text-[#4b5563]">
+        @switch (format()) {
+          @case ('pdf') { Opens a print view with one page per supplier. Choose "Save as PDF" in the print dialog. }
+          @case ('csv') { One combined file with a row per transaction, tagged by supplier. }
+          @case ('xlsx') { One workbook with a sheet per supplier. }
+        }
+      </p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="flex items-center justify-end gap-3 border-t border-[#c5ced9] px-5 py-3.5">
+    <button
+      type="button"
+      (click)="closed.emit()"
+      class="h-8 min-w-[5.5rem] cursor-pointer px-5 text-[13px] border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.18)] text-[#17304f] transition-colors hover:bg-[#e1e6ed] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
+      Cancel
+    </button>
+    <button
+      type="button"
+      [disabled]="!canGenerate()"
+      (click)="generate()"
+      class="h-8 min-w-[6.5rem] cursor-pointer px-5 text-[13px] border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] shadow-[0_1px_2px_rgba(23,48,79,0.35)] font-medium text-white transition-colors hover:bg-[#164b82] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:bg-[#1b5a9a]">
+      {{ busy() ? 'Generating…' : 'Generate' }}
+    </button>
+  </div>
+</div>

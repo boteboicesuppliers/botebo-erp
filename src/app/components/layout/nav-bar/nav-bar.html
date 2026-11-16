@@ -10,7 +10,7 @@
     <!-- FAVORITES SECTION -->
     @if (favorites().length > 0) {
       <div class="mb-3 border-b border-[#c5ced9] pb-2">
-        <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
+        <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">
           Favorites
         </div>
 
@@ -19,9 +19,9 @@
             <a
               [routerLink]="fav.route"
               (click)="trackRecent(fav.name, fav.route)"
-              routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+              routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a] !shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="flex h-full w-full cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent pr-8 pl-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+              class="flex h-full w-full cursor-pointer items-center gap-2.5 border-l-[3px] border-transparent pr-8 pl-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
 
               <!-- Star Icon -->
               <svg
@@ -38,7 +38,7 @@
               <span class="flex-1 truncate">{{ fav.name }}</span>
 
               @if (fav.badge) {
-                <span class="rounded bg-[#dde9f7] px-1.5 py-0.5 text-[11px] font-medium text-[#1b5a9a]">
+                <span class="rounded-[2px] bg-[#dde9f7] px-2.5 py-0.5 text-xs font-medium text-[#1b5a9a]">
                   {{ fav.badge }}
                 </span>
               }
@@ -49,7 +49,7 @@
               type="button"
               (click)="removeFavorite(fav.route, $event)"
               title="Remove from favorites"
-              class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#6b7280] opacity-70 transition-colors hover:bg-[#e5ecf5] hover:text-red-600 hover:opacity-100 focus:outline-none">
+              class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center text-[#4b5563] opacity-70 transition-colors hover:bg-[#e1e6ed] hover:text-red-700 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
               <svg
                 class="h-3.5 w-3.5"
                 fill="none"
@@ -67,7 +67,7 @@
     }
 
     <!-- APPLICATIONS / MAIN MODULES -->
-    <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
+    <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">
       Applications
     </div>
 
@@ -77,10 +77,10 @@
         <div class="group relative flex h-10 w-full items-center">
           <a
             [routerLink]="item.route"
-            routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+            routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a] !shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]"
             [routerLinkActiveOptions]="{ exact: true }"
             (click)="onMainItemClick(item)"
-            class="flex h-full w-full cursor-pointer items-center gap-3 border-l-[3px] border-transparent pr-9 pl-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+            class="flex h-full w-full cursor-pointer items-center gap-3 border-l-[3px] border-transparent pr-9 pl-5 text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
 
             <!-- Navigation Icons -->
             <svg
@@ -198,7 +198,7 @@
               type="button"
               (click)="toggleExpand(item.name, $event)"
               aria-label="Toggle submenu"
-              class="absolute right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#6b7280] transition-colors hover:bg-[#e5ecf5] hover:text-[#17304f] focus:outline-none">
+              class="absolute right-2 flex h-6 w-6 cursor-pointer items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]">
               <svg
                 class="h-3.5 w-3.5 transition-transform duration-200"
                 [class.rotate-90]="isExpanded(item.name)"
@@ -246,9 +246,9 @@
                     <a
                       [routerLink]="sub.route"
                       (click)="trackRecent(sub.name, sub.route)"
-                      routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+                      routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a] !shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]"
                       [routerLinkActiveOptions]="{ exact: true }"
-                      class="flex h-full w-full cursor-pointer items-center border-l-[3px] border-transparent pr-8 pl-[60px] text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+                      class="flex h-full w-full cursor-pointer items-center border-l-[3px] border-transparent pr-8 pl-[60px] text-[13px] text-[#374151] transition-colors duration-150 hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
                       <span class="truncate">{{ sub.name }}</span>
                     </a>
 
@@ -257,7 +257,7 @@
                       type="button"
                       (click)="toggleFavorite(sub, $event)"
                       [title]="isFavorite(sub.route) ? 'Remove from favorites' : 'Add to favorites'"
-                      class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#6b7280] opacity-0 transition-opacity group-hover/sub:opacity-100 hover:bg-[#e5ecf5] hover:text-[#1b5a9a] focus:opacity-100 focus:outline-none"
+                      class="absolute right-2 flex h-5 w-5 cursor-pointer items-center justify-center text-[#4b5563] opacity-0 transition-opacity group-hover/sub:opacity-100 hover:bg-[#e1e6ed] hover:text-[#1b5a9a] focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1b5a9a]"
                       [class.!opacity-100]="isFavorite(sub.route)"
                       [class.!text-[#1b5a9a]]="isFavorite(sub.route)">
                       <svg
@@ -283,7 +283,7 @@
     <!-- RECENTLY USED SECTION -->
     @if (recentlyUsed().length > 0) {
       <div class="mt-3 border-t border-[#c5ced9] pt-2">
-        <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wider text-[#6b7280] uppercase">
+        <div class="px-5 py-1.5 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">
           Recently Used
         </div>
 
@@ -291,9 +291,9 @@
           <a
             [routerLink]="recent.route"
             (click)="trackRecent(recent.name, recent.route)"
-            routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a]"
+            routerLinkActive="!border-[#1b5a9a] !bg-[#dde9f7] !font-medium !text-[#1b5a9a] !shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]"
             [routerLinkActiveOptions]="{ exact: true }"
-            class="flex h-8 w-full cursor-pointer items-center gap-1.5 border-l-[3px] border-transparent px-5 text-[12px] text-[#4b5563] transition-colors duration-150 hover:bg-[#f5f8fc] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
+            class="flex h-8 w-full cursor-pointer items-center gap-1.5 border-l-[3px] border-transparent px-5 text-xs text-[#4b5563] transition-colors duration-150 hover:bg-[#e1e6ed] hover:text-[#17304f] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1b5a9a]">
             <span class="truncate">{{ recent.name }}</span>
           </a>
         }
