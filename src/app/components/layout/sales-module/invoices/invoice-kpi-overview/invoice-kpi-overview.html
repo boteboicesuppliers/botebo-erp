@@ -1,0 +1,84 @@
+<div class="w-full text-[13px] text-[#1f2933]">
+  <section>
+    <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+
+      <!-- TOTAL OUTSTANDING RECEIVABLES -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-xs text-[#4b5563]">Outstanding Receivables</p>
+            <div class="flex gap-1">
+              @for (w of windows; track w) {
+                <button
+                  type="button"
+                  class="inline-flex h-6 items-center border px-2 text-xs transition-colors"
+                  [class]="window() === w ? 'border-t-[#8ba0b7] border-l-[#8ba0b7] border-b-[#b9c7d6] border-r-[#b9c7d6] bg-[#dde9f7] font-medium text-[#1b5a9a]' : 'border-transparent text-[#17304f] hover:bg-[#e1e6ed]'"
+                  (click)="window.set(w)">
+                  {{ w }}
+                </button>
+              }
+            </div>
+          </div>
+          <p class="mt-2 break-words text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ zar(summary().outstanding) }}</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Across {{ summary().totalCount }} active client invoices</p>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[#e1e6ed] pt-3 text-xs">
+          <span class="font-medium text-amber-900">Pending settlement</span>
+          <span class="text-[#4b5563]">{{ window() }} balance</span>
+        </div>
+      </article>
+
+      <!-- COLLECTED REVENUE -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <p class="text-xs text-[#4b5563]">Collected Revenue</p>
+          <p class="mt-2 break-words text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ zar(summary().collected) }}</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Realized bank deposits & EFT clearings</p>
+
+          <div class="mt-4 h-2 overflow-hidden bg-[#e1e6ed]">
+            <div class="h-full bg-emerald-700" [style.width.%]="78"></div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span class="font-medium text-emerald-900">+12.4% vs last period</span>
+          <span class="text-[#4b5563]">Healthy cash flow</span>
+        </div>
+      </article>
+
+      <!-- OVERDUE BALANCES -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <p class="text-xs text-[#4b5563]">Overdue Receivables (>30 Days)</p>
+          <p class="mt-2 text-[20px] leading-7 font-bold tracking-tight text-red-700">{{ zar(summary().overdue) }}</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Requires finance or sales rep follow-up</p>
+
+          <div class="mt-4 h-2 overflow-hidden bg-[#e1e6ed]">
+            <div class="h-full bg-red-600" [style.width.%]="22"></div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span class="font-medium text-red-700">6 invoices past term</span>
+          <span class="text-[#4b5563]">Collection hold</span>
+        </div>
+      </article>
+
+      <!-- AVERAGE COLLECTION PERIOD (DSO) -->
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <p class="text-xs text-[#4b5563]">Days Sales Outstanding (DSO)</p>
+          <p class="mt-2 text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ dso.days }} days</p>
+          <p class="mt-1 text-xs text-[#4b5563]">Invoice issuance to bank settlement</p>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[#e1e6ed] pt-3 text-xs">
+          <span class="font-medium text-green-700">{{ dso.change }} vs benchmark</span>
+          <span class="text-[#4b5563]">Target {{ dso.target }}d</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</div>

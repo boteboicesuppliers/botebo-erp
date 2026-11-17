@@ -1,0 +1,71 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-md border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Record Payment · {{ invoice().id }}</h2>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form (submit)="$event.preventDefault(); submitPayment()" class="space-y-4 px-5 py-5">
+      <div class="border border-[#c5ced9] bg-[#fafbfd] p-3 text-xs">
+        <div class="flex justify-between"><span class="text-[#4b5563]">Client:</span><span class="font-medium text-[#17304f]">{{ invoice().client }}</span></div>
+        <div class="mt-1 flex justify-between"><span class="text-[#4b5563]">Total Invoice:</span><span class="font-medium text-[#1f2933]">{{ zar(invoice().totalAmount) }}</span></div>
+        <div class="mt-1 flex justify-between"><span class="text-[#4b5563]">Current Balance Due:</span><span class="font-bold text-red-700">{{ zar(invoice().balanceDue) }}</span></div>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-normal text-[#374151]">Payment Amount (ZAR) *</label>
+        <input
+          type="number"
+          [value]="amountPaid() || ''"
+          (input)="amountPaid.set(+$any($event.target).value)"
+          [placeholder]="invoice().balanceDue"
+          class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-normal text-[#374151]">Payment Method</label>
+        <select
+          [value]="paymentMethod()"
+          (change)="paymentMethod.set($any($event.target).value)"
+          class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+          <option value="EFT Bank Transfer">EFT Bank Transfer</option>
+          <option value="Corporate Credit Card">Corporate Credit Card</option>
+          <option value="Direct Cash Deposit">Direct Cash Deposit</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-normal text-[#374151]">Bank Reference / EFT Trace #</label>
+        <input
+          type="text"
+          [value]="referenceNo()"
+          (input)="referenceNo.set($any($event.target).value)"
+          class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-[#c5ced9] pt-3.5">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 min-w-[5.5rem] items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-4 text-[13px] font-normal text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 min-w-[6rem] items-center justify-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] transition-colors hover:bg-[#164b82]">
+          Apply Payment
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

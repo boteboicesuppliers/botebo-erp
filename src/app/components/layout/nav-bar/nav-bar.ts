@@ -61,7 +61,6 @@ export class NavBar {
       icon: 'overview',
       children: [
         { name: 'Daily Operations', route: '/overview/daily-operations' },
-        { name: 'Stock & Warehouse Alerts', route: '/overview/stock-alerts' },
         { name: 'Sales & Orders Snapshot', route: '/overview/sales-snapshot' },
       ],
     },
@@ -106,16 +105,6 @@ export class NavBar {
       ],
     },
     {
-      name: 'Warehouses',
-      route: '/warehouses',
-      icon: 'warehouses',
-      children: [
-        { name: 'Warehouse Locations & Zones', route: '/warehouses/locations' },
-        { name: 'Stock Transfers', route: '/warehouses/transfers' },
-        { name: 'Packing & Dispatch Bay', route: '/warehouses/dispatch-bay' },
-      ],
-    },
-    {
       name: 'Purchases',
       route: '/purchases',
       icon: 'purchases',
@@ -123,6 +112,7 @@ export class NavBar {
         { name: 'Purchase Requests', route: '/purchases/requests' },
         { name: 'Requests for Quote (RFQ)', route: '/purchases/rfq' },
         { name: 'Received Stock (GRN)', route: '/purchases/grn' },
+        { name: 'Supplier Price Lists', route: '/suppliers/price-lists' },
       ],
     },
     {
@@ -131,7 +121,6 @@ export class NavBar {
       icon: 'suppliers',
       children: [
         { name: 'Supplier Price Lists', route: '/suppliers/price-lists' },
-        { name: 'Supplier Contracts & Terms', route: '/suppliers/contracts' },
       ],
     },
     {
@@ -139,9 +128,7 @@ export class NavBar {
       route: '/contracts',
       icon: 'customers',
       children: [
-        { name: 'Customer Pricing & Discounts', route: '/customers/pricing' },
         { name: 'Credit Limits & Balances', route: '/customers/credit-limits' },
-        { name: 'Contracts', route: '/customers/contracts' },
       ],
     },
     {
@@ -156,23 +143,11 @@ export class NavBar {
       ],
     },
     {
-      name: 'Invoices & Payments',
-      route: '/invoices',
-      icon: 'invoices',
-      children: [
-        { name: 'Customer Invoices', route: '/invoices/customer' },
-        { name: 'Supplier Bills', route: '/invoices/supplier' },
-        { name: 'Payments Received & Paid', route: '/invoices/payments' },
-      ],
-    },
-    {
       name: 'Delivery & Fleet',
       route: '/logistics',
       icon: 'logistics',
       children: [
         { name: 'Delivery Schedule', route: '/logistics/schedule' },
-        { name: 'Drivers & Vehicles', route: '/logistics/fleet' },
-        { name: 'Vehicle Maintenance & Fuel', route: '/logistics/maintenance' },
       ],
     },
     {
@@ -180,9 +155,9 @@ export class NavBar {
       route: '/accounting',
       icon: 'accounting',
       children: [
-        { name: 'Expenses', route: '/accounting/expenses' },
-        { name: 'Profit & Loss', route: '/accounting/profit-loss' },
-        { name: 'Tax / VAT Summary', route: '/accounting/vat' },
+        { name: 'Bookkeeping', route: '/accounting/bookkeeping' },
+        { name: 'Financial statements', route: '/accounting/financial-statements' },
+        { name: 'Financial projects', route: '/accounting/financial-projects' },
       ],
     },
     {
@@ -370,7 +345,6 @@ export class NavBar {
 
     return [
       { name: 'Daily Operations', route: '/overview/daily-operations', badge: 12 },
-      { name: 'Stock & Warehouse Alerts', route: '/overview/stock-alerts' },
     ];
   }
 

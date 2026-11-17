@@ -7,7 +7,7 @@ import { SalesPrimary } from './components/main-view-components/sales-module/sal
 import { Quotations } from './components/main-view-components/sales-module/quotations/quotations';
 import { SalesPipeline } from './components/main-view-components/sales-module/sales-pipeline/sales-pipeline';
 import { SalesOrders } from './components/main-view-components/sales-module/sales-orders/sales-orders';
-import { Invoices } from './components/layout/sales-module/invoices/invoices';
+import { Invoices } from './components/main-view-components/sales-module/invoices/invoices';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
 
