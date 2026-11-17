@@ -1,0 +1,44 @@
+<section class="w-full text-[13px] text-[#1f2933]">
+  <div class="mb-3 flex items-center justify-between">
+    <div>
+      <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Received Stock (Goods Received Note - GRN)</h3>
+      <p class="mt-1 text-xs text-[#4b5563]">Logistics dock verification, intake inspection, and warehouse inventory inbound matching.</p>
+    </div>
+    <button type="button" class="inline-flex h-8 items-center border border-[#12283f] bg-[#1b5a9a] px-4 text-xs font-medium text-white hover:bg-[#164b82]">+ Log New GRN</button>
+  </div>
+
+  <article class="border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="w-full overflow-auto">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:px-2.5 [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:bg-[#e1e6ed] [&_th]:px-2.5 [&_th]:font-normal [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>GRN Reference</th>
+            <th>Purchase Order</th>
+            <th>Supplier Name</th>
+            <th>Received Date</th>
+            <th>Verified Inventory Items</th>
+            <th>Warehouse Hub</th>
+            <th>QA Status</th>
+            <th class="pr-5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (grn of grns(); track grn.id; let odd = $odd) {
+            <tr [class]="odd ? '[&_td]:bg-[#e6eaf0]' : '[&_td]:bg-white'">
+              <td class="font-medium text-[#1b5a9a]">{{ grn.id }}</td>
+              <td class="font-medium text-[#1b5a9a]">{{ grn.poRef }}</td>
+              <td><span class="font-medium text-[#17304f]">{{ grn.supplier }}</span></td>
+              <td>{{ grn.receivedDate }}</td>
+              <td>{{ grn.itemsChecked }}</td>
+              <td>{{ grn.warehouse }}</td>
+              <td><span class="inline-flex items-center rounded-[2px] bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-900">{{ grn.qaStatus }}</span></td>
+              <td class="pr-5 text-right">
+                <button type="button" class="inline-flex h-7 items-center border border-[#8ba0b7] bg-white px-2.5 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">Inspect</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
