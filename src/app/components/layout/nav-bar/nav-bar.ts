@@ -85,7 +85,7 @@ export class NavBar {
       ],
     },
     {
-      name: 'Quality Check',
+      name: 'Quality Management',
       route: '/quality',
       icon: 'quality',
       children: [

@@ -8,6 +8,10 @@ import { Quotations } from './components/main-view-components/sales-module/quota
 import { SalesPipeline } from './components/main-view-components/sales-module/sales-pipeline/sales-pipeline';
 import { SalesOrders } from './components/main-view-components/sales-module/sales-orders/sales-orders';
 import { Invoices } from './components/main-view-components/sales-module/invoices/invoices';
+import { ProductionModule } from './components/main-view-components/production-module/production-module';
+import { ProductionSchedule } from './components/layout/production-module/production-schedule/production-schedule';
+import { ProductionOrdersAndBatches } from './components/layout/production-module/production-orders-and-batches/production-orders-and-batches';
+import { MachineAndLineStatus } from './components/layout/production-module/machine-and-line-status/machine-and-line-status';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
 
@@ -24,12 +28,19 @@ export const routes: Routes = [
       { path: 'dashboard', component: Dashboard },
       { path: 'contracts', component: Contracts },
       { path: 'suppliers', component: Suppliers },
+      
       // Sales Module Routes
       { path: 'sales', component: SalesPrimary },
       { path: 'sales/sales-pipeline', component: SalesPipeline },
       { path: 'sales/quotations', component: Quotations },
       { path: 'sales/sales-orders', component: SalesOrders },
       { path: 'sales/invoices', component: Invoices },
+
+      // Production Module Routes
+      { path: 'production', component: ProductionModule },
+      { path: 'production/schedule', component: ProductionSchedule },
+      { path: 'production/orders', component: ProductionOrdersAndBatches },
+      { path: 'production/machines', component: MachineAndLineStatus },
     ],
   },
 

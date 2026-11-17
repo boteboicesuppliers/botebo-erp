@@ -1,0 +1,42 @@
+<section class="w-full text-[13px] text-[#1f2933]">
+  <div class="mb-3 flex items-center justify-between">
+    <div>
+      <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Machine & Line Status Monitor</h3>
+      <p class="mt-1 text-xs text-[#4b5563]">Real-time operational health, temperature telemetry, and throughput speeds across manufacturing lines.</p>
+    </div>
+    <span class="inline-flex items-center rounded-[2px] bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-900">
+      3 of 4 Lines Active
+    </span>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+    @for (line of lines; track line.id) {
+      <article class="flex min-w-0 flex-col justify-between border border-[#c5ced9] bg-white p-5 transition-colors hover:border-[#9fb3c8]">
+        <div>
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-medium text-[#1b5a9a]">{{ line.id }}</span>
+            <span class="inline-flex items-center rounded-[2px] px-2 py-0.5 text-xs font-medium" [class]="getStatusBadge(line.status)">
+              {{ line.status }}
+            </span>
+          </div>
+
+          <h4 class="mt-2 text-[14px] font-semibold text-[#17304f]">{{ line.name }}</h4>
+          <p class="mt-1 text-xs text-[#4b5563]">Operator: {{ line.operator }}</p>
+
+          <div class="mt-4 space-y-1.5 border-t border-[#e1e6ed] pt-3 text-xs">
+            <div class="flex justify-between"><span class="text-[#4b5563]">Throughput</span><span class="font-medium text-[#17304f]">{{ line.output }}</span></div>
+            <div class="flex justify-between"><span class="text-[#4b5563]">Chamber Temp</span><span class="font-medium text-[#1b5a9a]">{{ line.temp }}</span></div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center justify-end gap-1.5 border-t border-[#e1e6ed] pt-2.5">
+          <button
+            type="button"
+            class="inline-flex h-7 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2.5 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+            Telemetry
+          </button>
+        </div>
+      </article>
+    }
+  </div>
+</section>
