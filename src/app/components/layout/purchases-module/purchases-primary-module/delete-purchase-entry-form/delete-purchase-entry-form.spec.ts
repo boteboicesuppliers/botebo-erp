@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReceivedStockListWidget } from './received-stock-list-widget';
+import { DeletePurchaseEntryForm } from './delete-purchase-entry-form';
 
-describe('ReceivedStockListWidget', () => {
-  let component: ReceivedStockListWidget;
-  let fixture: ComponentFixture<ReceivedStockListWidget>;
+describe('DeletePurchaseEntryForm', () => {
+  let component: DeletePurchaseEntryForm;
+  let fixture: ComponentFixture<DeletePurchaseEntryForm>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReceivedStockListWidget]
+      imports: [DeletePurchaseEntryForm]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ReceivedStockListWidget);
+    fixture = TestBed.createComponent(DeletePurchaseEntryForm);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

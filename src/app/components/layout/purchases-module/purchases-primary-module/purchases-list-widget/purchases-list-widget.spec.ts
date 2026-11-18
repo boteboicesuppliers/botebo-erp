@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RequestsForQuote } from './requests-for-quote';
+import { PurchasesListWidget } from './purchases-list-widget';
 
-describe('RequestsForQuote', () => {
-  let component: RequestsForQuote;
-  let fixture: ComponentFixture<RequestsForQuote>;
+describe('PurchasesListWidget', () => {
+  let component: PurchasesListWidget;
+  let fixture: ComponentFixture<PurchasesListWidget>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RequestsForQuote]
+      imports: [PurchasesListWidget]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RequestsForQuote);
+    fixture = TestBed.createComponent(PurchasesListWidget);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
