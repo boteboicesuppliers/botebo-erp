@@ -1,1 +1,113 @@
-<p>new-requisition-form works!</p>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-2xl border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">New Purchase Requisition</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Submit an internal procurement request for approval</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form (submit)="$event.preventDefault(); submitForm()" class="space-y-5 px-5 py-5">
+
+      <div>
+        <h3 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Item & Quantity</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-2">
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Material / Item Description *</label>
+            <input
+              type="text"
+              [value]="item()"
+              (input)="item.set($any($event.target).value)"
+              placeholder="e.g. Food-Grade Ammonia Refrigerant"
+              class="h-8 w-full border bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]"
+              [class]="submitted() && !item().trim() ? 'border-t-red-500 border-l-red-500 border-b-red-600 border-r-red-600' : 'border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3]'" />
+            @if (submitted() && !item().trim()) {
+              <p class="mt-1 text-xs text-red-700">Item description is required.</p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Required Quantity & Unit *</label>
+            <input
+              type="text"
+              [value]="qty()"
+              (input)="qty.set($any($event.target).value)"
+              placeholder="e.g. 500 kg"
+              class="h-8 w-full border bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]"
+              [class]="submitted() && !qty().trim() ? 'border-t-red-500 border-l-red-500 border-b-red-600 border-r-red-600' : 'border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3]'" />
+            @if (submitted() && !qty().trim()) {
+              <p class="mt-1 text-xs text-red-700">Quantity is required.</p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Requesting Department</label>
+            <select
+              [value]="department()"
+              (change)="department.set($any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+              <option value="Production Line A">Production Line A</option>
+              <option value="Packaging Plant">Packaging Plant</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Cold Storage Vault">Cold Storage Vault</option>
+              <option value="Logistics & Fleet">Logistics & Fleet</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-[#c5ced9] pt-5">
+        <h3 class="mb-3 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Authorization</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Requested By *</label>
+            <input
+              type="text"
+              [value]="requestedBy()"
+              (input)="requestedBy.set($any($event.target).value)"
+              placeholder="e.g. S. Khumalo"
+              class="h-8 w-full border bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]"
+              [class]="submitted() && !requestedBy().trim() ? 'border-t-red-500 border-l-red-500 border-b-red-600 border-r-red-600' : 'border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3]'" />
+            @if (submitted() && !requestedBy().trim()) {
+              <p class="mt-1 text-xs text-red-700">Requester name is required.</p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs font-normal text-[#374151]">Request Date</label>
+            <input
+              type="date"
+              [value]="date()"
+              (input)="date.set($any($event.target).value)"
+              class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-[#c5ced9] pt-3.5">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 min-w-[5.5rem] items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-4 text-[13px] font-normal text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 min-w-[6rem] items-center justify-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] transition-colors hover:bg-[#164b82]">
+          Submit Requisition
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
