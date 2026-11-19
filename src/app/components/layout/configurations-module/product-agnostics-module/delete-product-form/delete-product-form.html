@@ -1,0 +1,42 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-md border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-base font-bold text-[#17304f]">Delete Product</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Confirm removal of this master item.</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-7 w-7 items-center justify-center text-[#4b5563] hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        &times;
+      </button>
+    </div>
+
+    <div class="space-y-3 px-5 py-4">
+      <p class="text-xs leading-relaxed text-[#374151]">
+        Are you sure you want to delete <strong class="font-bold text-[#17304f]">{{ product().sku }} — {{ product().name }}</strong>?
+      </p>
+      <div class="border border-[#cfd7e1] bg-[#f8fafc] p-3 text-xs text-[#4b5563]">
+        <div>Type: <strong class="text-[#17304f]">{{ product().itemKind }}</strong></div>
+        <div>Category: <strong class="text-[#17304f]">{{ product().category }}</strong></div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-2 border-t border-[#c5ced9] bg-[#f8fafc] px-5 py-3">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-3.5 text-xs text-[#17304f] hover:bg-[#e1e6ed]">
+        Cancel
+      </button>
+      <button
+        type="button"
+        (click)="confirmDelete.emit(product().id)"
+        class="inline-flex h-8 items-center border border-red-800 bg-red-700 px-4 text-xs font-medium text-white hover:bg-red-800">
+        Delete Product
+      </button>
+    </div>
+  </div>
+</div>

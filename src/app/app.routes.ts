@@ -33,6 +33,7 @@ import { FinancialStatements } from './components/main-view-components/accountin
 import { FinancialProjections } from './components/main-view-components/accounting-module/financial-projections/financial-projections';
 
 // Configurations Module
+import { ProductAgnostics } from './components/main-view-components/configurations-module/product-agnostics/product-agnostics';
 import { CategoriesAndClassifications } from './components/main-view-components/configurations-module/categories-and-classifications/categories-and-classifications';
 
 import { authGuard } from './guards/auth-guard';
@@ -85,6 +86,7 @@ export const routes: Routes = [
       { path: 'accounting/financial-projections', component: FinancialProjections },
 
       // Configurations Module Routes
+      { path: 'configurations/product-agnostics', component: ProductAgnostics },
       { path: 'configurations/categories-and-classifications', component: CategoriesAndClassifications },
     ],
   },
