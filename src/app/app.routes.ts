@@ -12,11 +12,15 @@ import { ProductionModule } from './components/main-view-components/production-m
 import { ProductionSchedule } from './components/layout/production-module/production-schedule/production-schedule';
 import { ProductionOrdersAndBatches } from './components/layout/production-module/production-orders-and-batches/production-orders-and-batches';
 import { MachineAndLineStatus } from './components/layout/production-module/machine-and-line-status/machine-and-line-status';
-import { PurchasesModule } from './components/main-view-components/purchases-module/purchases-module';
-import { PurchaseRequests } from './components/layout/purchases-module/purchase-requests/purchase-requests';
-import { RequestsForQuote } from './components/layout/purchases-module/requests-for-quote/requests-for-quote';
-import { ReceivedStockGrn } from './components/layout/purchases-module/received-stock-grn/received-stock-grn';
-import { SupplierPriceLists } from './components/layout/purchases-module/supplier-price-lists/supplier-price-lists';
+
+// new imports - Purchases Module
+import { PurchaseRequests } from './components/main-view-components/purchases-module/purchase-requests/purchase-requests';
+import { PurchasesPrimary } from './components/main-view-components/purchases-module/purchases-primary/purchases-primary';
+import { RecievedStockGrn } from './components/main-view-components/purchases-module/recieved-stock-grn/recieved-stock-grn';
+import { RequestForQuoteRfq } from './components/main-view-components/purchases-module/request-for-quote-rfq/request-for-quote-rfq';
+import { QuoteRequestListWidget } from './components/layout/purchases-module/requests-for-quote-module/quote-request-list-widget/quote-request-list-widget';
+import { SupplierPriceLists } from './components/main-view-components/purchases-module/supplier-price-lists/supplier-price-lists';
+
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
 
@@ -48,10 +52,11 @@ export const routes: Routes = [
       { path: 'production/machines', component: MachineAndLineStatus },
 
       // Purchases Module Routes
-      { path: 'purchases', component: PurchasesModule },
+      { path: 'purchases', component: PurchasesPrimary },
       { path: 'purchases/requests', component: PurchaseRequests },
-      { path: 'purchases/rfq', component: RequestsForQuote },
-      { path: 'purchases/grn', component: ReceivedStockGrn },
+      { path: 'purchases/rfq', component: QuoteRequestListWidget },
+      { path: 'purchases/rfq-overview', component: RequestForQuoteRfq },
+      { path: 'purchases/grn', component: RecievedStockGrn },
       { path: 'suppliers/price-lists', component: SupplierPriceLists },
     ],
   },

@@ -1,1 +1,61 @@
-<p>delete-grn-entry-form works!</p>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-lg border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Delete Goods Received Note</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Confirm permanent removal of this inbound stock receipt</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-4 px-5 py-5">
+      <div class="border border-red-200 bg-red-50/70 p-3.5 text-xs text-red-900">
+        You are about to permanently delete <span class="font-semibold">{{ grn().id }}</span>. This action cannot be undone.
+      </div>
+
+      <div class="space-y-2 border border-[#c5ced9] bg-[#f8fafc] p-4 text-xs">
+        <div class="flex justify-between">
+          <span class="text-[#4b5563]">GRN Reference</span>
+          <span class="font-medium text-[#1b5a9a]">{{ grn().id }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#4b5563]">Purchase Order</span>
+          <span class="font-medium text-[#1b5a9a]">{{ grn().poRef }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[#4b5563]">Supplier</span>
+          <span class="font-medium text-[#17304f]">{{ grn().supplier }}</span>
+        </div>
+        <div class="flex justify-between border-t border-[#cfd7e1] pt-2">
+          <span class="text-[#4b5563]">Verified Items</span>
+          <span class="font-bold text-[#17304f]">{{ grn().itemsChecked }}</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-[#c5ced9] pt-3.5">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 min-w-[5.5rem] items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-4 text-[13px] font-normal text-[#17304f] shadow-[0_1px_2px_rgba(23,48,79,0.18)] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="button"
+          (click)="confirmDelete.emit(grn().id)"
+          class="inline-flex h-8 min-w-[6rem] items-center justify-center border border-t-red-700 border-l-red-700 border-b-red-950 border-r-red-950 bg-red-700 px-5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(127,29,29,0.35)] transition-colors hover:bg-red-800">
+          Delete GRN
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
