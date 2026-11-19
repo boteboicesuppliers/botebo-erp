@@ -1,0 +1,129 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="flex max-h-[90vh] w-full max-w-4xl flex-col border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+    <!-- HEADER -->
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">{{ statement().title }}</h2>
+          <span class="rounded-[2px] bg-[#dde9f7] px-2 py-0.5 text-xs font-medium text-[#1b5a9a]">
+            {{ statement().code }}
+          </span>
+        </div>
+        <p class="mt-0.5 text-xs text-[#4b5563]">
+          Period: <strong class="font-medium text-[#17304f]">{{ statement().period }}</strong> · Compiled: {{ statement().compiledAt }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="space-y-5 overflow-y-auto px-5 py-5">
+      <!-- EQUATION / RECONCILIATION CHECK BANNER -->
+      <div class="border border-[#c5ced9] bg-[#f8fafc] p-3.5 text-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="font-semibold tracking-wide text-[#17304f] uppercase">Compilation & Accounting Verification</span>
+          <span class="rounded-[2px] bg-[#dde9f7] px-2 py-0.5 font-medium text-[#1b5a9a]">
+            {{ statement().checkSummary }}
+          </span>
+        </div>
+        <p class="mt-1.5 text-[#4b5563]">
+          Checked <strong class="font-medium text-[#17304f]">{{ statement().sourceRecordsChecked.length }}</strong> contributing record streams and compiled <strong class="font-medium text-[#17304f]">{{ statement().lines.length }}</strong> statement lines.
+        </p>
+      </div>
+
+      <!-- CONTRIBUTING SOURCE RECORDS CHECKED -->
+      <div>
+        <h3 class="mb-2 text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Contributing Records Verified</h3>
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          @for (src of statement().sourceRecordsChecked; track src.stream) {
+            <div class="flex items-center justify-between border border-[#cfd7e1] bg-white px-3 py-2 text-xs">
+              <div>
+                <span class="font-medium text-[#17304f]">{{ src.stream }}</span>
+                <span class="ml-1.5 text-[#6b7280]">({{ src.recordCount }} records)</span>
+              </div>
+              <span class="font-medium text-[#1b5a9a]">{{ src.status }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- COMPILED STATEMENT LINES -->
+      <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+        <div class="w-full overflow-auto">
+          <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Section</th>
+                <th>Line Item</th>
+                <th>Source Basis</th>
+                <th class="text-right">Current Period</th>
+                <th class="pr-5 text-right">Prior Period</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (line of statement().lines; track line.code; let odd = $odd) {
+                <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0]' : '[&_td]:bg-white'">
+                  <td class="font-medium text-[#1b5a9a]">{{ line.code }}</td>
+                  <td>{{ line.section }}</td>
+                  <td class="font-medium text-[#17304f]">{{ line.lineItem }}</td>
+                  <td class="text-xs text-[#4b5563]">{{ line.sourceBasis }}</td>
+                  <td class="text-right font-medium text-[#17304f]">{{ formatZar(line.currentAmount) }}</td>
+                  <td class="pr-5 text-right text-[#4b5563]">{{ formatZar(line.priorAmount) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#c5ced9] bg-[#f8fafc] px-5 py-3 text-xs">
+          <span class="font-semibold tracking-wide text-[#374151] uppercase">{{ statement().netLabel }}</span>
+          <div class="flex items-center gap-6">
+            <span>Prior: <strong class="font-medium text-[#374151]">{{ formatZar(statement().priorNetTotal) }}</strong></span>
+            <span>Current: <strong class="font-bold text-[#17304f]">{{ formatZar(statement().currentNetTotal) }}</strong></span>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- FOOTER WITH EXPORT ACTIONS -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#c5ced9] bg-[#f8fafc] px-5 py-3.5">
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          (click)="exportRequested.emit({ statement: statement(), format: 'CSV' })"
+          class="inline-flex h-8 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-3 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+          Export CSV
+        </button>
+        <button
+          type="button"
+          (click)="exportRequested.emit({ statement: statement(), format: 'XLSX' })"
+          class="inline-flex h-8 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-3 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+          Export XLSX
+        </button>
+        <button
+          type="button"
+          (click)="exportRequested.emit({ statement: statement(), format: 'PDF' })"
+          class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-3.5 text-xs font-medium text-white hover:bg-[#164b82]">
+          Export PDF
+        </button>
+      </div>
+
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="inline-flex h-8 min-w-[5.5rem] items-center justify-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-4 text-[13px] text-[#17304f] hover:bg-[#e1e6ed]">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
