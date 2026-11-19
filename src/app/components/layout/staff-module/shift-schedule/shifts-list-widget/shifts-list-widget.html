@@ -1,0 +1,242 @@
+<section class="w-full text-[13px] text-[#1f2933]">
+  <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Shift Schedule · Calendar & Timeline</h3>
+      <p class="mt-1 text-xs text-[#4b5563]">Staff shift assignments, operating hours, and site locations across weekly calendar and daily timeline views.</p>
+    </div>
+
+    <div class="inline-flex border border-[#b9c7d6] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)]">
+      <button
+        type="button"
+        (click)="viewMode.set('Calendar')"
+        class="inline-flex h-8 items-center px-3.5 text-xs transition-colors"
+        [class]="viewMode() === 'Calendar'
+          ? 'bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+          : 'bg-white text-[#1f2933] hover:bg-[#e1e6ed]'">
+        Calendar View
+      </button>
+      <button
+        type="button"
+        (click)="viewMode.set('Timeline')"
+        class="inline-flex h-8 items-center border-l border-[#b9c7d6] px-3.5 text-xs transition-colors"
+        [class]="viewMode() === 'Timeline'
+          ? 'bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+          : 'bg-white text-[#1f2933] hover:bg-[#e1e6ed]'">
+        Timeline View
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER & ACTION TOOLBAR -->
+  <article class="mb-3.5 border border-[#c5ced9] bg-white p-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-normal text-[#374151]">Search</label>
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+            placeholder="Staff, role, location, shift #..."
+            class="h-8 w-56 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] shadow-[0_1px_2px_rgba(23,48,79,0.12)] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-normal text-[#374151]">Location</label>
+          <select
+            [value]="selectedLocation()"
+            (change)="selectedLocation.set($any($event.target).value)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#4b5563] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+            <option value="All">All locations</option>
+            @for (loc of availableLocations(); track loc) {
+              <option [value]="loc">{{ loc }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-normal text-[#374151]">Status</label>
+          <select
+            [value]="selectedStatus()"
+            (change)="selectedStatus.set($any($event.target).value)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#4b5563] shadow-[0_1px_2px_rgba(23,48,79,0.12)] focus:border-[#1b5a9a] focus:outline-none focus:ring-1 focus:ring-[#1b5a9a]">
+            <option value="All">All statuses</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        (click)="showNewModal.set(true)"
+        class="inline-flex h-8 min-w-[6.5rem] items-center justify-center gap-1.5 border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] hover:bg-[#164b82]">
+        <span class="text-[14px] leading-none">+</span>
+        <span>New Shift Entry</span>
+      </button>
+    </div>
+  </article>
+
+  <!-- CALENDAR VIEW -->
+  @if (viewMode() === 'Calendar') {
+    <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+      <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+        <div class="grid min-w-[980px] grid-cols-7 divide-x divide-[#cfd7e1]">
+          @for (day of calendarDays; track day.date) {
+            <div class="flex min-h-[270px] flex-col bg-white">
+              <div class="flex items-center justify-between border-t border-b border-t-[#cdd5df] border-b-[#bcc7d4] bg-[#e1e6ed] px-2.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                <span class="text-xs font-medium text-[#17304f]">{{ day.label }}</span>
+                <span class="text-[11px] text-[#374151]">{{ day.dayNum }}</span>
+              </div>
+
+              <div class="flex-1 space-y-2 p-2">
+                @for (shift of shiftsForDay(day.date); track shift.id) {
+                  <div class="border border-[#c5ced9] bg-[#f8fafc] p-2 shadow-[0_1px_2px_rgba(23,48,79,0.08)]">
+                    <div class="flex items-start justify-between gap-1">
+                      <span class="text-[11px] font-medium text-[#1b5a9a]">{{ shift.startTime }} - {{ shift.endTime }}</span>
+                      <span class="inline-flex items-center rounded-[2px] px-1.5 py-0.5 text-[10px] font-medium" [class]="getStatusBadgeClass(shift.status)">
+                        {{ shift.status }}
+                      </span>
+                    </div>
+
+                    <div class="mt-1 font-medium text-[#17304f]">{{ shift.staffName }}</div>
+                    <div class="text-[11px] text-[#4b5563]">{{ shift.role }}</div>
+                    <div class="mt-1 border-t border-[#e2e8f0] pt-1 text-[11px] text-[#374151]">
+                      <span class="font-normal text-[#6b7280]">Location:</span> {{ shift.location }}
+                    </div>
+
+                    <div class="mt-2 flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        (click)="editingShift.set(shift)"
+                        class="inline-flex h-6 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2 text-[11px] font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        (click)="deletingShift.set(shift)"
+                        class="inline-flex h-6 items-center border border-t-[#e5b8b8] border-l-[#e5b8b8] border-b-[#c98a8a] border-r-[#c98a8a] bg-white px-2 text-[11px] font-medium text-red-800 hover:bg-red-50">
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                } @empty {
+                  <div class="flex h-36 items-center justify-center border border-dashed border-[#d5dde6] p-2 text-center text-[11px] text-[#6b7280]">
+                    No shifts scheduled
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#c5ced9] px-5 py-3">
+        <span class="text-xs text-[#4b5563]">
+          Showing {{ filteredShifts().length }} shift entries across weekly calendar (16 Nov - 22 Nov 2026)
+        </span>
+        <span class="text-xs text-[#374151]">
+          Active shifts: {{ filteredShifts().length }}
+        </span>
+      </div>
+    </article>
+  }
+
+  <!-- TIMELINE VIEW -->
+  @if (viewMode() === 'Timeline') {
+    <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+      <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+        <div class="min-w-[960px]">
+          <div class="grid grid-cols-12 border-t border-b border-t-[#cdd5df] border-b-[#bcc7d4] bg-[#e1e6ed] text-xs text-[#374151] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+            <div class="col-span-3 border-r border-[#a9b7c8] px-4 py-2.5 font-normal">Staff & Location</div>
+            <div class="col-span-9 grid grid-cols-9 divide-x divide-[#c5ced9]">
+              @for (hour of timelineHours; track hour) {
+                <div class="px-1.5 py-2.5 text-center text-[11px]">{{ hour }}</div>
+              }
+            </div>
+          </div>
+
+          @for (shift of filteredShifts(); track shift.id; let odd = $odd) {
+            <div class="grid grid-cols-12 border-b border-[#cfd7e1]" [class]="odd ? 'bg-[#e6eaf0]' : 'bg-white'">
+              <div class="col-span-3 border-r border-[#cfd7e1] px-4 py-3">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="font-medium text-[#17304f]">{{ shift.staffName }}</span>
+                  <span class="text-[11px] font-medium text-[#1b5a9a]">{{ shift.id }}</span>
+                </div>
+                <div class="mt-0.5 text-[11px] text-[#4b5563]">{{ shift.role }} · {{ shift.shiftDate }}</div>
+                <div class="mt-1 text-[11px] text-[#1f2933]">
+                  <span class="text-[#6b7280]">Location:</span> {{ shift.location }}
+                </div>
+              </div>
+
+              <div class="relative col-span-9 flex items-center px-2 py-3">
+                <div
+                  class="flex min-h-[62px] flex-col justify-between border border-[#8ba0b7] bg-[#dde9f7] px-3 py-2 text-xs shadow-[0_1px_2px_rgba(23,48,79,0.14)]"
+                  [style.margin-left.%]="getTimelineLeftPercent(shift.startTime)"
+                  [style.width.%]="getTimelineWidthPercent(shift.startTime, shift.endTime)">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-medium text-[#17304f]">{{ shift.startTime }} - {{ shift.endTime }}</span>
+                    <span class="inline-flex items-center rounded-[2px] px-2 py-0.5 text-[10px] font-medium" [class]="getStatusBadgeClass(shift.status)">
+                      {{ shift.status }}
+                    </span>
+                  </div>
+                  <div class="mt-1 truncate text-[11px] text-[#374151]">{{ shift.location }}</div>
+                  <div class="mt-1.5 flex items-center justify-end gap-1">
+                    <button
+                      type="button"
+                      (click)="editingShift.set(shift)"
+                      class="inline-flex h-6 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2 text-[11px] font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      (click)="deletingShift.set(shift)"
+                      class="inline-flex h-6 items-center border border-t-[#e5b8b8] border-l-[#e5b8b8] border-b-[#c98a8a] border-r-[#c98a8a] bg-white px-2 text-[11px] font-medium text-red-800 hover:bg-red-50">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="flex h-24 items-center justify-center text-xs text-[#4b5563]">
+              No shift entries match your filter selection.
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#c5ced9] px-5 py-3">
+        <span class="text-xs text-[#4b5563]">
+          Showing {{ filteredShifts().length }} shift entries on timeline (06:00 - 22:00 window)
+        </span>
+        <span class="text-xs text-[#374151]">
+          Total shifts: {{ filteredShifts().length }}
+        </span>
+      </div>
+    </article>
+  }
+
+  <!-- MODALS -->
+  @if (showNewModal()) {
+    <app-new-shift-entry-form
+      (close)="showNewModal.set(false)"
+      (save)="handleCreateShift($event)" />
+  }
+
+  @if (editingShift(); as shift) {
+    <app-edit-shift-entry-form
+      [shift]="shift"
+      (close)="editingShift.set(null)"
+      (save)="handleUpdateShift($event)" />
+  }
+
+  @if (deletingShift(); as shift) {
+    <app-delete-shift-entry-form
+      [shift]="shift"
+      (close)="deletingShift.set(null)"
+      (confirmDelete)="handleDeleteShift($event)" />
+  }
+</section>

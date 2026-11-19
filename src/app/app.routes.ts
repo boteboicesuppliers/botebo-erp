@@ -13,13 +13,17 @@ import { ProductionSchedule } from './components/layout/production-module/produc
 import { ProductionOrdersAndBatches } from './components/layout/production-module/production-orders-and-batches/production-orders-and-batches';
 import { MachineAndLineStatus } from './components/layout/production-module/machine-and-line-status/machine-and-line-status';
 
-// new imports - Purchases Module
+// Purchases Module
 import { PurchaseRequests } from './components/main-view-components/purchases-module/purchase-requests/purchase-requests';
 import { PurchasesPrimary } from './components/main-view-components/purchases-module/purchases-primary/purchases-primary';
 import { RecievedStockGrn } from './components/main-view-components/purchases-module/recieved-stock-grn/recieved-stock-grn';
 import { RequestForQuoteRfq } from './components/main-view-components/purchases-module/request-for-quote-rfq/request-for-quote-rfq';
 import { QuoteRequestListWidget } from './components/layout/purchases-module/requests-for-quote-module/quote-request-list-widget/quote-request-list-widget';
 import { SupplierPriceLists } from './components/main-view-components/purchases-module/supplier-price-lists/supplier-price-lists';
+
+// Staff Module
+import { StaffPrimary } from './components/main-view-components/staff-module/staff-primary/staff-primary';
+import { ShiftSchedule } from './components/main-view-components/staff-module/shift-schedule/shift-schedule';
 
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
@@ -58,6 +62,10 @@ export const routes: Routes = [
       { path: 'purchases/rfq-overview', component: RequestForQuoteRfq },
       { path: 'purchases/grn', component: RecievedStockGrn },
       { path: 'suppliers/price-lists', component: SupplierPriceLists },
+
+      // Staff Module Routes
+      { path: 'staff', component: StaffPrimary },
+      { path: 'staff/shift-schedule', component: ShiftSchedule },
     ],
   },
 
