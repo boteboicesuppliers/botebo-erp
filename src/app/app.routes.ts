@@ -35,6 +35,7 @@ import { FinancialProjections } from './components/main-view-components/accounti
 // Configurations Module
 import { ProductAgnostics } from './components/main-view-components/configurations-module/product-agnostics/product-agnostics';
 import { CategoriesAndClassifications } from './components/main-view-components/configurations-module/categories-and-classifications/categories-and-classifications';
+import { WorkflowsListWidget } from './components/layout/configurations-module/workflows-module/workflows-list-widget/workflows-list-widget';
 
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
@@ -88,6 +89,7 @@ export const routes: Routes = [
       // Configurations Module Routes
       { path: 'configurations/product-agnostics', component: ProductAgnostics },
       { path: 'configurations/categories-and-classifications', component: CategoriesAndClassifications },
+      { path: 'configurations/workflows', component: WorkflowsListWidget },
     ],
   },
 
