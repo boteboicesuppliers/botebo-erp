@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import { BusinessClassificationRecord } from '../classifications-list-widget/classifications-list-widget';
 
 @Component({
   selector: 'app-delete-classification-form',
@@ -7,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './delete-classification-form.css',
 })
 export class DeleteClassificationForm {
-
+  classification = input.required<BusinessClassificationRecord>();
+  close = output<void>();
+  confirmDelete = output<string>();
 }

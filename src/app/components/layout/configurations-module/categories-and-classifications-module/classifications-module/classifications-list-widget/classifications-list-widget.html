@@ -1,1 +1,132 @@
-<p>classifications-list-widget works!</p>
+<section class="w-full space-y-4 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Business Units & Classifications</h3>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Business units and production departments used to group operations and reporting.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="showNewModal.set(true)"
+      class="inline-flex h-8 items-center gap-1.5 border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-3.5 text-xs font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] hover:bg-[#164b82]">
+      <span class="text-[14px] leading-none">+</span>
+      <span>New Classification</span>
+    </button>
+  </div>
+
+  <!-- FILTER TOOLBAR -->
+  <article class="border border-[#c5ced9] bg-white p-3.5">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Scope</label>
+          <select
+            [value]="typeFilter()"
+            (change)="typeFilter.set($any($event.target).value)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+            <option value="All">All Units & Departments</option>
+            <option value="Business Unit">Business Units</option>
+            <option value="Production Department">Production Departments</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Search</label>
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+            placeholder="Code, unit, department..."
+            class="h-8 w-52 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#1f2933] placeholder:text-[#6b7280]" />
+        </div>
+      </div>
+
+      <span class="text-xs text-[#4b5563]">
+        Total: <strong class="font-bold text-[#17304f]">{{ filteredClassifications().length }}</strong>
+      </span>
+    </div>
+  </article>
+
+  <!-- CLASSIFICATIONS TABLE -->
+  <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Classification Type</th>
+            <th>Production Department</th>
+            <th>Business Unit</th>
+            <th>Status</th>
+            <th class="pr-5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cls of filteredClassifications(); track cls.id; let odd = $odd) {
+            <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+              <td class="font-medium text-[#1b5a9a]">{{ cls.code }}</td>
+              <td class="font-bold text-[#17304f]">{{ cls.name }}</td>
+              <td>
+                <span class="inline-flex items-center rounded-[2px] bg-[#dde9f7] px-2 py-0.5 text-xs font-medium text-[#1b5a9a]">
+                  {{ cls.classificationType }}
+                </span>
+              </td>
+              <td>{{ cls.productionDepartment }}</td>
+              <td>{{ cls.businessUnit }}</td>
+              <td>
+                <span
+                  class="inline-flex items-center rounded-[2px] px-2 py-0.5 text-xs font-medium"
+                  [class]="cls.status === 'Active' ? 'bg-[#dde9f7] text-[#1b5a9a]' : 'bg-slate-100 text-[#4b5563]'">
+                  {{ cls.status }}
+                </span>
+              </td>
+              <td class="pr-5 text-right">
+                <div class="inline-flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    (click)="editingClassification.set(cls)"
+                    class="inline-flex h-7 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2.5 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deletingClassification.set(cls)"
+                    class="inline-flex h-7 items-center border border-t-[#e5b8b8] border-l-[#e5b8b8] border-b-[#c98a8a] border-r-[#c98a8a] bg-white px-2.5 text-xs font-medium text-red-800 hover:bg-red-50">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="h-20 text-center text-[#4b5563]">No business units or classifications match your filter.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  @if (showNewModal()) {
+    <app-new-classification-form
+      (close)="showNewModal.set(false)"
+      (save)="addClassification($event)" />
+  }
+
+  @if (editingClassification(); as cls) {
+    <app-edit-classification-form
+      [classification]="cls"
+      (close)="editingClassification.set(null)"
+      (save)="updateClassification($event)" />
+  }
+
+  @if (deletingClassification(); as cls) {
+    <app-delete-classification-form
+      [classification]="cls"
+      (close)="deletingClassification.set(null)"
+      (confirmDelete)="deleteClassification($event)" />
+  }
+</section>

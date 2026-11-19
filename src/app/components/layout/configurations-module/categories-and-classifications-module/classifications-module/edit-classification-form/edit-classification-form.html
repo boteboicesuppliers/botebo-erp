@@ -1,1 +1,109 @@
-<p>edit-classification-form works!</p>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="flex max-h-[90vh] w-full max-w-xl flex-col border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Edit Classification</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Update {{ classification().code }} — {{ classification().name }}.</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        ×
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitForm()" class="space-y-4 overflow-y-auto px-5 py-5">
+      @if (errorMessage()) {
+        <div class="border border-red-300 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Code *</label>
+          <input
+            type="text"
+            [ngModel]="code()"
+            (ngModelChange)="code.set($event)"
+            name="code"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Classification Type</label>
+          <select
+            [ngModel]="classificationType()"
+            (ngModelChange)="classificationType.set($event)"
+            name="classificationType"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#17304f]">
+            <option value="Business Unit">Business Unit</option>
+            <option value="Production Department">Production Department</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Name *</label>
+          <input
+            type="text"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            name="name"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Business Unit</label>
+          <input
+            type="text"
+            [ngModel]="businessUnit()"
+            (ngModelChange)="businessUnit.set($event)"
+            name="businessUnit"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Production Department</label>
+          <input
+            type="text"
+            [ngModel]="productionDepartment()"
+            (ngModelChange)="productionDepartment.set($event)"
+            name="productionDepartment"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Status</label>
+          <select
+            [ngModel]="status()"
+            (ngModelChange)="status.set($event)"
+            name="status"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#17304f]">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 border-t border-[#c5ced9] pt-4">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-3.5 text-xs text-[#17304f] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-xs font-medium text-white hover:bg-[#164b82]">
+          Update Classification
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

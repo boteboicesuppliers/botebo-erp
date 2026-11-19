@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import { ProductCategoryRecord } from '../categories-list-widget/categories-list-widget';
 
 @Component({
   selector: 'app-delete-category-form',
@@ -7,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './delete-category-form.css',
 })
 export class DeleteCategoryForm {
-
+  category = input.required<ProductCategoryRecord>();
+  close = output<void>();
+  confirmDelete = output<string>();
 }

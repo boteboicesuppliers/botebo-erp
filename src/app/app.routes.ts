@@ -32,6 +32,9 @@ import { Bookkeeping } from './components/main-view-components/accounting-module
 import { FinancialStatements } from './components/main-view-components/accounting-module/financial-statements/financial-statements';
 import { FinancialProjections } from './components/main-view-components/accounting-module/financial-projections/financial-projections';
 
+// Configurations Module
+import { CategoriesAndClassifications } from './components/main-view-components/configurations-module/categories-and-classifications/categories-and-classifications';
+
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
 
@@ -80,6 +83,9 @@ export const routes: Routes = [
       { path: 'accounting/bookkeeping', component: Bookkeeping },
       { path: 'accounting/financial-statements', component: FinancialStatements },
       { path: 'accounting/financial-projections', component: FinancialProjections },
+
+      // Configurations Module Routes
+      { path: 'configurations/categories-and-classifications', component: CategoriesAndClassifications },
     ],
   },
 
