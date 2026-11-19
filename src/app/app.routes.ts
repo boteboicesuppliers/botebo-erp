@@ -27,6 +27,7 @@ import { ShiftSchedule } from './components/main-view-components/staff-module/sh
 import { AttendanceAndHours } from './components/main-view-components/staff-module/attendance-and-hours/attendance-and-hours';
 
 // Accounting Module
+import { AccountingPrimary } from './components/main-view-components/accounting-module/accounting-primary/accounting-primary';
 import { Bookkeeping } from './components/main-view-components/accounting-module/bookkeeping/bookkeeping';
 import { FinancialStatements } from './components/main-view-components/accounting-module/financial-statements/financial-statements';
 import { FinancialProjections } from './components/main-view-components/accounting-module/financial-projections/financial-projections';
@@ -75,6 +76,7 @@ export const routes: Routes = [
       { path: 'staff/attendance', component: AttendanceAndHours },
 
       // Accounting Module Routes
+      { path: 'accounting', component: AccountingPrimary },
       { path: 'accounting/bookkeeping', component: Bookkeeping },
       { path: 'accounting/financial-statements', component: FinancialStatements },
       { path: 'accounting/financial-projections', component: FinancialProjections },

@@ -1,0 +1,36 @@
+<section class="w-full space-y-5 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Accounting Primary</h2>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Accounting module group overview and sub-views for bookkeeping, financial statements, and projections.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    @for (item of groupLinks(); track item.code) {
+      <article class="flex flex-col justify-between border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white p-4">
+        <div>
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">{{ item.code }}</span>
+            <span class="rounded-[2px] bg-[#dde9f7] px-2 py-0.5 text-xs font-medium text-[#1b5a9a]">
+              {{ item.badge }}
+            </span>
+          </div>
+
+          <h3 class="mt-2 text-base font-bold text-[#17304f]">{{ item.title }}</h3>
+          <p class="mt-1 text-xs leading-relaxed text-[#4b5563]">{{ item.description }}</p>
+        </div>
+
+        <div class="mt-4 flex items-center justify-end border-t border-[#cfd7e1] pt-3">
+          <a
+            [routerLink]="item.route"
+            class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-3.5 text-xs font-medium text-white hover:bg-[#164b82]">
+            Open {{ item.title }}
+          </a>
+        </div>
+      </article>
+    }
+  </div>
+</section>
