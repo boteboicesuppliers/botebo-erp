@@ -1,132 +1,270 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-[1px]">
-  <div class="w-full max-w-4xl border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
 
-    <!-- MODAL HEADER -->
-    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
-      <div>
-        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">
-          Attendance Adherence · {{ entry().staffName }} ({{ entry().staffId }})
-        </h2>
-        <p class="mt-0.5 text-xs text-[#4b5563]">
-          Location: {{ entry().location }} · Scheduled Window: {{ entry().scheduledWindow }}
-        </p>
-      </div>
-      <button
-        type="button"
-        (click)="close.emit()"
-        aria-label="Close modal"
-        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
-        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6 6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-
-    <div class="space-y-5 px-5 py-5">
-
-      <!-- ADHERENCE SUMMARY STRIP -->
-      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
-          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Adherence Rate</div>
-          <div class="mt-1 text-lg font-bold text-[#17304f]">{{ adherenceSummary().rate }}%</div>
-        </div>
-        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
-          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Regular Hours</div>
-          <div class="mt-1 text-lg font-bold text-[#17304f]">{{ adherenceSummary().totalReg.toFixed(2) }} hrs</div>
-        </div>
-        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
-          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Overtime Hours</div>
-          <div class="mt-1 text-lg font-bold text-[#1b5a9a]">{{ adherenceSummary().totalOt.toFixed(2) }} hrs</div>
-        </div>
-        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
-          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Late / Absent</div>
-          <div class="mt-1 text-lg font-bold text-[#17304f]">{{ adherenceSummary().lateOrAbsent }}</div>
-        </div>
-      </div>
-
-      <!-- WEEKLY ADHERENCE CALENDAR GRID -->
-      <div>
-        <div class="mb-2 flex items-center justify-between">
-          <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Weekly Attendance Calendar (16 Nov - 22 Nov 2026)</h3>
-          <span class="text-xs text-[#4b5563]">Click a day to inspect clock-in/out details</span>
-        </div>
-
-        <div class="grid grid-cols-2 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] sm:grid-cols-4 md:grid-cols-7">
-          @for (day of calendarDays(); track day.date) {
-            <button
-              type="button"
-              (click)="selectedDayDate.set(day.date)"
-              class="flex min-h-[126px] flex-col justify-between border-r border-b border-[#cfd7e1] p-2.5 text-left transition-colors last:border-r-0 md:border-b-0"
-              [class]="selectedDayDate() === day.date
-                ? 'bg-[#dde9f7] shadow-[inset_0_0_0_2px_#1b5a9a]'
-                : 'bg-white hover:bg-[#f1f5f9]'">
-              <div>
-                <div class="flex items-center justify-between gap-1">
-                  <span class="text-xs font-medium text-[#17304f]">{{ day.dayLabel }}</span>
-                  <span class="text-[11px] text-[#4b5563]">{{ day.dayNum }}</span>
-                </div>
-                <span
-                  class="mt-1.5 inline-flex items-center rounded-[2px] px-2 py-0.5 text-[10px] font-medium"
-                  [class]="getCellStatusClass(day.status)">
-                  {{ day.status }}
-                </span>
-              </div>
-
-              <div class="mt-2 border-t border-[#e2e8f0] pt-1.5 text-[11px] text-[#374151]">
-                <div>In: <span class="font-medium text-[#17304f]">{{ day.clockIn }}</span></div>
-                <div>Out: <span class="font-medium text-[#17304f]">{{ day.clockOut }}</span></div>
-              </div>
-            </button>
-          }
-        </div>
-      </div>
-
-      <!-- SELECTED DAY ADHERENCE BREAKDOWN -->
-      <div class="border border-[#c5ced9] bg-[#f8fafc] p-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7e1] pb-2.5">
-          <div>
-            <span class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Selected Day Breakdown</span>
-            <h4 class="text-sm font-bold text-[#17304f]">{{ selectedDay().dayLabel }}, {{ selectedDay().dayNum }} ({{ selectedDay().date }})</h4>
-          </div>
-          <span
-            class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium"
-            [class]="getCellStatusClass(selectedDay().status)">
-            {{ selectedDay().status }}
-          </span>
-        </div>
-
-        <div class="mt-3 grid grid-cols-1 gap-3 text-xs sm:grid-cols-3">
-          <div>
-            <span class="text-[#4b5563]">Clock In / Clock Out:</span>
-            <div class="mt-0.5 font-medium text-[#17304f]">{{ selectedDay().clockIn }} - {{ selectedDay().clockOut }}</div>
-          </div>
-          <div>
-            <span class="text-[#4b5563]">Hours Worked:</span>
-            <div class="mt-0.5 font-medium text-[#17304f]">
-              {{ selectedDay().regularHours.toFixed(2) }} reg + {{ selectedDay().overtimeHours.toFixed(2) }} OT
-            </div>
-          </div>
-          <div>
-            <span class="text-[#4b5563]">Site Location:</span>
-            <div class="mt-0.5 font-medium text-[#1f2933]">{{ selectedDay().location }}</div>
-          </div>
-          <div class="sm:col-span-3">
-            <span class="text-[#4b5563]">Notes:</span>
-            <span class="ml-1 font-medium text-[#1f2933]">{{ selectedDay().notes }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="flex items-center justify-end gap-2.5 border-t border-[#c5ced9] pt-3.5">
+    <!-- TOP BAR: BREADCRUMB + GRANULARITY SWITCHER + WINDOW CONTROLS -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#c5ced9] bg-[#e1e6ed] px-5 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+      <div class="flex items-center gap-3">
         <button
           type="button"
-          (click)="close.emit()"
-          class="inline-flex h-8 min-w-[6rem] items-center justify-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] transition-colors hover:bg-[#164b82]">
-          Close Calendar
+          (click)="stepPeriod(-1)"
+          title="Previous period"
+          class="flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-[#17304f] transition-colors hover:bg-[#dde9f7]">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
         </button>
+        <span class="text-xs font-medium text-[#17304f]">{{ headerBreadcrumb() }}</span>
+        <span class="hidden text-xs text-[#4b5563] sm:inline">· {{ entry().staffName }} ({{ entry().location }})</span>
       </div>
 
+      <div class="flex items-center gap-3">
+        <!-- MONTH / DAY / WEEK / YEAR SWITCHER -->
+        <div class="inline-flex border border-[#b9c7d6] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)]">
+          <button
+            type="button"
+            (click)="granularity.set('Month')"
+            class="inline-flex h-7 items-center px-3 text-xs transition-colors"
+            [class]="granularity() === 'Month'
+              ? 'bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+              : 'bg-white text-[#1f2933] hover:bg-[#e1e6ed]'">
+            Month
+          </button>
+          <button
+            type="button"
+            (click)="granularity.set('Day')"
+            class="inline-flex h-7 items-center border-l border-[#b9c7d6] px-3 text-xs transition-colors"
+            [class]="granularity() === 'Day'
+              ? 'bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+              : 'bg-white text-[#1f2933] hover:bg-[#e1e6ed]'">
+            Day
+          </button>
+          <button
+            type="button"
+            (click)="granularity.set('Week')"
+            class="inline-flex h-7 items-center border-l border-[#b9c7d6] px-3 text-xs transition-colors"
+            [class]="granularity() === 'Week'
+              ? 'bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+              : 'bg-white text-[#1f2933] hover:bg-[#e1e6ed]'">
+            Week
+          </button>
+          <button
+            type="button"
+            (click)="granularity.set('Year')"
+            class="inline-flex h-7 items-center border-l border-[#b9c7d6] px-3 text-xs transition-colors"
+            [class]="granularity() === 'Year'
+              ? 'bg-[#dde9f7] font-medium text-[#1b5a9a] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+              : 'bg-white text-[#1f2933] hover:bg-[#e1e6ed]'">
+            Year
+          </button>
+        </div>
+
+        <!-- PREV / NEXT / CLOSE CONTROLS -->
+        <div class="flex items-center gap-1 border-l border-[#a9b7c8] pl-2.5 text-xs text-[#374151]">
+          <button
+            type="button"
+            (click)="stepPeriod(-1)"
+            title="Previous"
+            class="flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-[#17304f] hover:bg-[#dde9f7]">
+            ‹
+          </button>
+          <button
+            type="button"
+            (click)="stepPeriod(1)"
+            title="Next"
+            class="flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-[#17304f] hover:bg-[#dde9f7]">
+            ›
+          </button>
+          <button
+            type="button"
+            (click)="close.emit()"
+            aria-label="Close calendar"
+            class="ml-1 flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-[#17304f] hover:bg-[#e1e6ed]">
+            ×
+          </button>
+        </div>
+      </div>
     </div>
+
+    <!-- SPLIT PANE BODY: LEFT SELECTED DAY PANEL + RIGHT CALENDAR GRID -->
+    <div class="grid min-h-[460px] flex-1 grid-cols-1 overflow-y-auto md:grid-cols-12">
+
+      <!-- LEFT PANE: SELECTED DAY HEADER & AGENDA -->
+      <aside class="flex flex-col border-b border-[#c5ced9] bg-[#f8fafc] p-6 md:col-span-4 md:border-r md:border-b-0">
+        <div class="mb-6 flex items-center gap-2 text-[#17304f]">
+          <button
+            type="button"
+            (click)="stepPeriod(-1)"
+            title="Previous day"
+            class="flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-sm leading-none hover:bg-[#dde9f7] hover:text-[#1b5a9a]">+</button>
+          <button
+            type="button"
+            (click)="granularity.set('Day')"
+            title="Day view"
+            class="flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-xs leading-none hover:bg-[#dde9f7] hover:text-[#1b5a9a]">⏰</button>
+          <button
+            type="button"
+            (click)="stepPeriod(-1)"
+            title="Earlier"
+            class="flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-xs leading-none hover:bg-[#dde9f7] hover:text-[#1b5a9a]">↑</button>
+          <button
+            type="button"
+            (click)="stepPeriod(1)"
+            title="Later"
+            class="flex h-7 w-7 items-center justify-center border border-[#b9c7d6] bg-white text-xs leading-none hover:bg-[#dde9f7] hover:text-[#1b5a9a]">↓</button>
+        </div>
+
+        <div class="mb-7 border-b border-[#cfd7e1] pb-5">
+          <div class="text-[28px] leading-[1.15] font-light tracking-tight text-[#17304f]">
+            {{ selectedDayCell().weekdayFull }}
+          </div>
+          <div class="text-[28px] leading-[1.15] font-bold tracking-tight text-[#1b5a9a]">
+            {{ selectedDayCell().monthFull }} {{ selectedDayCell().dayOfMonth }}
+          </div>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          @for (item of selectedDayAgenda(); track item.time + item.title) {
+            <div class="grid grid-cols-12 items-start gap-2">
+              <span class="col-span-3 font-medium text-[#1b5a9a] tabular-nums">{{ item.time }}</span>
+              <div class="col-span-9">
+                <div class="font-medium text-[#17304f]">{{ item.title }}</div>
+                <div class="mt-0.5 text-[11px] text-[#4b5563]">{{ item.detail }}</div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="mt-auto border-t border-[#c5ced9] pt-4 text-[11px] text-[#4b5563]">
+          <div>Staff: <span class="font-medium text-[#17304f]">{{ entry().staffName }}</span></div>
+          <div class="mt-0.5">Location: <span class="font-medium text-[#1f2933]">{{ entry().location }}</span></div>
+        </div>
+      </aside>
+
+      <!-- RIGHT PANE: MONTH / DAY / WEEK / YEAR CALENDAR -->
+      <div class="border-t-[3px] border-t-[#b8cbe0] bg-white p-6 md:col-span-8 md:border-t-0">
+
+        <!-- MONTH VIEW -->
+        @if (granularity() === 'Month') {
+          <div class="grid grid-cols-7 border-b border-[#bcc7d4] bg-[#e1e6ed] text-center text-xs text-[#374151]">
+            @for (wd of weekdayHeaders; track wd) {
+              <div class="border-r border-[#a9b7c8] py-2 font-normal last:border-r-0">{{ wd }}</div>
+            }
+          </div>
+
+          <div class="grid grid-cols-7 divide-x divide-y divide-[#cfd7e1] border-x border-b border-[#cfd7e1] text-center">
+            @for (cell of monthGridCells(); track cell.date) {
+              <button
+                type="button"
+                (click)="selectDay(cell.date)"
+                class="group flex min-h-[78px] flex-col items-center justify-center py-1.5 transition-colors focus:outline-none"
+                [class]="cell.date === activeDate()
+                  ? 'bg-[#dde9f7] shadow-[inset_0_0_0_2px_#1b5a9a]'
+                  : (cell.inCurrentMonth ? 'bg-white hover:bg-[#e6eaf0]' : 'bg-[#f8fafc] hover:bg-[#eef2f6]')">
+                <span
+                  class="text-[20px] leading-7 font-light tabular-nums transition-colors"
+                  [class]="cell.date === activeDate()
+                    ? 'font-bold text-[#1b5a9a]'
+                    : (cell.inCurrentMonth ? 'text-[#17304f] group-hover:text-[#1b5a9a]' : 'text-[#9ca3af] group-hover:text-[#4b5563]')">
+                  {{ cell.dayOfMonth }}
+                </span>
+                <span
+                  class="mt-0.5 text-[10px] leading-3 tabular-nums"
+                  [class]="cell.date === activeDate()
+                    ? 'font-semibold text-[#1b5a9a]'
+                    : (cell.inCurrentMonth ? 'text-[#4b5563]' : 'text-[#b0b7c0]')">
+                  {{ cell.itemCount }}
+                </span>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- WEEK VIEW -->
+        @if (granularity() === 'Week') {
+          <div class="grid grid-cols-7 gap-2">
+            @for (cell of weekGridCells(); track cell.date) {
+              <button
+                type="button"
+                (click)="selectDay(cell.date)"
+                class="flex min-h-[260px] flex-col items-center justify-between border p-3 text-center transition-colors"
+                [class]="cell.date === activeDate()
+                  ? 'border-[#1b5a9a] bg-[#dde9f7] shadow-[inset_0_1px_2px_rgba(23,48,79,0.18)]'
+                  : 'border-[#c5ced9] bg-white hover:bg-[#e6eaf0]'">
+                <div class="text-xs text-[#4b5563]">{{ cell.dayLabel }}</div>
+                <div
+                  class="text-2xl font-light tabular-nums"
+                  [class]="cell.date === activeDate() ? 'font-bold text-[#1b5a9a]' : 'text-[#17304f]'">
+                  {{ cell.dayOfMonth }}
+                </div>
+                <div class="space-y-1 text-[11px] text-[#374151]">
+                  <div class="font-medium text-[#17304f]">{{ cell.status }}</div>
+                  <div>{{ cell.clockIn }} - {{ cell.clockOut }}</div>
+                  <div class="text-[#4b5563]">{{ (cell.regularHours + cell.overtimeHours).toFixed(1) }}h</div>
+                </div>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- DAY VIEW -->
+        @if (granularity() === 'Day') {
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-[#c5ced9] pb-3">
+              <div>
+                <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Daily Schedule & Adherence</div>
+                <div class="text-lg font-bold text-[#17304f]">{{ selectedDayCell().weekdayFull }}, {{ selectedDayCell().monthFull }} {{ selectedDayCell().dayOfMonth }}</div>
+              </div>
+              <span class="rounded-[2px] bg-[#dde9f7] px-2.5 py-0.5 text-xs font-medium text-[#1b5a9a]">{{ selectedDayCell().status }}</span>
+            </div>
+
+            <div class="divide-y divide-[#cfd7e1] border border-[#c5ced9]">
+              <div class="flex items-center justify-between bg-white px-4 py-3 text-xs">
+                <span class="text-[#4b5563]">Clock In / Out</span>
+                <span class="font-medium text-[#17304f]">{{ selectedDayCell().clockIn }} - {{ selectedDayCell().clockOut }}</span>
+              </div>
+              <div class="flex items-center justify-between bg-[#f8fafc] px-4 py-3 text-xs">
+                <span class="text-[#4b5563]">Regular Hours</span>
+                <span class="font-medium text-[#17304f]">{{ selectedDayCell().regularHours.toFixed(2) }} hrs</span>
+              </div>
+              <div class="flex items-center justify-between bg-white px-4 py-3 text-xs">
+                <span class="text-[#4b5563]">Overtime Hours</span>
+                <span class="font-medium text-[#1b5a9a]">{{ selectedDayCell().overtimeHours.toFixed(2) }} hrs</span>
+              </div>
+              <div class="flex items-center justify-between bg-[#f8fafc] px-4 py-3 text-xs">
+                <span class="text-[#4b5563]">Location</span>
+                <span class="font-medium text-[#1f2933]">{{ selectedDayCell().location }}</span>
+              </div>
+              <div class="flex items-center justify-between bg-white px-4 py-3 text-xs">
+                <span class="text-[#4b5563]">Notes</span>
+                <span class="text-[#374151]">{{ selectedDayCell().notes }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- YEAR VIEW -->
+        @if (granularity() === 'Year') {
+          <div class="grid grid-cols-3 gap-4 sm:grid-cols-4">
+            @for (m of yearMonths(); track m.monthIndex) {
+              <button
+                type="button"
+                (click)="selectMonthFromYear(m.monthIndex)"
+                class="flex flex-col justify-between border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white p-3.5 text-left transition-colors hover:bg-[#dde9f7]/50">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-sm font-bold text-[#17304f]">{{ m.monthShort }}</span>
+                  <span class="rounded-[2px] bg-[#dde9f7] px-2 py-0.5 text-xs font-medium text-[#1b5a9a]">{{ m.adherenceRate }}%</span>
+                </div>
+                <div class="mt-3 text-[11px] text-[#4b5563] tabular-nums">
+                  <div>{{ m.totalDaysCount }} days</div>
+                  <div>{{ (m.regularHours + m.overtimeHours).toFixed(1) }}h logged</div>
+                </div>
+              </button>
+            }
+          </div>
+        }
+
+      </div>
+    </div>
+
   </div>
 </div>
