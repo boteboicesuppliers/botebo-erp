@@ -157,7 +157,7 @@ export class NavBar {
       children: [
         { name: 'Bookkeeping', route: '/accounting/bookkeeping' },
         { name: 'Financial statements', route: '/accounting/financial-statements' },
-        { name: 'Financial projects', route: '/accounting/financial-projects' },
+        { name: 'Financial projections', route: '/accounting/financial-projections' },
       ],
     },
     {
