@@ -26,6 +26,11 @@ import { StaffPrimary } from './components/main-view-components/staff-module/sta
 import { ShiftSchedule } from './components/main-view-components/staff-module/shift-schedule/shift-schedule';
 import { AttendanceAndHours } from './components/main-view-components/staff-module/attendance-and-hours/attendance-and-hours';
 
+// Accounting Module
+import { Bookkeeping } from './components/main-view-components/accounting-module/bookkeeping/bookkeeping';
+import { FinancialStatements } from './components/main-view-components/accounting-module/financial-statements/financial-statements';
+import { FinancialProjections } from './components/main-view-components/accounting-module/financial-projections/financial-projections';
+
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
 
@@ -68,6 +73,11 @@ export const routes: Routes = [
       { path: 'staff', component: StaffPrimary },
       { path: 'staff/shift-schedule', component: ShiftSchedule },
       { path: 'staff/attendance', component: AttendanceAndHours },
+
+      // Accounting Module Routes
+      { path: 'accounting/bookkeeping', component: Bookkeeping },
+      { path: 'accounting/financial-statements', component: FinancialStatements },
+      { path: 'accounting/financial-projections', component: FinancialProjections },
     ],
   },
 
