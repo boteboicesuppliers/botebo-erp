@@ -38,6 +38,21 @@ export class ShiftsListWidget {
   selectedLocation = signal<string>('All');
   selectedStatus = signal<string>('All');
 
+  // Calendar drag state
+  draggedCalendarShiftId = signal<string | null>(null);
+  dragOverDayDate = signal<string | null>(null);
+
+  // Timeline drag state
+  draggingTimelineShiftId = signal<string | null>(null);
+  private timelineDragState: {
+    shiftId: string;
+    trackWidth: number;
+    durationHours: number;
+    previewStart: string;
+    previewEnd: string;
+  } | null = null;
+  timelinePreview = signal<{ shiftId: string; startTime: string; endTime: string } | null>(null);
+
   readonly timelineHours = [
     '06:00',
     '08:00',
@@ -150,6 +165,31 @@ export class ShiftsListWidget {
     return (Number.isFinite(h) ? h : 6) + (Number.isFinite(m) ? m / 60 : 0);
   }
 
+  private hoursToTime(hoursDecimal: number): string {
+    const clamped = Math.max(6, Math.min(22, hoursDecimal));
+    const snappedMinutes = Math.round((clamped * 60) / 30) * 30;
+    const boundedMinutes = Math.max(6 * 60, Math.min(22 * 60, snappedMinutes));
+    const h = Math.floor(boundedMinutes / 60);
+    const m = boundedMinutes % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  getDisplayStartTime(shift: ShiftEntryRecord): string {
+    const preview = this.timelinePreview();
+    if (preview && preview.shiftId === shift.id) {
+      return preview.startTime;
+    }
+    return shift.startTime;
+  }
+
+  getDisplayEndTime(shift: ShiftEntryRecord): string {
+    const preview = this.timelinePreview();
+    if (preview && preview.shiftId === shift.id) {
+      return preview.endTime;
+    }
+    return shift.endTime;
+  }
+
   getTimelineLeftPercent(startTime: string): number {
     const startHour = 6;
     const totalSpan = 16;
@@ -162,6 +202,121 @@ export class ShiftsListWidget {
     const duration = Math.max(1.5, this.timeToHours(endTime) - this.timeToHours(startTime));
     const width = (duration / totalSpan) * 100;
     return Math.max(14, Math.min(100 - this.getTimelineLeftPercent(startTime), width));
+  }
+
+  // --- CALENDAR DRAG & DROP ---
+  onCalendarDragStart(shiftId: string, event: DragEvent): void {
+    this.draggedCalendarShiftId.set(shiftId);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', shiftId);
+    }
+  }
+
+  onCalendarDragOver(dayDate: string, event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    if (this.dragOverDayDate() !== dayDate) {
+      this.dragOverDayDate.set(dayDate);
+    }
+  }
+
+  onCalendarDrop(dayDate: string, event: DragEvent): void {
+    event.preventDefault();
+    const shiftId =
+      this.draggedCalendarShiftId() || event.dataTransfer?.getData('text/plain') || '';
+
+    if (shiftId) {
+      this.shifts.update((list) =>
+        list.map((entry) =>
+          entry.id === shiftId ? { ...entry, shiftDate: dayDate } : entry
+        )
+      );
+    }
+
+    this.draggedCalendarShiftId.set(null);
+    this.dragOverDayDate.set(null);
+  }
+
+  onCalendarDragEnd(): void {
+    this.draggedCalendarShiftId.set(null);
+    this.dragOverDayDate.set(null);
+  }
+
+  // --- TIMELINE HORIZONTAL DRAG ---
+  startTimelineDrag(shift: ShiftEntryRecord, trackEl: HTMLElement, event: PointerEvent): void {
+    if ((event.target as HTMLElement | null)?.closest('button')) {
+      return;
+    }
+
+    event.preventDefault();
+    const rect = trackEl.getBoundingClientRect();
+    const trackWidth = Math.max(1, rect.width);
+    const startH = this.timeToHours(shift.startTime);
+    const endH = this.timeToHours(shift.endTime);
+    const durationHours = Math.max(1, endH - startH);
+    const startX = event.clientX;
+
+    this.draggingTimelineShiftId.set(shift.id);
+    this.timelineDragState = {
+      shiftId: shift.id,
+      trackWidth,
+      durationHours,
+      previewStart: shift.startTime,
+      previewEnd: shift.endTime,
+    };
+    this.timelinePreview.set({
+      shiftId: shift.id,
+      startTime: shift.startTime,
+      endTime: shift.endTime,
+    });
+
+    const onMove = (moveEvent: PointerEvent) => {
+      if (!this.timelineDragState) return;
+      const deltaX = moveEvent.clientX - startX;
+      const deltaHours = (deltaX / this.timelineDragState.trackWidth) * 16;
+
+      let nextStartH = startH + deltaHours;
+      nextStartH = Math.max(6, Math.min(22 - this.timelineDragState.durationHours, nextStartH));
+
+      const nextStartTime = this.hoursToTime(nextStartH);
+      const snappedStartH = this.timeToHours(nextStartTime);
+      const nextEndTime = this.hoursToTime(snappedStartH + this.timelineDragState.durationHours);
+
+      this.timelineDragState.previewStart = nextStartTime;
+      this.timelineDragState.previewEnd = nextEndTime;
+      this.timelinePreview.set({
+        shiftId: shift.id,
+        startTime: nextStartTime,
+        endTime: nextEndTime,
+      });
+    };
+
+    const onUp = () => {
+      const state = this.timelineDragState;
+      this.draggingTimelineShiftId.set(null);
+      this.timelineDragState = null;
+      this.timelinePreview.set(null);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+
+      if (state) {
+        this.shifts.update((list) =>
+          list.map((entry) =>
+            entry.id === state.shiftId
+              ? { ...entry, startTime: state.previewStart, endTime: state.previewEnd }
+              : entry
+          )
+        );
+      }
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
   }
 
   handleCreateShift(data: Omit<ShiftEntryRecord, 'id'>) {

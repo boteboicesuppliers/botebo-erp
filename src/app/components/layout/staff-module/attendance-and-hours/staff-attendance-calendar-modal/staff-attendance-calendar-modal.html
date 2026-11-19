@@ -1,0 +1,132 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-4xl border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+
+    <!-- MODAL HEADER -->
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">
+          Attendance Adherence · {{ entry().staffName }} ({{ entry().staffId }})
+        </h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">
+          Location: {{ entry().location }} · Scheduled Window: {{ entry().scheduledWindow }}
+        </p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] transition-colors hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-5 px-5 py-5">
+
+      <!-- ADHERENCE SUMMARY STRIP -->
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
+          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Adherence Rate</div>
+          <div class="mt-1 text-lg font-bold text-[#17304f]">{{ adherenceSummary().rate }}%</div>
+        </div>
+        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
+          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Regular Hours</div>
+          <div class="mt-1 text-lg font-bold text-[#17304f]">{{ adherenceSummary().totalReg.toFixed(2) }} hrs</div>
+        </div>
+        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
+          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Overtime Hours</div>
+          <div class="mt-1 text-lg font-bold text-[#1b5a9a]">{{ adherenceSummary().totalOt.toFixed(2) }} hrs</div>
+        </div>
+        <div class="border border-[#c5ced9] bg-[#f8fafc] p-3">
+          <div class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Late / Absent</div>
+          <div class="mt-1 text-lg font-bold text-[#17304f]">{{ adherenceSummary().lateOrAbsent }}</div>
+        </div>
+      </div>
+
+      <!-- WEEKLY ADHERENCE CALENDAR GRID -->
+      <div>
+        <div class="mb-2 flex items-center justify-between">
+          <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Weekly Attendance Calendar (16 Nov - 22 Nov 2026)</h3>
+          <span class="text-xs text-[#4b5563]">Click a day to inspect clock-in/out details</span>
+        </div>
+
+        <div class="grid grid-cols-2 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] sm:grid-cols-4 md:grid-cols-7">
+          @for (day of calendarDays(); track day.date) {
+            <button
+              type="button"
+              (click)="selectedDayDate.set(day.date)"
+              class="flex min-h-[126px] flex-col justify-between border-r border-b border-[#cfd7e1] p-2.5 text-left transition-colors last:border-r-0 md:border-b-0"
+              [class]="selectedDayDate() === day.date
+                ? 'bg-[#dde9f7] shadow-[inset_0_0_0_2px_#1b5a9a]'
+                : 'bg-white hover:bg-[#f1f5f9]'">
+              <div>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-xs font-medium text-[#17304f]">{{ day.dayLabel }}</span>
+                  <span class="text-[11px] text-[#4b5563]">{{ day.dayNum }}</span>
+                </div>
+                <span
+                  class="mt-1.5 inline-flex items-center rounded-[2px] px-2 py-0.5 text-[10px] font-medium"
+                  [class]="getCellStatusClass(day.status)">
+                  {{ day.status }}
+                </span>
+              </div>
+
+              <div class="mt-2 border-t border-[#e2e8f0] pt-1.5 text-[11px] text-[#374151]">
+                <div>In: <span class="font-medium text-[#17304f]">{{ day.clockIn }}</span></div>
+                <div>Out: <span class="font-medium text-[#17304f]">{{ day.clockOut }}</span></div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- SELECTED DAY ADHERENCE BREAKDOWN -->
+      <div class="border border-[#c5ced9] bg-[#f8fafc] p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#cfd7e1] pb-2.5">
+          <div>
+            <span class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Selected Day Breakdown</span>
+            <h4 class="text-sm font-bold text-[#17304f]">{{ selectedDay().dayLabel }}, {{ selectedDay().dayNum }} ({{ selectedDay().date }})</h4>
+          </div>
+          <span
+            class="inline-flex items-center rounded-[2px] px-2.5 py-0.5 text-xs font-medium"
+            [class]="getCellStatusClass(selectedDay().status)">
+            {{ selectedDay().status }}
+          </span>
+        </div>
+
+        <div class="mt-3 grid grid-cols-1 gap-3 text-xs sm:grid-cols-3">
+          <div>
+            <span class="text-[#4b5563]">Clock In / Clock Out:</span>
+            <div class="mt-0.5 font-medium text-[#17304f]">{{ selectedDay().clockIn }} - {{ selectedDay().clockOut }}</div>
+          </div>
+          <div>
+            <span class="text-[#4b5563]">Hours Worked:</span>
+            <div class="mt-0.5 font-medium text-[#17304f]">
+              {{ selectedDay().regularHours.toFixed(2) }} reg + {{ selectedDay().overtimeHours.toFixed(2) }} OT
+            </div>
+          </div>
+          <div>
+            <span class="text-[#4b5563]">Site Location:</span>
+            <div class="mt-0.5 font-medium text-[#1f2933]">{{ selectedDay().location }}</div>
+          </div>
+          <div class="sm:col-span-3">
+            <span class="text-[#4b5563]">Notes:</span>
+            <span class="ml-1 font-medium text-[#1f2933]">{{ selectedDay().notes }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="flex items-center justify-end gap-2.5 border-t border-[#c5ced9] pt-3.5">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 min-w-[6rem] items-center justify-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] transition-colors hover:bg-[#164b82]">
+          Close Calendar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

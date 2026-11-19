@@ -2,7 +2,7 @@
   <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
     <div>
       <h3 class="text-[11px] font-semibold tracking-wide text-[#374151] uppercase">Shift Schedule · Calendar & Timeline</h3>
-      <p class="mt-1 text-xs text-[#4b5563]">Staff shift assignments, operating hours, and site locations across weekly calendar and daily timeline views.</p>
+      <p class="mt-1 text-xs text-[#4b5563]">Drag shift cards across calendar days or drag timeline blocks horizontally to reschedule shift windows.</p>
     </div>
 
     <div class="inline-flex border border-[#b9c7d6] bg-white shadow-[0_1px_2px_rgba(23,48,79,0.12)]">
@@ -85,7 +85,11 @@
       <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
         <div class="grid min-w-[980px] grid-cols-7 divide-x divide-[#cfd7e1]">
           @for (day of calendarDays; track day.date) {
-            <div class="flex min-h-[270px] flex-col bg-white">
+            <div
+              (dragover)="onCalendarDragOver(day.date, $event)"
+              (drop)="onCalendarDrop(day.date, $event)"
+              class="flex min-h-[270px] flex-col transition-colors"
+              [class]="dragOverDayDate() === day.date ? 'bg-[#eef5fc]' : 'bg-white'">
               <div class="flex items-center justify-between border-t border-b border-t-[#cdd5df] border-b-[#bcc7d4] bg-[#e1e6ed] px-2.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
                 <span class="text-xs font-medium text-[#17304f]">{{ day.label }}</span>
                 <span class="text-[11px] text-[#374151]">{{ day.dayNum }}</span>
@@ -93,7 +97,12 @@
 
               <div class="flex-1 space-y-2 p-2">
                 @for (shift of shiftsForDay(day.date); track shift.id) {
-                  <div class="border border-[#c5ced9] bg-[#f8fafc] p-2 shadow-[0_1px_2px_rgba(23,48,79,0.08)]">
+                  <div
+                    draggable="true"
+                    (dragstart)="onCalendarDragStart(shift.id, $event)"
+                    (dragend)="onCalendarDragEnd()"
+                    class="cursor-grab border border-[#c5ced9] bg-[#f8fafc] p-2 shadow-[0_1px_2px_rgba(23,48,79,0.08)] transition-colors hover:border-[#8ba0b7] active:cursor-grabbing"
+                    [class.opacity-50]="draggedCalendarShiftId() === shift.id">
                     <div class="flex items-start justify-between gap-1">
                       <span class="text-[11px] font-medium text-[#1b5a9a]">{{ shift.startTime }} - {{ shift.endTime }}</span>
                       <span class="inline-flex items-center rounded-[2px] px-1.5 py-0.5 text-[10px] font-medium" [class]="getStatusBadgeClass(shift.status)">
@@ -110,21 +119,23 @@
                     <div class="mt-2 flex items-center justify-end gap-1">
                       <button
                         type="button"
-                        (click)="editingShift.set(shift)"
+                        (click)="$event.stopPropagation(); editingShift.set(shift)"
                         class="inline-flex h-6 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2 text-[11px] font-medium text-[#17304f] hover:bg-[#e1e6ed]">
                         Edit
                       </button>
                       <button
                         type="button"
-                        (click)="deletingShift.set(shift)"
+                        (click)="$event.stopPropagation(); deletingShift.set(shift)"
                         class="inline-flex h-6 items-center border border-t-[#e5b8b8] border-l-[#e5b8b8] border-b-[#c98a8a] border-r-[#c98a8a] bg-white px-2 text-[11px] font-medium text-red-800 hover:bg-red-50">
                         Delete
                       </button>
                     </div>
                   </div>
                 } @empty {
-                  <div class="flex h-36 items-center justify-center border border-dashed border-[#d5dde6] p-2 text-center text-[11px] text-[#6b7280]">
-                    No shifts scheduled
+                  <div
+                    class="flex h-36 items-center justify-center border border-dashed p-2 text-center text-[11px] transition-colors"
+                    [class]="dragOverDayDate() === day.date ? 'border-[#1b5a9a] bg-[#dde9f7]/50 text-[#1b5a9a]' : 'border-[#d5dde6] text-[#6b7280]'">
+                    {{ dragOverDayDate() === day.date ? 'Drop shift here' : 'No shifts scheduled' }}
                   </div>
                 }
               </div>
@@ -171,13 +182,16 @@
                 </div>
               </div>
 
-              <div class="relative col-span-9 flex items-center px-2 py-3">
+              <div #timelineTrack class="relative col-span-9 flex items-center px-2 py-3">
                 <div
-                  class="flex min-h-[62px] flex-col justify-between border border-[#8ba0b7] bg-[#dde9f7] px-3 py-2 text-xs shadow-[0_1px_2px_rgba(23,48,79,0.14)]"
-                  [style.margin-left.%]="getTimelineLeftPercent(shift.startTime)"
-                  [style.width.%]="getTimelineWidthPercent(shift.startTime, shift.endTime)">
+                  (pointerdown)="startTimelineDrag(shift, timelineTrack, $event)"
+                  class="flex min-h-[62px] cursor-grab flex-col justify-between border border-[#8ba0b7] bg-[#dde9f7] px-3 py-2 text-xs shadow-[0_1px_2px_rgba(23,48,79,0.14)] select-none touch-none active:cursor-grabbing"
+                  [class.ring-2]="draggingTimelineShiftId() === shift.id"
+                  [class.ring-[#1b5a9a]]="draggingTimelineShiftId() === shift.id"
+                  [style.margin-left.%]="getTimelineLeftPercent(getDisplayStartTime(shift))"
+                  [style.width.%]="getTimelineWidthPercent(getDisplayStartTime(shift), getDisplayEndTime(shift))">
                   <div class="flex items-center justify-between gap-2">
-                    <span class="font-medium text-[#17304f]">{{ shift.startTime }} - {{ shift.endTime }}</span>
+                    <span class="font-medium text-[#17304f]">{{ getDisplayStartTime(shift) }} - {{ getDisplayEndTime(shift) }}</span>
                     <span class="inline-flex items-center rounded-[2px] px-2 py-0.5 text-[10px] font-medium" [class]="getStatusBadgeClass(shift.status)">
                       {{ shift.status }}
                     </span>
@@ -186,13 +200,13 @@
                   <div class="mt-1.5 flex items-center justify-end gap-1">
                     <button
                       type="button"
-                      (click)="editingShift.set(shift)"
+                      (click)="$event.stopPropagation(); editingShift.set(shift)"
                       class="inline-flex h-6 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2 text-[11px] font-medium text-[#17304f] hover:bg-[#e1e6ed]">
                       Edit
                     </button>
                     <button
                       type="button"
-                      (click)="deletingShift.set(shift)"
+                      (click)="$event.stopPropagation(); deletingShift.set(shift)"
                       class="inline-flex h-6 items-center border border-t-[#e5b8b8] border-l-[#e5b8b8] border-b-[#c98a8a] border-r-[#c98a8a] bg-white px-2 text-[11px] font-medium text-red-800 hover:bg-red-50">
                       Delete
                     </button>
@@ -210,7 +224,7 @@
 
       <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[#c5ced9] px-5 py-3">
         <span class="text-xs text-[#4b5563]">
-          Showing {{ filteredShifts().length }} shift entries on timeline (06:00 - 22:00 window)
+          Showing {{ filteredShifts().length }} shift entries on timeline (06:00 - 22:00 window, 30-min snap)
         </span>
         <span class="text-xs text-[#374151]">
           Total shifts: {{ filteredShifts().length }}

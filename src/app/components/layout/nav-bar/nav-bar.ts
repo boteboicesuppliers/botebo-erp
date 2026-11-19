@@ -165,7 +165,7 @@ export class NavBar {
       route: '/staff',
       icon: 'staff',
       children: [
-        { name: 'Shift Schedule', route: '/staff/shifts' },
+        { name: 'Shift Schedule', route: '/staff/shift-schedule' },
         { name: 'Attendance & Hours', route: '/staff/attendance' },
       ],
     },

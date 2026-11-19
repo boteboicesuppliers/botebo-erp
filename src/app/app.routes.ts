@@ -24,6 +24,7 @@ import { SupplierPriceLists } from './components/main-view-components/purchases-
 // Staff Module
 import { StaffPrimary } from './components/main-view-components/staff-module/staff-primary/staff-primary';
 import { ShiftSchedule } from './components/main-view-components/staff-module/shift-schedule/shift-schedule';
+import { AttendanceAndHours } from './components/main-view-components/staff-module/attendance-and-hours/attendance-and-hours';
 
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
@@ -66,6 +67,7 @@ export const routes: Routes = [
       // Staff Module Routes
       { path: 'staff', component: StaffPrimary },
       { path: 'staff/shift-schedule', component: ShiftSchedule },
+      { path: 'staff/attendance', component: AttendanceAndHours },
     ],
   },
 
