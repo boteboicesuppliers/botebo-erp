@@ -65,6 +65,16 @@ export class NavBar {
       ],
     },
     {
+      name: 'Configurations',
+      route: '/configurations',
+      icon: 'configurations',
+      children: [
+        { name: 'Product Agnostics', route: '/configurations/product-agnostics' },
+        { name: 'Categories & Classifications', route: '/configurations/categories-and-classifications' },
+        { name: 'Workflows', route: '/configurations/workflows' },
+      ],
+    },
+    {
       name: 'Products & Materials',
       route: '/products',
       icon: 'products',
