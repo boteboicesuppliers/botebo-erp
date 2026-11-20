@@ -1,0 +1,157 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="flex max-h-[90vh] w-full max-w-2xl flex-col border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">New Raw Material / Packaging</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Add a production input, packaging roll, or cold-chain consumable.</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        ×
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitForm()" class="space-y-4 overflow-y-auto px-5 py-5">
+      @if (errorMessage()) {
+        <div class="border border-red-300 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">SKU *</label>
+          <input
+            type="text"
+            [ngModel]="sku()"
+            (ngModelChange)="sku.set($event)"
+            name="sku"
+            placeholder="e.g. PKG-BAG-2KG"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div class="sm:col-span-2">
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Item Name *</label>
+          <input
+            type="text"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            name="name"
+            placeholder="e.g. Food-Grade 2kg Ice Poly Bag Roll"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Material Type</label>
+          <select
+            [ngModel]="materialType()"
+            (ngModelChange)="materialType.set($event)"
+            name="materialType"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#17304f]">
+            <option value="Packaging">Packaging</option>
+            <option value="Raw Material">Raw Material</option>
+            <option value="Consumable">Consumable</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Unit of Measure</label>
+          <input
+            type="text"
+            [ngModel]="unitOfMeasure()"
+            (ngModelChange)="unitOfMeasure.set($event)"
+            name="unitOfMeasure"
+            placeholder="e.g. Rolls, Boxes, Litres"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Unit Cost (R)</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            [ngModel]="unitCost()"
+            (ngModelChange)="unitCost.set($event)"
+            name="unitCost"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Stock on Hand</label>
+          <input
+            type="number"
+            min="0"
+            [ngModel]="stockOnHand()"
+            (ngModelChange)="stockOnHand.set($event)"
+            name="stockOnHand"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Reorder Level</label>
+          <input
+            type="number"
+            min="0"
+            [ngModel]="reorderLevel()"
+            (ngModelChange)="reorderLevel.set($event)"
+            name="reorderLevel"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Lead Time (Days)</label>
+          <input
+            type="number"
+            min="1"
+            [ngModel]="leadTimeDays()"
+            (ngModelChange)="leadTimeDays.set($event)"
+            name="leadTimeDays"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Preferred Supplier</label>
+          <input
+            type="text"
+            [ngModel]="preferredSupplier()"
+            (ngModelChange)="preferredSupplier.set($event)"
+            name="preferredSupplier"
+            placeholder="e.g. Highveld Packaging"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+      </div>
+
+      <label class="inline-flex cursor-pointer items-center gap-2 pt-1 text-xs font-medium text-[#374151]">
+        <input
+          type="checkbox"
+          [ngModel]="active()"
+          (ngModelChange)="active.set($event)"
+          name="active"
+          class="h-4 w-4 border-[#9fb0c3] text-[#1b5a9a]" />
+        <span>Active item for production & purchasing</span>
+      </label>
+
+      <div class="flex items-center justify-end gap-2 border-t border-[#c5ced9] pt-4">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-3.5 text-xs text-[#17304f] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-xs font-medium text-white hover:bg-[#164b82]">
+          Save Item
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
