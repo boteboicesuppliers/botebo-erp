@@ -145,7 +145,7 @@ export class NavBar {
       ],
     },
     {
-      name: 'Delivery & Fleet',
+      name: 'Logistics',
       route: '/logistics',
       icon: 'logistics',
       children: [
@@ -172,13 +172,9 @@ export class NavBar {
       ],
     },
     {
-      name: 'Reports & Settings',
-      route: '/settings',
+      name: 'Reports',
+      route: '/reports',
       icon: 'reports',
-      children: [
-        { name: 'Users & Permissions', route: '/settings/users' },
-        { name: 'Company Settings', route: '/settings/company' },
-      ],
     },
   ];
 
