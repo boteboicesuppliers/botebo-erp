@@ -1,0 +1,86 @@
+<section class="w-full space-y-3 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <div>
+      <h3 class="text-[15px] font-bold text-[#17304f]">Dispatch & Load Queue</h3>
+      <p class="text-xs text-[#4b5563]">
+        Read-only view of trips ready for loading, active dispatches, and delayed drops.
+      </p>
+    </div>
+
+    <span class="text-xs text-[#4b5563]">
+      Showing <strong class="font-bold text-[#17304f]">{{ filteredQueue().length }}</strong> trips
+    </span>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="flex flex-wrap items-center justify-between gap-3 border border-[#c5ced9] bg-white p-3">
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2">
+        <label class="text-xs text-[#374151]">Queue Status</label>
+        <select
+          [value]="statusFilter()"
+          (change)="statusFilter.set($any($event.target).value)"
+          class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+          <option value="All">All</option>
+          <option value="Ready to Load">Ready to Load</option>
+          <option value="Dispatched">Dispatched</option>
+          <option value="Delayed">Delayed</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label class="text-xs text-[#374151]">Search</label>
+        <input
+          type="text"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          placeholder="Trip, order, customer, driver..."
+          class="h-8 w-52 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] placeholder:text-[#6b7280]" />
+      </div>
+    </div>
+  </div>
+
+  <!-- DISPATCH QUEUE TABLE -->
+  <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>Trip</th>
+            <th>Order Ref</th>
+            <th>Customer</th>
+            <th>Load Items</th>
+            <th>Driver</th>
+            <th>ETA</th>
+            <th class="pr-5">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of filteredQueue(); track row.id; let odd = $odd) {
+            <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+              <td class="font-medium text-[#1b5a9a]">{{ row.tripCode }}</td>
+              <td>{{ row.orderRef }}</td>
+              <td class="font-bold text-[#17304f]">{{ row.customer }}</td>
+              <td>{{ row.itemsSummary }}</td>
+              <td>{{ row.driver }}</td>
+              <td class="text-xs text-[#374151]">{{ row.etaSlot }}</td>
+              <td class="pr-5">
+                <span
+                  class="inline-flex items-center rounded-[2px] px-2 py-0.5 text-xs font-medium"
+                  [class]="row.status === 'Delayed' ? 'bg-amber-100 text-amber-800' : 'bg-[#dde9f7] text-[#1b5a9a]'">
+                  {{ row.status }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="h-20 text-center text-[#4b5563]">
+                No trips match your filter.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>

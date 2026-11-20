@@ -21,6 +21,10 @@ import { FinishedGoods } from './components/main-view-components/products-and-ma
 import { RawMaterialsAndPackaging } from './components/main-view-components/products-and-materials-module/raw-materials-and-packaging/raw-materials-and-packaging';
 import { Recipe } from './components/main-view-components/products-and-materials-module/recipe/recipe';
 
+// Logistics Module
+import { LogisticsPrimary } from './components/main-view-components/logistics-module/logistics-primary/logistics-primary';
+import { DeliverySchedulesListWidget } from './components/layout/logistics-module/delivery-schedules-module/delivery-schedules-list-widget/delivery-schedules-list-widget';
+
 // Purchases Module
 import { PurchaseRequests } from './components/main-view-components/purchases-module/purchase-requests/purchase-requests';
 import { PurchasesPrimary } from './components/main-view-components/purchases-module/purchases-primary/purchases-primary';
@@ -82,6 +86,10 @@ export const routes: Routes = [
       { path: 'products/finished-goods', component: FinishedGoods },
       { path: 'products/raw-materials', component: RawMaterialsAndPackaging },
       { path: 'products/bom', component: Recipe },
+
+      // Logistics Module Routes
+      { path: 'logistics', component: LogisticsPrimary },
+      { path: 'logistics/schedule', component: DeliverySchedulesListWidget },
 
       // Purchases Module Routes
       { path: 'purchases', component: PurchasesPrimary },

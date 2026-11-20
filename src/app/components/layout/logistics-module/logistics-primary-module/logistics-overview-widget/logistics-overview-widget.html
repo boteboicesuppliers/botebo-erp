@@ -1,0 +1,40 @@
+<section class="w-full space-y-4 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Logistics Overview</h2>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Daily dispatch snapshot, route zones, and load queue across ice deliveries.
+      </p>
+    </div>
+
+    <a
+      routerLink="/logistics/schedule"
+      class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-3.5 text-xs font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] hover:bg-[#164b82]">
+      Delivery Schedule
+    </a>
+  </div>
+
+  <!-- KPI SUMMARY CARDS -->
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Scheduled Drops</span>
+      <strong class="mt-1 block text-lg font-bold text-[#17304f]">{{ metrics().scheduledDeliveries }}</strong>
+    </article>
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Active Trips</span>
+      <strong class="mt-1 block text-lg font-bold text-[#1b5a9a]">{{ metrics().activeTrips }}</strong>
+    </article>
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Pending Dispatch</span>
+      <strong class="mt-1 block text-lg font-bold text-amber-800">{{ metrics().pendingDispatch }}</strong>
+    </article>
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Completed Today</span>
+      <strong class="mt-1 block text-lg font-bold text-[#17304f]">{{ metrics().completedToday }} ({{ completionRate() }}%)</strong>
+    </article>
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Bags Dispatched</span>
+      <strong class="mt-1 block text-lg font-bold text-[#1b5a9a]">{{ metrics().totalBagsOut }}</strong>
+    </article>
+  </div>
+</section>
