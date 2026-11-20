@@ -1,0 +1,149 @@
+<section class="w-full space-y-5 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Current Stock Count</h2>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Record physical cycle counts across cold rooms, freezers, and production stores and track variances.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 text-xs">
+      <span class="border border-[#c5ced9] bg-white px-2.5 py-1 text-[#374151]">
+        Total: <strong class="font-bold text-[#17304f]">{{ summary().total }}</strong>
+      </span>
+      <span class="border border-[#c5ced9] bg-white px-2.5 py-1 text-[#1b5a9a]">
+        Matched: <strong class="font-bold">{{ summary().matched }}</strong>
+      </span>
+      <span class="border border-[#c5ced9] bg-white px-2.5 py-1 text-amber-800">
+        Variances: <strong class="font-bold">{{ summary().variance }}</strong>
+      </span>
+      <span class="border border-[#c5ced9] bg-white px-2.5 py-1 text-[#4b5563]">
+        Pending: <strong class="font-bold text-[#17304f]">{{ summary().pending }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <!-- FILTER TOOLBAR -->
+  <article class="border border-[#c5ced9] bg-white p-4">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Zone / Store</label>
+          <select
+            [value]="zoneFilter()"
+            (change)="zoneFilter.set($any($event.target).value)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+            @for (zone of zones(); track zone) {
+              <option [value]="zone">{{ zone === 'All' ? 'All Zones' : zone }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Status</label>
+          <select
+            [value]="statusFilter()"
+            (change)="statusFilter.set($any($event.target).value)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+            <option value="All">All</option>
+            <option value="Pending Count">Pending Count</option>
+            <option value="Variance">Variance</option>
+            <option value="Matched">Matched</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Search</label>
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+            placeholder="SKU, item, zone, counter..."
+            class="h-8 w-56 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] placeholder:text-[#6b7280]" />
+        </div>
+      </div>
+
+      <span class="text-xs text-[#4b5563]">
+        Showing <strong class="font-bold text-[#17304f]">{{ filteredItems().length }}</strong> items
+      </span>
+    </div>
+  </article>
+
+  <!-- STOCK COUNT TABLE -->
+  <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Item Name</th>
+            <th>Zone / Store</th>
+            <th>UOM</th>
+            <th class="text-right">System Qty</th>
+            <th class="text-right">Counted Qty</th>
+            <th class="text-right">Variance</th>
+            <th>Status</th>
+            <th>Counted By</th>
+            <th>Last Counted</th>
+            <th class="pr-5 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredItems(); track item.id; let odd = $odd) {
+            @let variance = getVariance(item);
+            @let status = getStatus(item);
+            <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+              <td class="font-medium text-[#1b5a9a]">{{ item.sku }}</td>
+              <td class="font-bold text-[#17304f]">{{ item.itemName }}</td>
+              <td>{{ item.zone }}</td>
+              <td>{{ item.unitOfMeasure }}</td>
+              <td class="text-right font-medium text-[#17304f]">{{ item.systemQty }}</td>
+              <td class="text-right font-bold text-[#17304f]">
+                {{ item.countedQty !== null ? item.countedQty : '—' }}
+              </td>
+              <td
+                class="text-right font-semibold"
+                [class]="variance === null ? 'text-[#4b5563]' : variance === 0 ? 'text-[#1b5a9a]' : 'text-red-700'">
+                {{ formatVariance(variance) }}
+              </td>
+              <td>
+                <span
+                  class="inline-flex items-center rounded-[2px] px-2 py-0.5 text-xs font-medium"
+                  [class]="status === 'Matched'
+                    ? 'bg-[#dde9f7] text-[#1b5a9a]'
+                    : status === 'Variance'
+                      ? 'bg-amber-100 text-amber-900'
+                      : 'bg-slate-100 text-[#4b5563]'">
+                  {{ status }}
+                </span>
+              </td>
+              <td>{{ item.countedBy }}</td>
+              <td class="text-xs text-[#4b5563]">{{ item.lastCountedAt }}</td>
+              <td class="pr-5 text-right">
+                <button
+                  type="button"
+                  (click)="activeItem.set(item)"
+                  class="inline-flex h-7 items-center border border-t-[#b9c7d6] border-l-[#b9c7d6] border-b-[#8ba0b7] border-r-[#8ba0b7] bg-white px-2.5 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+                  Update Count
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="11" class="h-24 text-center text-[#4b5563]">
+                No stock count items match your filter.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  @if (activeItem(); as item) {
+    <app-update-stock-count-form
+      [item]="item"
+      (close)="activeItem.set(null)"
+      (save)="applyStockCount($event)" />
+  }
+</section>

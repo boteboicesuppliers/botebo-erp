@@ -91,6 +91,7 @@ export class NavBar {
       children: [
         { name: 'Production Schedule', route: '/production/schedule' },
         { name: 'Production Orders / Batches', route: '/production/orders' },
+        { name: 'Stock Counts', route: '/production/stock-counts' },
         { name: 'Machine & Line Status', route: '/production/machines' },
       ],
     },
@@ -102,16 +103,6 @@ export class NavBar {
         { name: 'Raw Material Checks', route: '/quality/raw-materials' },
         { name: 'Finished Product Checks', route: '/quality/finished-goods' },
         { name: 'Damaged / Rejected Stock', route: '/quality/rejected' },
-      ],
-    },
-    {
-      name: 'Inventory',
-      route: '/inventory',
-      icon: 'inventory',
-      children: [
-        { name: 'Stock Movements & History', route: '/inventory/movements' },
-        { name: 'Stock Adjustments', route: '/inventory/adjustments' },
-        { name: 'Stock Counts', route: '/inventory/counts' },
       ],
     },
     {
@@ -372,7 +363,7 @@ export class NavBar {
 
     return [
       { name: 'Production Orders / Batches', route: '/production/orders' },
-      { name: 'Stock Movements & History', route: '/inventory/movements' },
+      { name: 'Stock Counts', route: '/production/stock-counts' },
       { name: 'Received Stock (GRN)', route: '/purchases/grn' },
     ];
   }

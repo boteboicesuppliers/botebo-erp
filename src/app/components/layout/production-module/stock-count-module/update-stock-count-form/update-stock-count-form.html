@@ -1,0 +1,94 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="flex max-h-[90vh] w-full max-w-lg flex-col border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Update Stock Count</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">{{ item().sku }} — {{ item().itemName }} ({{ item().zone }})</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        ×
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitForm()" class="space-y-4 overflow-y-auto px-5 py-5">
+      @if (errorMessage()) {
+        <div class="border border-red-300 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="grid grid-cols-3 gap-3 border border-[#cfd7e1] bg-[#f8fafc] p-3 text-xs">
+        <div>
+          <span class="block text-[#4b5563]">System Qty</span>
+          <strong class="mt-0.5 block text-sm font-bold text-[#17304f]">{{ item().systemQty }} {{ item().unitOfMeasure }}</strong>
+        </div>
+        <div>
+          <span class="block text-[#4b5563]">Counted Qty</span>
+          <strong class="mt-0.5 block text-sm font-bold text-[#1b5a9a]">{{ countedQty() }}</strong>
+        </div>
+        <div>
+          <span class="block text-[#4b5563]">Variance</span>
+          <strong
+            class="mt-0.5 block text-sm font-bold"
+            [class]="variance() === 0 ? 'text-[#1b5a9a]' : 'text-red-700'">
+            {{ variance() > 0 ? '+' + variance() : variance() }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Physical Counted Qty *</label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            [ngModel]="countedQty()"
+            (ngModelChange)="countedQty.set($event)"
+            name="countedQty"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Counted By *</label>
+          <input
+            type="text"
+            [ngModel]="countedBy()"
+            (ngModelChange)="countedBy.set($event)"
+            name="countedBy"
+            placeholder="e.g. T. Mokoena"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-medium text-[#374151]">Variance / Count Notes</label>
+        <textarea
+          rows="2"
+          [ngModel]="notes()"
+          (ngModelChange)="notes.set($event)"
+          name="notes"
+          placeholder="Optional note for any discrepancy or cold-room observation..."
+          class="w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white p-2.5 text-[13px] text-[#1f2933]"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 border-t border-[#c5ced9] pt-4">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-3.5 text-xs text-[#17304f] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-xs font-medium text-white hover:bg-[#164b82]">
+          Save Count
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
