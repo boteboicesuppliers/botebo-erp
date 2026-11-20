@@ -1,0 +1,145 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="flex max-h-[90vh] w-full max-w-2xl flex-col border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">New Recipe / Bill of Material</h2>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Define batch yield, input materials/packaging, and estimated batch cost.</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-8 w-8 items-center justify-center text-[#4b5563] hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        ×
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitForm()" class="space-y-4 overflow-y-auto px-5 py-5">
+      @if (errorMessage()) {
+        <div class="border border-red-300 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">BOM Code *</label>
+          <input
+            type="text"
+            [ngModel]="bomCode()"
+            (ngModelChange)="bomCode.set($event)"
+            name="bomCode"
+            placeholder="e.g. BOM-ICE-2KG"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Finished Good SKU *</label>
+          <input
+            type="text"
+            [ngModel]="finishedGoodSku()"
+            (ngModelChange)="finishedGoodSku.set($event)"
+            name="finishedGoodSku"
+            placeholder="e.g. ICE-2KG-BAG"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Version</label>
+          <input
+            type="text"
+            [ngModel]="version()"
+            (ngModelChange)="version.set($event)"
+            name="version"
+            placeholder="e.g. v1.0"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Finished Good Name *</label>
+          <input
+            type="text"
+            [ngModel]="finishedGoodName()"
+            (ngModelChange)="finishedGoodName.set($event)"
+            name="finishedGoodName"
+            placeholder="e.g. 2kg Party Cube Ice Bag"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Key Materials & Packaging</label>
+          <input
+            type="text"
+            [ngModel]="primaryComponent()"
+            (ngModelChange)="primaryComponent.set($event)"
+            name="primaryComponent"
+            placeholder="e.g. PKG-BAG-2KG + Purified Water"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Batch Yield Qty</label>
+          <input
+            type="number"
+            min="1"
+            [ngModel]="batchYieldQty()"
+            (ngModelChange)="batchYieldQty.set($event)"
+            name="batchYieldQty"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Yield Unit</label>
+          <input
+            type="text"
+            [ngModel]="yieldUnit()"
+            (ngModelChange)="yieldUnit.set($event)"
+            name="yieldUnit"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Est. Batch Cost (R)</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            [ngModel]="estimatedBatchCost()"
+            (ngModelChange)="estimatedBatchCost.set($event)"
+            name="estimatedBatchCost"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933]" />
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Status</label>
+          <select
+            [ngModel]="status()"
+            (ngModelChange)="status.set($event)"
+            name="status"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#17304f]">
+            <option value="Active">Active</option>
+            <option value="Draft">Draft</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 border-t border-[#c5ced9] pt-4">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-3.5 text-xs text-[#17304f] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-xs font-medium text-white hover:bg-[#164b82]">
+          Save Recipe / BOM
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

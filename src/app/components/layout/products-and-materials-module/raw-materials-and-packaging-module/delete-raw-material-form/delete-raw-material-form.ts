@@ -1,5 +1,4 @@
-import { Component, input, output } from '@angular/core';
-import { RawMaterialRecord } from '../raw-materials-and-packaging-list-widget/raw-materials-and-packaging-list-widget';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-delete-raw-material-form',
@@ -8,7 +7,5 @@ import { RawMaterialRecord } from '../raw-materials-and-packaging-list-widget/ra
   styleUrl: './delete-raw-material-form.css',
 })
 export class DeleteRawMaterialForm {
-  material = input.required<RawMaterialRecord>();
-  close = output<void>();
-  confirmDelete = output<string>();
+
 }

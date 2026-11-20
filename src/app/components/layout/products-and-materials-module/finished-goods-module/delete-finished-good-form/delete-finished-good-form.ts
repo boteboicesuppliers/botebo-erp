@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import { FinishedGoodRecord } from '../finished-goods-list-widget/finished-goods-list-widget';
 
 @Component({
   selector: 'app-delete-finished-good-form',
@@ -7,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './delete-finished-good-form.css',
 })
 export class DeleteFinishedGoodForm {
-
+  product = input.required<FinishedGoodRecord>();
+  close = output<void>();
+  confirmDelete = output<string>();
 }
