@@ -15,6 +15,12 @@ import { MachineAndLineStatus } from './components/layout/production-module/mach
 import { StockCount } from './components/main-view-components/production-module/stock-count/stock-count';
 import { Locations } from './components/main-view-components/production-module/locations/locations';
 
+// Products & Materials Module
+import { ProductsAndMaterialsPrimary } from './components/main-view-components/products-and-materials-module/products-and-materials-primary/products-and-materials-primary';
+import { FinishedGoods } from './components/main-view-components/products-and-materials-module/finished-goods/finished-goods';
+import { RawMaterialsAndPackaging } from './components/main-view-components/products-and-materials-module/raw-materials-and-packaging/raw-materials-and-packaging';
+import { Recipe } from './components/main-view-components/products-and-materials-module/recipe/recipe';
+
 // Purchases Module
 import { PurchaseRequests } from './components/main-view-components/purchases-module/purchase-requests/purchase-requests';
 import { PurchasesPrimary } from './components/main-view-components/purchases-module/purchases-primary/purchases-primary';
@@ -70,6 +76,12 @@ export const routes: Routes = [
       { path: 'production/locations', component: Locations },
       { path: 'production/stock-counts', component: StockCount },
       { path: 'production/machines', component: MachineAndLineStatus },
+
+      // Products & Materials Module Routes
+      { path: 'products', component: ProductsAndMaterialsPrimary },
+      { path: 'products/finished-goods', component: FinishedGoods },
+      { path: 'products/raw-materials', component: RawMaterialsAndPackaging },
+      { path: 'products/bom', component: Recipe },
 
       // Purchases Module Routes
       { path: 'purchases', component: PurchasesPrimary },

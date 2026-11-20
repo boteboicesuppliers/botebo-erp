@@ -18,7 +18,7 @@ export interface ProductMaterialOverviewRecord {
 }
 
 @Component({
-  selector: 'app-products-and-materials-primary',
+  selector: 'app-products-and-materials-primary-view',
   imports: [RouterLink],
   templateUrl: './products-and-materials-primary.html',
   styleUrl: './products-and-materials-primary.css',
