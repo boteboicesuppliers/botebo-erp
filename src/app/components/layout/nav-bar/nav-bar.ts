@@ -91,7 +91,8 @@ export class NavBar {
       children: [
         { name: 'Production Schedule', route: '/production/schedule' },
         { name: 'Production Orders / Batches', route: '/production/orders' },
-        { name: 'Stock Counts', route: '/production/stock-counts' },
+        { name: 'Locations', route: '/production/locations' },
+        { name: 'Stock Count', route: '/production/stock-counts' },
         { name: 'Machine & Line Status', route: '/production/machines' },
       ],
     },
@@ -363,7 +364,7 @@ export class NavBar {
 
     return [
       { name: 'Production Orders / Batches', route: '/production/orders' },
-      { name: 'Stock Counts', route: '/production/stock-counts' },
+      { name: 'Stock Count', route: '/production/stock-counts' },
       { name: 'Received Stock (GRN)', route: '/purchases/grn' },
     ];
   }

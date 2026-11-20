@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Shell } from './shell';
+import { Locations } from './locations';
 
-describe('Shell', () => {
-  let component: Shell;
-  let fixture: ComponentFixture<Shell>;
+describe('Locations', () => {
+  let component: Locations;
+  let fixture: ComponentFixture<Locations>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Shell]
+      imports: [Locations]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Shell);
+    fixture = TestBed.createComponent(Locations);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

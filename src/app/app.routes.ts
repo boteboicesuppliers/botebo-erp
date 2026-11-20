@@ -13,6 +13,7 @@ import { ProductionSchedule } from './components/layout/production-module/produc
 import { ProductionOrdersAndBatches } from './components/layout/production-module/production-orders-and-batches/production-orders-and-batches';
 import { MachineAndLineStatus } from './components/layout/production-module/machine-and-line-status/machine-and-line-status';
 import { StockCount } from './components/main-view-components/production-module/stock-count/stock-count';
+import { Locations } from './components/main-view-components/production-module/locations/locations';
 
 // Purchases Module
 import { PurchaseRequests } from './components/main-view-components/purchases-module/purchase-requests/purchase-requests';
@@ -66,6 +67,7 @@ export const routes: Routes = [
       { path: 'production', component: ProductionModule },
       { path: 'production/schedule', component: ProductionSchedule },
       { path: 'production/orders', component: ProductionOrdersAndBatches },
+      { path: 'production/locations', component: Locations },
       { path: 'production/stock-counts', component: StockCount },
       { path: 'production/machines', component: MachineAndLineStatus },
 
