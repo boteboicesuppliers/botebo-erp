@@ -1,0 +1,81 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#0f172a]/50 p-4 text-[13px] text-[#1f2933]">
+  <article class="w-full max-w-md border border-t-[3px] border-[#c5ced9] border-t-[#1b5a9a] bg-white shadow-lg">
+    <div class="flex items-center justify-between border-b border-[#c5ced9] bg-[#e1e6ed] px-5 py-3">
+      <div>
+        <h3 class="text-[14px] font-semibold text-[#17304f]">Update Credit Limit</h3>
+        <p class="text-xs text-[#4b5563]">{{ customerCode() }} · {{ customerName() }}</p>
+      </div>
+      <button
+        type="button"
+        (click)="cancelled.emit()"
+        class="h-7 px-2 text-xs font-medium text-[#374151] hover:bg-[#cfd7e1]">
+        ✕
+      </button>
+    </div>
+
+    <form (submit)="onSubmit($event)" class="space-y-4 p-5">
+      <div class="grid grid-cols-2 gap-3 border border-[#cfd7e1] bg-[#f8fafc] p-3 text-xs">
+        <div>
+          <span class="block text-[#4b5563]">Current Limit</span>
+          <strong class="mt-0.5 block font-semibold text-[#17304f]">
+            R {{ currentCreditLimit().toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          </strong>
+        </div>
+        <div>
+          <span class="block text-[#4b5563]">Current Balance</span>
+          <strong class="mt-0.5 block font-semibold text-[#1b5a9a]">
+            R {{ currentBalance().toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          </strong>
+        </div>
+      </div>
+
+      <div>
+        <label for="newCreditLimit" class="mb-1 block text-xs font-medium text-[#17304f]">
+          New Credit Limit (ZAR)
+        </label>
+        <input
+          id="newCreditLimit"
+          type="number"
+          step="100"
+          min="0"
+          [value]="limitInput()"
+          (input)="limitInput.set($any($event.target).value)"
+          class="h-9 w-full border border-[#b9c7d6] bg-white px-3 text-xs text-[#1f2933] focus:border-[#1b5a9a] focus:outline-none"
+          required />
+      </div>
+
+      <div>
+        <label for="limitReason" class="mb-1 block text-xs font-medium text-[#17304f]">
+          Adjustment Note / Reason
+        </label>
+        <input
+          id="limitReason"
+          type="text"
+          [value]="reasonInput()"
+          (input)="reasonInput.set($any($event.target).value)"
+          placeholder="e.g., Seasonal volume increase"
+          class="h-9 w-full border border-[#b9c7d6] bg-white px-3 text-xs text-[#1f2933] placeholder:text-[#6b7280] focus:border-[#1b5a9a] focus:outline-none" />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-800">
+          {{ errorMessage() }}
+        </p>
+      }
+
+      <div class="flex items-center justify-end gap-2 border-t border-[#cfd7e1] pt-4">
+        <button
+          type="button"
+          (click)="cancelled.emit()"
+          class="h-8 border border-[#b9c7d6] bg-white px-3.5 text-xs font-medium text-[#374151] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="h-8 border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-xs font-medium text-white hover:bg-[#164b82]">
+          Save Credit Limit
+        </button>
+      </div>
+    </form>
+  </article>
+</div>
