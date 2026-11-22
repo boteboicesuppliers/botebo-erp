@@ -52,6 +52,9 @@ import { FinancialProjections } from './components/main-view-components/accounti
 
 // Reports Module
 import { ReportsPrimary } from './components/main-view-components/reports-module/reports-primary/reports-primary';
+import { ProductionReport } from './components/main-view-components/reports-module/production-report/production-report';
+import { PurchasingStockReport } from './components/main-view-components/reports-module/purchasing-stock-report/purchasing-stock-report';
+import { SalesReport } from './components/main-view-components/reports-module/sales-report/sales-report';
 
 // Configurations Module
 import { ProductAgnostics } from './components/main-view-components/configurations-module/product-agnostics/product-agnostics';
@@ -125,8 +128,11 @@ export const routes: Routes = [
       { path: 'accounting/financial-statements', component: FinancialStatements },
       { path: 'accounting/financial-projections', component: FinancialProjections },
 
-      // Reports Module Route
+      // Reports Module Routes
       { path: 'reports', component: ReportsPrimary },
+      { path: 'reports/production', component: ProductionReport },
+      { path: 'reports/purchasing-stock', component: PurchasingStockReport },
+      { path: 'reports/sales', component: SalesReport },
 
       // Configurations Module Routes
       { path: 'configurations/product-agnostics', component: ProductAgnostics },

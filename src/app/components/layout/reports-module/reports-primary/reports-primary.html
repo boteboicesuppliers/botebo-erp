@@ -1,291 +1,272 @@
-<section class="w-full space-y-3 text-[13px] text-[#1f2933]">
-  <!-- REPORT SWITCHER + SEARCH -->
-  <div class="flex flex-wrap items-center justify-between gap-2">
-    <div class="flex flex-wrap items-center gap-1.5">
-      <button
-        type="button"
-        (click)="switchReport('Production')"
-        class="inline-flex h-8 cursor-pointer items-center border px-3 text-xs font-medium"
-        [class]="activeReport() === 'Production'
-          ? 'border-[#9fb0c3] bg-[#e2e8f0] font-semibold text-[#17304f]'
-          : 'border-[#c5ced9] bg-white text-[#374151] hover:bg-[#f1f5f9]'">
-        Production Report
-      </button>
-
-      <button
-        type="button"
-        (click)="switchReport('Purchasing & Stock')"
-        class="inline-flex h-8 cursor-pointer items-center border px-3 text-xs font-medium"
-        [class]="activeReport() === 'Purchasing & Stock'
-          ? 'border-[#9fb0c3] bg-[#e2e8f0] font-semibold text-[#17304f]'
-          : 'border-[#c5ced9] bg-white text-[#374151] hover:bg-[#f1f5f9]'">
-        Purchasing & Stock Report
-      </button>
-
-      <button
-        type="button"
-        (click)="switchReport('Sales')"
-        class="inline-flex h-8 cursor-pointer items-center border px-3 text-xs font-medium"
-        [class]="activeReport() === 'Sales'
-          ? 'border-[#9fb0c3] bg-[#e2e8f0] font-semibold text-[#17304f]'
-          : 'border-[#c5ced9] bg-white text-[#374151] hover:bg-[#f1f5f9]'">
-        Sales Report
-      </button>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <input
-        type="text"
-        [value]="searchQuery()"
-        (input)="searchQuery.set($any($event.target).value); currentPage.set(1)"
-        placeholder="Filter rows..."
-        class="h-8 w-52 border border-[#b9c7d6] bg-white px-2.5 text-xs text-[#1f2933] placeholder:text-[#6b7280]" />
-    </div>
-  </div>
-
-  <!-- ACTION TOOLBAR (MATCHING REFERENCE) -->
-  <div class="relative flex flex-wrap items-center justify-between gap-2 pt-1">
-    <div class="flex items-center gap-2">
-      <button
-        type="button"
-        (click)="toggleSelectMode()"
-        class="inline-flex h-8 cursor-pointer items-center border px-3.5 text-xs font-medium"
-        [class]="selectMode()
-          ? 'border-[#8fa2b7] bg-[#dce4ee] text-[#17304f]'
-          : 'border-[#b9c7d6] bg-white text-[#17304f] hover:bg-[#f1f5f9]'">
-        Select
-      </button>
-
-      <button
-        type="button"
-        [disabled]="selectedCount() === 0"
-        class="inline-flex h-8 items-center border border-[#d0d8e2] bg-[#f8fafc] px-3.5 text-xs font-medium text-[#9aa5b1] disabled:cursor-not-allowed">
-        Edit
-      </button>
-
-      <div class="relative">
-        <button
-          type="button"
-          (click)="showMoreMenu.set(!showMoreMenu()); showColumnsMenu.set(false)"
-          class="inline-flex h-8 cursor-pointer items-center gap-1 border border-[#b9c7d6] bg-white px-3 text-xs font-medium text-[#17304f] hover:bg-[#f1f5f9]">
-          <span>More</span>
-          <span class="text-[10px]">▾</span>
-        </button>
-
-        @if (showMoreMenu()) {
-          <div class="absolute left-0 z-30 mt-1 w-44 border border-[#b9c7d6] bg-white py-1 text-xs text-[#17304f] shadow-md">
-            <button
-              type="button"
-              (click)="exportCsv()"
-              class="block w-full cursor-pointer px-3 py-1.5 text-left hover:bg-[#e8eff7]">
-              Export Selected / All CSV
-            </button>
-            <button
-              type="button"
-              (click)="printReport(); showMoreMenu.set(false)"
-              class="block w-full cursor-pointer px-3 py-1.5 text-left hover:bg-[#e8eff7]">
-              Print Report View
-            </button>
-          </div>
-        }
-      </div>
-
-      <span class="ml-1 text-xs text-[#64748b]">{{ selectedCount() }} selected</span>
-    </div>
-
-    <div class="flex items-center gap-4 text-xs text-[#334155]">
-      <button
-        type="button"
-        (click)="exportCsv()"
-        class="inline-flex h-8 cursor-pointer items-center gap-1 px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
-        <span>Export</span>
-        <span>↓</span>
-      </button>
-
-      <button
-        type="button"
-        (click)="printReport()"
-        class="inline-flex h-8 cursor-pointer items-center px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
-        Print
-      </button>
-
-      <div class="relative">
-        <button
-          type="button"
-          (click)="showColumnsMenu.set(!showColumnsMenu()); showMoreMenu.set(false)"
-          class="inline-flex h-8 cursor-pointer items-center gap-1 px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
-          <span>Columns</span>
-          <span class="text-[10px]">▾</span>
-        </button>
-
-        @if (showColumnsMenu()) {
-          <div class="absolute right-0 z-30 mt-1 w-48 border border-[#b9c7d6] bg-white p-2.5 text-xs text-[#17304f] shadow-md">
-            <label class="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                [checked]="showExtraColumns()"
-                (change)="showExtraColumns.set($any($event.target).checked)" />
-              <span>Show Volume & Notes</span>
-            </label>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- TABLE CONTAINER -->
-  <article class="min-w-0 border border-[#c5ced9] bg-white">
-    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_#e2e8f0] [scrollbar-width:thin]">
-      <table class="w-full min-w-max border-collapse text-left text-[13px] text-[#1f2933]">
-        <thead>
-          <tr class="h-10 border-b border-[#b8c4d2] bg-[#d8dfe8] text-[13px] font-medium text-[#334155]">
-            <th class="w-10 border-r border-[#c2ccd8] px-2.5 text-center">
-              <input
-                type="checkbox"
-                [checked]="allVisibleSelected()"
-                (change)="toggleSelectAllVisible()"
-                aria-label="Select all visible rows"
-                class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
-            </th>
-            <th class="border-r border-[#c2ccd8] px-3 font-medium">
-              @if (activeReport() === 'Production') {
-                Batch Number
-              } @else if (activeReport() === 'Purchasing & Stock') {
-                Reference Number
-              } @else {
-                Invoice Number
-              }
-            </th>
-            <th class="border-r border-[#c2ccd8] px-3 font-medium">
-              @if (activeReport() === 'Production') {
-                Product / Line ↑
-              } @else if (activeReport() === 'Purchasing & Stock') {
-                Item / Supplier ↑
-              } @else {
-                Customer Name ↑
-              }
-            </th>
-            <th class="border-r border-[#c2ccd8] px-3 font-medium">Status</th>
-            <th class="border-r border-[#c2ccd8] px-3 font-medium">Details</th>
-            <th class="border-r border-[#c2ccd8] px-3 font-medium">Period / Date</th>
-            <th class="px-3 font-medium">
-              @if (activeReport() === 'Production') {
-                Output Volume
-              } @else {
-                Report Amount
-              }
-            </th>
-            @if (showExtraColumns()) {
-              <th class="border-l border-[#c2ccd8] px-3 font-medium">Notes</th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of pagedRows(); track row.id; let odd = $odd) {
-            <tr
-              class="h-11 border-b border-[#cfd7e1] transition-colors"
-              [class]="odd ? 'bg-[#edf1f6] hover:bg-[#dce6f2]' : 'bg-white hover:bg-[#dce6f2]'">
-              <td class="border-r border-[#dde4ed] px-2.5 text-center">
-                <input
-                  type="checkbox"
-                  [checked]="row.selected"
-                  (change)="toggleRowSelection(row.id)"
-                  class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
-              </td>
-              <td class="border-r border-[#dde4ed] px-3 font-semibold text-[#1b5a9a]">
-                {{ row.reference }}
-              </td>
-              <td class="border-r border-[#dde4ed] px-3 text-[#1f2933]">
-                {{ row.name }}
-              </td>
-              <td class="border-r border-[#dde4ed] px-3">
-                <span
-                  class="inline-flex items-center rounded-[3px] px-2 py-0.5 text-xs font-medium"
-                  [class]="statusBadgeClasses(row.statusTone)">
-                  {{ row.status }}
-                </span>
-              </td>
-              <td class="border-r border-[#dde4ed] px-3 text-[#334155]">
-                {{ row.detail }}
-              </td>
-              <td class="border-r border-[#dde4ed] px-3 text-[#334155]">
-                {{ row.periodOrOwner }}
-              </td>
-              <td class="px-3 font-medium text-[#1f2933]">
-                {{ row.metricDisplay }}
-              </td>
-              @if (showExtraColumns()) {
-                <td class="border-l border-[#dde4ed] px-3 text-xs text-[#4b5563]">
-                  {{ row.extraNotes }}
-                </td>
-              }
-            </tr>
-          } @empty {
-            <tr class="h-24">
-              <td [attr.colspan]="showExtraColumns() ? 8 : 7" class="px-4 text-center text-xs text-[#64748b]">
-                No report rows match your filter.
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </article>
-
-  <!-- HORIZONTAL SCROLL HINT -->
-  <div class="text-center text-xs text-[#64748b]">
-    Scroll horizontally for additional report columns →
-  </div>
-
-  <!-- FOOTER PAGINATION BAR -->
-  <div class="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs text-[#475569]">
+<section class="w-full space-y-4 text-[13px] text-[#1f2933]">
+  <!-- HEADER + TIMEFRAME FILTER + QUICK REPORT LINKS -->
+  <div class="flex flex-wrap items-center justify-between gap-3">
     <div>
-      Showing {{ rangeStart() }}–{{ rangeEnd() }} of {{ totalFilteredCount() }} {{ activeReport().toLowerCase() }} records
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">
+        Reports Overview
+      </h2>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Visual reporting trends across Production, Purchasing & Stock, and Sales before opening detailed report lists.
+      </p>
     </div>
 
-    <div class="flex flex-wrap items-center gap-4">
-      <div class="flex items-center gap-2">
-        <span>Rows per page:</span>
-        <select
-          [value]="pageSize()"
-          (change)="setPageSize(+$any($event.target).value)"
-          class="h-7 border border-[#b9c7d6] bg-white px-2 text-xs text-[#17304f]">
-          <option [value]="5">5</option>
-          <option [value]="8">8</option>
-          <option [value]="15">15</option>
-          <option [value]="25">25</option>
-        </select>
-      </div>
-
-      <div class="flex items-center gap-1">
-        <button
-          type="button"
-          [disabled]="currentPage() <= 1"
-          (click)="goToPage(currentPage() - 1)"
-          class="inline-flex h-7 w-7 cursor-pointer items-center justify-center border border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9] disabled:cursor-not-allowed disabled:opacity-40">
-          ‹
-        </button>
-
-        @for (p of pageNumbers(); track p) {
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center border border-[#b9c7d6] bg-white">
+        @for (tf of ['All', 'Today', 'This Week', 'This Month']; track tf) {
           <button
             type="button"
-            (click)="goToPage(p)"
-            class="inline-flex h-7 min-w-7 cursor-pointer items-center justify-center border px-2 text-xs font-medium"
-            [class]="currentPage() === p
-              ? 'border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a]'
-              : 'border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9]'">
-            {{ p }}
+            (click)="timeframe.set($any(tf))"
+            class="h-8 cursor-pointer px-2.5 text-xs transition-colors"
+            [class]="timeframe() === tf
+              ? 'bg-[#dde9f7] font-semibold text-[#1b5a9a]'
+              : 'text-[#374151] hover:bg-[#f1f5f9]'">
+            {{ tf }}
           </button>
         }
-
-        <button
-          type="button"
-          [disabled]="currentPage() >= totalPages()"
-          (click)="goToPage(currentPage() + 1)"
-          class="inline-flex h-7 w-7 cursor-pointer items-center justify-center border border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9] disabled:cursor-not-allowed disabled:opacity-40">
-          ›
-        </button>
       </div>
+
+      <a
+        routerLink="/reports/production"
+        class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-3 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+        Production Report
+      </a>
+      <a
+        routerLink="/reports/purchasing-stock"
+        class="inline-flex h-8 items-center border border-[#b9c7d6] bg-white px-3 text-xs font-medium text-[#17304f] hover:bg-[#e1e6ed]">
+        Purchasing & Stock
+      </a>
+      <a
+        routerLink="/reports/sales"
+        class="inline-flex h-8 items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-3.5 text-xs font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] hover:bg-[#164b82]">
+        Sales Report
+      </a>
+    </div>
+  </div>
+
+  <!-- TOP KPI SUMMARY STRIP -->
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Production Output ({{ timeframe() }})</span>
+      <strong class="mt-1 block text-lg font-bold text-[#17304f]">
+        {{ totals().outputUnits.toLocaleString() }} Units
+      </strong>
+      <a routerLink="/reports/production" class="mt-1.5 inline-block text-xs font-medium text-[#1b5a9a] hover:underline">
+        Open Production Reports →
+      </a>
+    </article>
+
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Purchasing & Stock Value ({{ timeframe() }})</span>
+      <strong class="mt-1 block text-lg font-bold text-[#0f766e]">
+        R {{ totals().stockSpend.toLocaleString() }}
+      </strong>
+      <a routerLink="/reports/purchasing-stock" class="mt-1.5 inline-block text-xs font-medium text-[#1b5a9a] hover:underline">
+        Open Purchasing & Stock Reports →
+      </a>
+    </article>
+
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Sales Revenue ({{ timeframe() }})</span>
+      <strong class="mt-1 block text-lg font-bold text-[#1b5a9a]">
+        R {{ totals().salesTotal.toLocaleString() }}
+      </strong>
+      <a routerLink="/reports/sales" class="mt-1.5 inline-block text-xs font-medium text-[#1b5a9a] hover:underline">
+        Open Sales Reports →
+      </a>
+    </article>
+
+    <article class="border border-[#c5ced9] bg-white p-3.5">
+      <span class="block text-xs text-[#4b5563]">Sales vs. Stock Spend Spread</span>
+      <strong
+        class="mt-1 block text-lg font-bold"
+        [class]="totals().grossSpread >= 0 ? 'text-[#15803d]' : 'text-red-700'">
+        {{ totals().grossSpread >= 0 ? '+' : '-' }}R {{ MathAbs(totals().grossSpread).toLocaleString() }}
+      </strong>
+      <span class="mt-1.5 block text-[11px] text-[#64748b]">
+        Period comparison across active streams
+      </span>
+    </article>
+  </div>
+
+  <!-- MAIN CHARTS GRID -->
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
+    <!-- LINE / TREND GRAPH (7 cols) -->
+    <article class="border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white p-4 lg:col-span-7">
+      <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 class="text-[15px] font-bold text-[#17304f]">Report Activity Trend</h3>
+          <p class="text-xs text-[#4b5563]">Sales revenue, purchasing spend, and production units across days.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 text-xs text-[#374151]">
+          <span class="inline-flex items-center gap-1.5">
+            <span class="h-2.5 w-2.5 bg-[#1b5a9a]"></span>
+            Sales (R)
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="h-2.5 w-2.5 bg-[#0f766e]"></span>
+            Purchasing (R)
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <span class="h-2.5 w-2.5 bg-[#475569]"></span>
+            Production (Units)
+          </span>
+        </div>
+      </div>
+
+      <div class="w-full overflow-x-auto">
+        <svg
+          [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight"
+          class="h-52 w-full min-w-[460px] select-none"
+          role="img"
+          aria-label="Report activity trend line chart">
+          <!-- Horizontal gridlines & Y labels -->
+          @for (tick of yTicks(); track tick) {
+            <line
+              [attr.x1]="padLeft"
+              [attr.x2]="chartWidth - padRight"
+              [attr.y1]="yPosForTick(tick)"
+              [attr.y2]="yPosForTick(tick)"
+              stroke="#e2e8f0"
+              stroke-width="1" />
+            <text
+              [attr.x]="padLeft - 8"
+              [attr.y]="yPosForTick(tick) + 4"
+              text-anchor="end"
+              class="fill-[#64748b] text-[10px]">
+              {{ tick >= 1000 ? (tick / 1000) + 'k' : tick }}
+            </text>
+          }
+
+          <!-- Production line -->
+          <polyline
+            fill="none"
+            stroke="#475569"
+            stroke-width="2"
+            stroke-dasharray="4 3"
+            [attr.points]="productionPolyline()" />
+
+          <!-- Purchasing line -->
+          <polyline
+            fill="none"
+            stroke="#0f766e"
+            stroke-width="2.2"
+            [attr.points]="purchasingPolyline()" />
+
+          <!-- Sales line -->
+          <polyline
+            fill="none"
+            stroke="#1b5a9a"
+            stroke-width="2.5"
+            [attr.points]="salesPolyline()" />
+
+          <!-- Data points + X axis labels -->
+          @for (pt of salesPoints(); track pt.label) {
+            <circle
+              [attr.cx]="pt.x"
+              [attr.cy]="pt.y"
+              r="3.5"
+              fill="#1b5a9a" />
+            <text
+              [attr.x]="pt.x"
+              [attr.y]="chartHeight - 8"
+              text-anchor="middle"
+              class="fill-[#475569] text-[11px]">
+              {{ pt.label }}
+            </text>
+          }
+
+          @for (pt of purchasingPoints(); track pt.label) {
+            <circle
+              [attr.cx]="pt.x"
+              [attr.cy]="pt.y"
+              r="3"
+              fill="#0f766e" />
+          }
+
+          @for (pt of productionPoints(); track pt.label) {
+            <circle
+              [attr.cx]="pt.x"
+              [attr.cy]="pt.y"
+              r="3"
+              fill="#475569" />
+          }
+        </svg>
+      </div>
+    </article>
+
+    <!-- BAR COMPARISON + DONUT DISTRIBUTION (5 cols) -->
+    <div class="flex flex-col gap-4 lg:col-span-5">
+      <!-- Horizontal Bar Chart -->
+      <article class="border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white p-4">
+        <div class="mb-3">
+          <h3 class="text-[15px] font-bold text-[#17304f]">Volume & Value Comparison</h3>
+          <p class="text-xs text-[#4b5563]">Relative magnitude across the three active report modules.</p>
+        </div>
+
+        <div class="space-y-3">
+          @for (bar of streamBars(); track bar.label) {
+            <div>
+              <div class="mb-1 flex items-center justify-between text-xs">
+                <span class="font-medium text-[#1f2933]">{{ bar.label }}</span>
+                <span class="font-semibold text-[#17304f]">{{ bar.display }}</span>
+              </div>
+              <div class="h-3 w-full overflow-hidden border border-[#d0d8e2] bg-[#edf1f6]">
+                <div
+                  class="h-full bg-[#1b5a9a] transition-all duration-300"
+                  [style.width.%]="barWidthPercent(bar.value)"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+
+      <!-- Donut Share Chart -->
+      <article class="flex-1 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white p-4">
+        <div class="mb-2">
+          <h3 class="text-[15px] font-bold text-[#17304f]">Report Stream Share</h3>
+          <p class="text-xs text-[#4b5563]">Proportion of total logged figures in the selected period.</p>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <svg
+            viewBox="0 0 112 112"
+            class="h-28 w-28 shrink-0 -rotate-90"
+            role="img"
+            aria-label="Report stream distribution donut chart">
+            <circle
+              cx="56"
+              cy="56"
+              [attr.r]="donutRadius"
+              fill="none"
+              stroke="#e2e8f0"
+              stroke-width="14" />
+            @for (seg of donutSegments(); track seg.label) {
+              <circle
+                cx="56"
+                cy="56"
+                [attr.r]="donutRadius"
+                fill="none"
+                [attr.stroke]="seg.color"
+                stroke-width="14"
+                [attr.stroke-dasharray]="seg.dashArray"
+                [attr.stroke-dashoffset]="seg.dashOffset" />
+            }
+          </svg>
+
+          <div class="flex-1 space-y-2 text-xs">
+            @for (seg of donutSegments(); track seg.label) {
+              <div class="flex items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-2 text-[#334155]">
+                  <span class="h-2.5 w-2.5 shrink-0" [style.background-color]="seg.color"></span>
+                  <span>{{ seg.label }}</span>
+                </span>
+                <span class="font-semibold text-[#17304f]">{{ seg.percent }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+      </article>
     </div>
   </div>
 </section>

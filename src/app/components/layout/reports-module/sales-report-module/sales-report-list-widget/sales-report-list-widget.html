@@ -1,0 +1,186 @@
+<section class="w-full space-y-3 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <div>
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">Sales Reports</h2>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Reports generated from existing sales orders, invoices, quotations, and customer records.
+      </p>
+    </div>
+
+    <input
+      type="text"
+      [value]="searchQuery()"
+      (input)="searchQuery.set($any($event.target).value); currentPage.set(1)"
+      placeholder="Filter sales reports..."
+      class="h-8 w-56 border border-[#b9c7d6] bg-white px-2.5 text-xs text-[#1f2933] placeholder:text-[#6b7280]" />
+  </div>
+
+  <!-- ACTION TOOLBAR -->
+  <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        (click)="toggleSelectAllVisible()"
+        class="inline-flex h-8 cursor-pointer items-center border border-[#b9c7d6] bg-white px-3.5 text-xs font-medium text-[#17304f] hover:bg-[#f1f5f9]">
+        Select All
+      </button>
+
+      <span class="ml-1 text-xs text-[#64748b]">{{ selectedCount() }} selected</span>
+    </div>
+
+    <div class="flex items-center gap-4 text-xs text-[#334155]">
+      <button
+        type="button"
+        (click)="exportCsv()"
+        class="inline-flex h-8 cursor-pointer items-center gap-1 px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
+        <span>Export</span>
+        <span>↓</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="printView()"
+        class="inline-flex h-8 cursor-pointer items-center px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
+        Print
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <article class="min-w-0 border border-[#c5ced9] bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_#e2e8f0] [scrollbar-width:thin]">
+      <table class="w-full min-w-max border-collapse text-left text-[13px] text-[#1f2933]">
+        <thead>
+          <tr class="h-10 border-b border-[#b8c4d2] bg-[#d8dfe8] text-[13px] font-medium text-[#334155]">
+            <th class="w-10 border-r border-[#c2ccd8] px-2.5 text-center">
+              <input
+                type="checkbox"
+                [checked]="allVisibleSelected()"
+                (change)="toggleSelectAllVisible()"
+                aria-label="Select all visible rows"
+                class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+            </th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Report Number</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Report Title ↑</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Status</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Account Scope</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Period Covered</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Total Sales</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Generated</th>
+            <th class="px-3 text-right font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pagedReports(); track row.id; let odd = $odd) {
+            <tr
+              class="h-11 border-b border-[#cfd7e1] transition-colors"
+              [class]="odd ? 'bg-[#edf1f6] hover:bg-[#dce6f2]' : 'bg-white hover:bg-[#dce6f2]'">
+              <td class="border-r border-[#dde4ed] px-2.5 text-center">
+                <input
+                  type="checkbox"
+                  [checked]="row.selected"
+                  (change)="toggleRowSelection(row.id)"
+                  class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+              </td>
+              <td class="border-r border-[#dde4ed] px-3 font-semibold text-[#1b5a9a]">
+                {{ row.reportCode }}
+              </td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#1f2933]">
+                {{ row.reportTitle }}
+              </td>
+              <td class="border-r border-[#dde4ed] px-3">
+                <span
+                  class="inline-flex items-center rounded-[3px] px-2 py-0.5 text-xs font-medium"
+                  [class]="row.status === 'Ready'
+                    ? 'border border-[#bbf7d0] bg-[#dcfce7] text-[#15803d]'
+                    : 'border border-[#cbd5e1] bg-[#e2e8f0] text-[#334155]'">
+                  {{ row.status }}
+                </span>
+              </td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#334155]">{{ row.accountScope }}</td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#334155]">{{ row.periodCovered }}</td>
+              <td class="border-r border-[#dde4ed] px-3 font-medium text-[#1f2933]">{{ row.totalSalesDisplay }}</td>
+              <td class="border-r border-[#dde4ed] px-3 text-xs text-[#475569]">{{ row.generatedDate }}</td>
+              <td class="px-3 text-right">
+                <button
+                  type="button"
+                  (click)="deletingReport.set(row)"
+                  class="inline-flex h-7 cursor-pointer items-center border border-red-200 bg-white px-2.5 text-xs text-red-700 hover:bg-red-50">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr class="h-24">
+              <td colspan="9" class="px-4 text-center text-xs text-[#64748b]">
+                No sales reports match your filter.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <div class="text-center text-xs text-[#64748b]">
+    Scroll horizontally for additional report columns →
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs text-[#475569]">
+    <div>
+      Showing {{ rangeStart() }}–{{ rangeEnd() }} of {{ filteredReports().length }} sales reports
+    </div>
+
+    <div class="flex flex-wrap items-center gap-4">
+      <div class="flex items-center gap-2">
+        <span>Rows per page:</span>
+        <select
+          [value]="pageSize()"
+          (change)="pageSize.set(+$any($event.target).value); currentPage.set(1)"
+          class="h-7 border border-[#b9c7d6] bg-white px-2 text-xs text-[#17304f]">
+          <option [value]="5">5</option>
+          <option [value]="8">8</option>
+          <option [value]="15">15</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-1">
+        <button
+          type="button"
+          [disabled]="currentPage() <= 1"
+          (click)="currentPage.set(currentPage() - 1)"
+          class="inline-flex h-7 w-7 cursor-pointer items-center justify-center border border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9] disabled:cursor-not-allowed disabled:opacity-40">
+          ‹
+        </button>
+
+        @for (p of pageNumbers(); track p) {
+          <button
+            type="button"
+            (click)="currentPage.set(p)"
+            class="inline-flex h-7 min-w-7 cursor-pointer items-center justify-center border px-2 text-xs font-medium"
+            [class]="currentPage() === p
+              ? 'border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a]'
+              : 'border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9]'">
+            {{ p }}
+          </button>
+        }
+
+        <button
+          type="button"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="currentPage.set(currentPage() + 1)"
+          class="inline-flex h-7 w-7 cursor-pointer items-center justify-center border border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9] disabled:cursor-not-allowed disabled:opacity-40">
+          ›
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (deletingReport(); as target) {
+    <app-delete-sales-report-form
+      [report]="target"
+      (close)="deletingReport.set(null)"
+      (confirmDelete)="deleteReport($event)" />
+  }
+</section>

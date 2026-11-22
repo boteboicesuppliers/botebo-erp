@@ -175,6 +175,11 @@ export class NavBar {
       name: 'Reports',
       route: '/reports',
       icon: 'reports',
+      children: [
+        { name: 'Production Report', route: '/reports/production' },
+        { name: 'Purchasing & Stock Report', route: '/reports/purchasing-stock' },
+        { name: 'Sales Report', route: '/reports/sales' },
+      ],
     },
   ];
 
