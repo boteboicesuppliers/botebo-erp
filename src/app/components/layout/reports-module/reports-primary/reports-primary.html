@@ -1,0 +1,291 @@
+<section class="w-full space-y-3 text-[13px] text-[#1f2933]">
+  <!-- REPORT SWITCHER + SEARCH -->
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <div class="flex flex-wrap items-center gap-1.5">
+      <button
+        type="button"
+        (click)="switchReport('Production')"
+        class="inline-flex h-8 cursor-pointer items-center border px-3 text-xs font-medium"
+        [class]="activeReport() === 'Production'
+          ? 'border-[#9fb0c3] bg-[#e2e8f0] font-semibold text-[#17304f]'
+          : 'border-[#c5ced9] bg-white text-[#374151] hover:bg-[#f1f5f9]'">
+        Production Report
+      </button>
+
+      <button
+        type="button"
+        (click)="switchReport('Purchasing & Stock')"
+        class="inline-flex h-8 cursor-pointer items-center border px-3 text-xs font-medium"
+        [class]="activeReport() === 'Purchasing & Stock'
+          ? 'border-[#9fb0c3] bg-[#e2e8f0] font-semibold text-[#17304f]'
+          : 'border-[#c5ced9] bg-white text-[#374151] hover:bg-[#f1f5f9]'">
+        Purchasing & Stock Report
+      </button>
+
+      <button
+        type="button"
+        (click)="switchReport('Sales')"
+        class="inline-flex h-8 cursor-pointer items-center border px-3 text-xs font-medium"
+        [class]="activeReport() === 'Sales'
+          ? 'border-[#9fb0c3] bg-[#e2e8f0] font-semibold text-[#17304f]'
+          : 'border-[#c5ced9] bg-white text-[#374151] hover:bg-[#f1f5f9]'">
+        Sales Report
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <input
+        type="text"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value); currentPage.set(1)"
+        placeholder="Filter rows..."
+        class="h-8 w-52 border border-[#b9c7d6] bg-white px-2.5 text-xs text-[#1f2933] placeholder:text-[#6b7280]" />
+    </div>
+  </div>
+
+  <!-- ACTION TOOLBAR (MATCHING REFERENCE) -->
+  <div class="relative flex flex-wrap items-center justify-between gap-2 pt-1">
+    <div class="flex items-center gap-2">
+      <button
+        type="button"
+        (click)="toggleSelectMode()"
+        class="inline-flex h-8 cursor-pointer items-center border px-3.5 text-xs font-medium"
+        [class]="selectMode()
+          ? 'border-[#8fa2b7] bg-[#dce4ee] text-[#17304f]'
+          : 'border-[#b9c7d6] bg-white text-[#17304f] hover:bg-[#f1f5f9]'">
+        Select
+      </button>
+
+      <button
+        type="button"
+        [disabled]="selectedCount() === 0"
+        class="inline-flex h-8 items-center border border-[#d0d8e2] bg-[#f8fafc] px-3.5 text-xs font-medium text-[#9aa5b1] disabled:cursor-not-allowed">
+        Edit
+      </button>
+
+      <div class="relative">
+        <button
+          type="button"
+          (click)="showMoreMenu.set(!showMoreMenu()); showColumnsMenu.set(false)"
+          class="inline-flex h-8 cursor-pointer items-center gap-1 border border-[#b9c7d6] bg-white px-3 text-xs font-medium text-[#17304f] hover:bg-[#f1f5f9]">
+          <span>More</span>
+          <span class="text-[10px]">▾</span>
+        </button>
+
+        @if (showMoreMenu()) {
+          <div class="absolute left-0 z-30 mt-1 w-44 border border-[#b9c7d6] bg-white py-1 text-xs text-[#17304f] shadow-md">
+            <button
+              type="button"
+              (click)="exportCsv()"
+              class="block w-full cursor-pointer px-3 py-1.5 text-left hover:bg-[#e8eff7]">
+              Export Selected / All CSV
+            </button>
+            <button
+              type="button"
+              (click)="printReport(); showMoreMenu.set(false)"
+              class="block w-full cursor-pointer px-3 py-1.5 text-left hover:bg-[#e8eff7]">
+              Print Report View
+            </button>
+          </div>
+        }
+      </div>
+
+      <span class="ml-1 text-xs text-[#64748b]">{{ selectedCount() }} selected</span>
+    </div>
+
+    <div class="flex items-center gap-4 text-xs text-[#334155]">
+      <button
+        type="button"
+        (click)="exportCsv()"
+        class="inline-flex h-8 cursor-pointer items-center gap-1 px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
+        <span>Export</span>
+        <span>↓</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="printReport()"
+        class="inline-flex h-8 cursor-pointer items-center px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
+        Print
+      </button>
+
+      <div class="relative">
+        <button
+          type="button"
+          (click)="showColumnsMenu.set(!showColumnsMenu()); showMoreMenu.set(false)"
+          class="inline-flex h-8 cursor-pointer items-center gap-1 px-1.5 font-medium text-[#17304f] hover:text-[#1b5a9a]">
+          <span>Columns</span>
+          <span class="text-[10px]">▾</span>
+        </button>
+
+        @if (showColumnsMenu()) {
+          <div class="absolute right-0 z-30 mt-1 w-48 border border-[#b9c7d6] bg-white p-2.5 text-xs text-[#17304f] shadow-md">
+            <label class="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                [checked]="showExtraColumns()"
+                (change)="showExtraColumns.set($any($event.target).checked)" />
+              <span>Show Volume & Notes</span>
+            </label>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE CONTAINER -->
+  <article class="min-w-0 border border-[#c5ced9] bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_#e2e8f0] [scrollbar-width:thin]">
+      <table class="w-full min-w-max border-collapse text-left text-[13px] text-[#1f2933]">
+        <thead>
+          <tr class="h-10 border-b border-[#b8c4d2] bg-[#d8dfe8] text-[13px] font-medium text-[#334155]">
+            <th class="w-10 border-r border-[#c2ccd8] px-2.5 text-center">
+              <input
+                type="checkbox"
+                [checked]="allVisibleSelected()"
+                (change)="toggleSelectAllVisible()"
+                aria-label="Select all visible rows"
+                class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+            </th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">
+              @if (activeReport() === 'Production') {
+                Batch Number
+              } @else if (activeReport() === 'Purchasing & Stock') {
+                Reference Number
+              } @else {
+                Invoice Number
+              }
+            </th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">
+              @if (activeReport() === 'Production') {
+                Product / Line ↑
+              } @else if (activeReport() === 'Purchasing & Stock') {
+                Item / Supplier ↑
+              } @else {
+                Customer Name ↑
+              }
+            </th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Status</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Details</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Period / Date</th>
+            <th class="px-3 font-medium">
+              @if (activeReport() === 'Production') {
+                Output Volume
+              } @else {
+                Report Amount
+              }
+            </th>
+            @if (showExtraColumns()) {
+              <th class="border-l border-[#c2ccd8] px-3 font-medium">Notes</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pagedRows(); track row.id; let odd = $odd) {
+            <tr
+              class="h-11 border-b border-[#cfd7e1] transition-colors"
+              [class]="odd ? 'bg-[#edf1f6] hover:bg-[#dce6f2]' : 'bg-white hover:bg-[#dce6f2]'">
+              <td class="border-r border-[#dde4ed] px-2.5 text-center">
+                <input
+                  type="checkbox"
+                  [checked]="row.selected"
+                  (change)="toggleRowSelection(row.id)"
+                  class="h-3.5 w-3.5 cursor-pointer accent-[#1b5a9a]" />
+              </td>
+              <td class="border-r border-[#dde4ed] px-3 font-semibold text-[#1b5a9a]">
+                {{ row.reference }}
+              </td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#1f2933]">
+                {{ row.name }}
+              </td>
+              <td class="border-r border-[#dde4ed] px-3">
+                <span
+                  class="inline-flex items-center rounded-[3px] px-2 py-0.5 text-xs font-medium"
+                  [class]="statusBadgeClasses(row.statusTone)">
+                  {{ row.status }}
+                </span>
+              </td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#334155]">
+                {{ row.detail }}
+              </td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#334155]">
+                {{ row.periodOrOwner }}
+              </td>
+              <td class="px-3 font-medium text-[#1f2933]">
+                {{ row.metricDisplay }}
+              </td>
+              @if (showExtraColumns()) {
+                <td class="border-l border-[#dde4ed] px-3 text-xs text-[#4b5563]">
+                  {{ row.extraNotes }}
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr class="h-24">
+              <td [attr.colspan]="showExtraColumns() ? 8 : 7" class="px-4 text-center text-xs text-[#64748b]">
+                No report rows match your filter.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- HORIZONTAL SCROLL HINT -->
+  <div class="text-center text-xs text-[#64748b]">
+    Scroll horizontally for additional report columns →
+  </div>
+
+  <!-- FOOTER PAGINATION BAR -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs text-[#475569]">
+    <div>
+      Showing {{ rangeStart() }}–{{ rangeEnd() }} of {{ totalFilteredCount() }} {{ activeReport().toLowerCase() }} records
+    </div>
+
+    <div class="flex flex-wrap items-center gap-4">
+      <div class="flex items-center gap-2">
+        <span>Rows per page:</span>
+        <select
+          [value]="pageSize()"
+          (change)="setPageSize(+$any($event.target).value)"
+          class="h-7 border border-[#b9c7d6] bg-white px-2 text-xs text-[#17304f]">
+          <option [value]="5">5</option>
+          <option [value]="8">8</option>
+          <option [value]="15">15</option>
+          <option [value]="25">25</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-1">
+        <button
+          type="button"
+          [disabled]="currentPage() <= 1"
+          (click)="goToPage(currentPage() - 1)"
+          class="inline-flex h-7 w-7 cursor-pointer items-center justify-center border border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9] disabled:cursor-not-allowed disabled:opacity-40">
+          ‹
+        </button>
+
+        @for (p of pageNumbers(); track p) {
+          <button
+            type="button"
+            (click)="goToPage(p)"
+            class="inline-flex h-7 min-w-7 cursor-pointer items-center justify-center border px-2 text-xs font-medium"
+            [class]="currentPage() === p
+              ? 'border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a]'
+              : 'border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9]'">
+            {{ p }}
+          </button>
+        }
+
+        <button
+          type="button"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="goToPage(currentPage() + 1)"
+          class="inline-flex h-7 w-7 cursor-pointer items-center justify-center border border-[#cbd5e1] bg-white text-[#334155] hover:bg-[#f1f5f9] disabled:cursor-not-allowed disabled:opacity-40">
+          ›
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

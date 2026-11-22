@@ -50,6 +50,9 @@ import { Bookkeeping } from './components/main-view-components/accounting-module
 import { FinancialStatements } from './components/main-view-components/accounting-module/financial-statements/financial-statements';
 import { FinancialProjections } from './components/main-view-components/accounting-module/financial-projections/financial-projections';
 
+// Reports Module
+import { ReportsPrimary } from './components/main-view-components/reports-module/reports-primary/reports-primary';
+
 // Configurations Module
 import { ProductAgnostics } from './components/main-view-components/configurations-module/product-agnostics/product-agnostics';
 import { CategoriesAndClassifications } from './components/main-view-components/configurations-module/categories-and-classifications/categories-and-classifications';
@@ -121,6 +124,9 @@ export const routes: Routes = [
       { path: 'accounting/bookkeeping', component: Bookkeeping },
       { path: 'accounting/financial-statements', component: FinancialStatements },
       { path: 'accounting/financial-projections', component: FinancialProjections },
+
+      // Reports Module Route
+      { path: 'reports', component: ReportsPrimary },
 
       // Configurations Module Routes
       { path: 'configurations/product-agnostics', component: ProductAgnostics },
