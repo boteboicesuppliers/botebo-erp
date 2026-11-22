@@ -1,0 +1,75 @@
+<section class="w-full space-y-4 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">
+        Daily Operations
+      </h2>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Live day-to-day operational items across production, receiving, quality checks, and deliveries.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <select
+        [value]="moduleFilter()"
+        (change)="moduleFilter.set($any($event.target).value)"
+        class="h-8 border border-[#b9c7d6] bg-white px-2.5 text-xs text-[#17304f]">
+        <option value="All">All Modules</option>
+        <option value="Production">Production</option>
+        <option value="Purchases">Purchases</option>
+        <option value="Quality">Quality</option>
+        <option value="Logistics">Logistics</option>
+      </select>
+
+      <input
+        type="text"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+        placeholder="Filter operations..."
+        class="h-8 w-52 border border-[#b9c7d6] bg-white px-2.5 text-xs text-[#1f2933] placeholder:text-[#6b7280]" />
+    </div>
+  </div>
+
+  <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_#e2e8f0] [scrollbar-width:thin]">
+      <table class="w-full min-w-max border-collapse text-left text-[13px] text-[#1f2933]">
+        <thead>
+          <tr class="h-10 border-b border-[#b8c4d2] bg-[#d8dfe8] text-[13px] font-medium text-[#334155]">
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Reference</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Module</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Operation Summary</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Owner / Desk</th>
+            <th class="border-r border-[#c2ccd8] px-3 font-medium">Status</th>
+            <th class="px-3 font-medium">Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (op of filteredOperations(); track op.id; let odd = $odd) {
+            <tr
+              class="h-11 border-b border-[#cfd7e1] transition-colors"
+              [class]="odd ? 'bg-[#edf1f6] hover:bg-[#dce6f2]' : 'bg-white hover:bg-[#dce6f2]'">
+              <td class="border-r border-[#dde4ed] px-3 font-semibold text-[#1b5a9a]">{{ op.reference }}</td>
+              <td class="border-r border-[#dde4ed] px-3 font-medium text-[#17304f]">{{ op.module }}</td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#1f2933]">{{ op.summary }}</td>
+              <td class="border-r border-[#dde4ed] px-3 text-[#334155]">{{ op.owner }}</td>
+              <td class="border-r border-[#dde4ed] px-3">
+                <span
+                  class="inline-flex items-center rounded-[3px] px-2 py-0.5 text-xs font-medium"
+                  [class]="badgeClass(op.status)">
+                  {{ op.status }}
+                </span>
+              </td>
+              <td class="px-3 text-xs text-[#475569]">{{ op.updatedAt }}</td>
+            </tr>
+          } @empty {
+            <tr class="h-24">
+              <td colspan="6" class="px-4 text-center text-xs text-[#64748b]">
+                No daily operations match your filter.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
