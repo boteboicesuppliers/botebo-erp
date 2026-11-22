@@ -23,6 +23,7 @@ interface BarDatum {
   styleUrl: './reports-primary.css',
 })
 export class ReportsPrimary {
+  readonly Math = Math;
   timeframe = signal<ReportTimeframe>('This Week');
 
   private allSeries = signal<SeriesPoint[]>([

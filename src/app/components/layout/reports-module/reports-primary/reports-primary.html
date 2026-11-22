@@ -80,7 +80,7 @@
       <strong
         class="mt-1 block text-lg font-bold"
         [class]="totals().grossSpread >= 0 ? 'text-[#15803d]' : 'text-red-700'">
-        {{ totals().grossSpread >= 0 ? '+' : '-' }}R {{ MathAbs(totals().grossSpread).toLocaleString() }}
+        {{ totals().grossSpread >= 0 ? '+' : '-' }}R {{ Math.abs(totals().grossSpread).toLocaleString() }}
       </strong>
       <span class="mt-1.5 block text-[11px] text-[#64748b]">
         Period comparison across active streams
