@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LoginForm } from './components/auth/login-form/login-form';
-import { Dashboard } from './components/main-view-components/dashboard/dashboard';
 import { Contracts } from './components/main-view-components/contracts/contracts';
 import { Suppliers } from './components/main-view-components/suppliers/suppliers';
 import { SalesPrimary } from './components/main-view-components/sales-module/sales-primary/sales-primary';
@@ -14,6 +13,11 @@ import { ProductionOrdersAndBatches } from './components/layout/production-modul
 import { MachineAndLineStatus } from './components/layout/production-module/machine-and-line-status/machine-and-line-status';
 import { StockCount } from './components/main-view-components/production-module/stock-count/stock-count';
 import { Locations } from './components/main-view-components/production-module/locations/locations';
+
+// Overview & Analytics Module
+import { OverviewAndAnalyticsPrimary } from './components/main-view-components/overview-and-analytics-module/overview-and-analytics-primary/overview-and-analytics-primary';
+import { DailyOperations } from './components/main-view-components/overview-and-analytics-module/daily-operations/daily-operations';
+import { SalesAndOrdersSnapshot } from './components/main-view-components/overview-and-analytics-module/sales-and-orders-snapshot/sales-and-orders-snapshot';
 
 // Products & Materials Module
 import { ProductsAndMaterialsPrimary } from './components/main-view-components/products-and-materials-module/products-and-materials-primary/products-and-materials-primary';
@@ -73,10 +77,14 @@ export const routes: Routes = [
     path: '',
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: Dashboard },
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'contracts', component: Contracts },
       { path: 'suppliers', component: Suppliers },
+
+      // Overview & Analytics Module Routes
+      { path: 'overview', component: OverviewAndAnalyticsPrimary },
+      { path: 'overview/daily-operations', component: DailyOperations },
+      { path: 'overview/sales-snapshot', component: SalesAndOrdersSnapshot },
 
       // Sales Module Routes
       { path: 'sales', component: SalesPrimary },
