@@ -1,0 +1,136 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4 backdrop-blur-[1px]">
+  <div class="w-full max-w-lg border border-[#c5ced9] bg-white text-[13px] text-[#1f2933] shadow-lg">
+    <div class="flex items-center justify-between border-b border-[#c5ced9] px-5 py-4">
+      <div>
+        <h3 class="text-base font-bold text-[#17304f]">Edit Rejected Stock Record</h3>
+        <p class="mt-0.5 text-xs text-[#4b5563]">Update quantities, defect notes, or disposition status.</p>
+      </div>
+      <button
+        type="button"
+        (click)="close.emit()"
+        aria-label="Close modal"
+        class="flex h-7 w-7 cursor-pointer items-center justify-center text-[#4b5563] hover:bg-[#e1e6ed] hover:text-[#17304f]">
+        ×
+      </button>
+    </div>
+
+    <form (submit)="$event.preventDefault(); submit()" class="space-y-3.5 px-5 py-4">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Reference Code</label>
+          <input
+            type="text"
+            [value]="referenceCode()"
+            (input)="referenceCode.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Item Type</label>
+          <select
+            [value]="itemKind()"
+            (change)="itemKind.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+            <option value="Finished Good">Finished Good</option>
+            <option value="Raw Material">Raw Material</option>
+            <option value="Packaging">Packaging</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Item Name *</label>
+          <input
+            type="text"
+            required
+            [value]="itemName()"
+            (input)="itemName.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Batch / Lot Number</label>
+          <input
+            type="text"
+            [value]="batchOrLot()"
+            (input)="batchOrLot.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Quantity</label>
+          <input
+            type="number"
+            min="0"
+            [value]="quantity()"
+            (input)="quantity.set(+$any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">UOM</label>
+          <input
+            type="text"
+            [value]="unitOfMeasure()"
+            (input)="unitOfMeasure.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Disposition</label>
+          <select
+            [value]="disposition()"
+            (change)="disposition.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+            <option value="Quarantine Hold">Quarantine Hold</option>
+            <option value="Scrap / Melt">Scrap / Melt</option>
+            <option value="Return to Supplier">Return to Supplier</option>
+            <option value="Rework / Repack">Rework / Repack</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="mb-1 block text-xs font-medium text-[#374151]">Defect / Reason *</label>
+        <input
+          type="text"
+          required
+          [value]="reason()"
+          (input)="reason.set($any($event.target).value)"
+          class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Date Logged</label>
+          <input
+            type="date"
+            [value]="loggedDate()"
+            (input)="loggedDate.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-[#374151]">Logged By</label>
+          <input
+            type="text"
+            [value]="loggedBy()"
+            (input)="loggedBy.set($any($event.target).value)"
+            class="h-8 w-full border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] px-3 text-xs text-[#17304f]" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 border-t border-[#c5ced9] pt-3">
+        <button
+          type="button"
+          (click)="close.emit()"
+          class="inline-flex h-8 cursor-pointer items-center border border-[#b9c7d6] bg-white px-3.5 text-xs text-[#17304f] hover:bg-[#e1e6ed]">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="inline-flex h-8 cursor-pointer items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-4 text-xs font-medium text-white hover:bg-[#164b82]">
+          Update Record
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

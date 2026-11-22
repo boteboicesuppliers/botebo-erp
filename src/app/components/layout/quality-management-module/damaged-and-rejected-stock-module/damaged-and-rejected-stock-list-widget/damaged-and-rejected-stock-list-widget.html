@@ -1,0 +1,153 @@
+<section class="w-full space-y-4 text-[13px] text-[#1f2933]">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-[20px] leading-7 font-bold tracking-tight text-[#17304f]">
+        Damaged & Rejected Stock
+      </h2>
+      <p class="mt-0.5 text-xs text-[#4b5563]">
+        Track non-conforming batches, damaged packaging, and quarantine or scrap dispositions.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="showNewModal.set(true)"
+      class="inline-flex h-8 cursor-pointer items-center border border-t-[#2c5282] border-l-[#2c5282] border-b-[#12283f] border-r-[#12283f] bg-[#1b5a9a] px-3.5 text-xs font-medium text-white shadow-[0_1px_2px_rgba(23,48,79,0.35)] hover:bg-[#164b82]">
+      + Log Rejected Stock
+    </button>
+  </div>
+
+  <!-- FILTER TOOLBAR -->
+  <article class="border border-[#c5ced9] bg-white p-4">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Item Type</label>
+          <select
+            [value]="kindFilter()"
+            (change)="kindFilter.set($any($event.target).value)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+            <option value="All">All Types</option>
+            <option value="Finished Good">Finished Good</option>
+            <option value="Raw Material">Raw Material</option>
+            <option value="Packaging">Packaging</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Disposition</label>
+          <select
+            [value]="dispositionFilter()"
+            (change)="dispositionFilter.set($any($event.target).value)"
+            class="h-8 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-xs text-[#17304f]">
+            <option value="All">All Dispositions</option>
+            <option value="Scrap / Melt">Scrap / Melt</option>
+            <option value="Return to Supplier">Return to Supplier</option>
+            <option value="Rework / Repack">Rework / Repack</option>
+            <option value="Quarantine Hold">Quarantine Hold</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-[#374151]">Search</label>
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+            placeholder="Ref, item, batch, reason..."
+            class="h-8 w-56 border border-t-[#c9d4e1] border-l-[#c9d4e1] border-b-[#9fb0c3] border-r-[#9fb0c3] bg-white px-3 text-[13px] text-[#1f2933] placeholder:text-[#6b7280]" />
+        </div>
+      </div>
+
+      <span class="text-xs text-[#4b5563]">
+        Records: <strong class="font-bold text-[#17304f]">{{ filteredRecords().length }}</strong>
+        · Qty: <strong class="font-bold text-[#17304f]">{{ totalUnits() }}</strong>
+      </span>
+    </div>
+  </article>
+
+  <!-- TABLE -->
+  <article class="min-w-0 border border-t-[3px] border-[#c5ced9] border-t-[#b8cbe0] bg-white">
+    <div class="w-full overflow-auto [scrollbar-color:#9fb3c8_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#9fb3c8] [&::-webkit-scrollbar-track]:bg-transparent">
+      <table class="w-full min-w-max border-separate border-spacing-0 text-left text-[13px] text-[#1f2933] [&_td]:h-10 [&_td]:whitespace-nowrap [&_td]:border-b [&_td]:border-b-[#cfd7e1] [&_td]:shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] [&_td]:px-2.5 [&_td]:align-middle [&_th]:h-10 [&_th]:border-t [&_th]:border-r [&_th]:border-b [&_th]:border-t-[#cdd5df] [&_th]:border-r-[#a9b7c8] [&_th]:border-b-[#bcc7d4] [&_th]:bg-[#e1e6ed] [&_th]:shadow-[inset_1px_0_0_rgba(255,255,255,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] [&_th]:px-2.5 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-[#374151] [&_td:first-child]:pl-5 [&_th:first-child]:pl-5">
+        <thead>
+          <tr>
+            <th>Ref #</th>
+            <th>Item</th>
+            <th>Type</th>
+            <th>Batch / Lot</th>
+            <th class="text-right">Qty</th>
+            <th>UOM</th>
+            <th>Defect / Reason</th>
+            <th>Disposition</th>
+            <th>Date</th>
+            <th>Logged By</th>
+            <th class="pr-5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (rec of filteredRecords(); track rec.id; let odd = $odd) {
+            <tr class="transition-colors duration-150" [class]="odd ? '[&_td]:bg-[#e6eaf0] hover:[&_td]:bg-[#d8e3f1]' : '[&_td]:bg-white hover:[&_td]:bg-[#d8e3f1]'">
+              <td class="font-medium text-[#1b5a9a]">{{ rec.referenceCode }}</td>
+              <td class="font-bold text-[#17304f]">{{ rec.itemName }}</td>
+              <td>{{ rec.itemKind }}</td>
+              <td class="text-xs text-[#374151]">{{ rec.batchOrLot }}</td>
+              <td class="text-right font-bold text-[#17304f]">{{ rec.quantity }}</td>
+              <td>{{ rec.unitOfMeasure }}</td>
+              <td>{{ rec.reason }}</td>
+              <td>
+                <span class="inline-flex items-center rounded-[2px] bg-[#dde9f7] px-2 py-0.5 text-xs font-medium text-[#1b5a9a]">
+                  {{ rec.disposition }}
+                </span>
+              </td>
+              <td class="text-xs text-[#4b5563]">{{ rec.loggedDate }}</td>
+              <td>{{ rec.loggedBy }}</td>
+              <td class="pr-5 text-right">
+                <div class="inline-flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    (click)="editingRecord.set(rec)"
+                    class="inline-flex h-7 cursor-pointer items-center border border-[#b9c7d6] bg-white px-2.5 text-xs text-[#17304f] hover:bg-[#e1e6ed]">
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    (click)="deletingRecord.set(rec)"
+                    class="inline-flex h-7 cursor-pointer items-center border border-red-200 bg-white px-2.5 text-xs text-red-700 hover:bg-red-50">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="11" class="h-24 text-center text-[#4b5563]">
+                No damaged or rejected stock records match your filter.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  @if (showNewModal()) {
+    <app-new-damaged-rejected-stock-form
+      (close)="showNewModal.set(false)"
+      (save)="addRecord($event)" />
+  }
+
+  @if (editingRecord(); as activeEdit) {
+    <app-edit-damaged-rejected-stock-form
+      [record]="activeEdit"
+      (close)="editingRecord.set(null)"
+      (save)="updateRecord($event)" />
+  }
+
+  @if (deletingRecord(); as activeDelete) {
+    <app-delete-damaged-rejected-stock-form
+      [record]="activeDelete"
+      (close)="deletingRecord.set(null)"
+      (confirmDelete)="deleteRecord($event)" />
+  }
+</section>

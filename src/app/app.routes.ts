@@ -21,6 +21,12 @@ import { FinishedGoods } from './components/main-view-components/products-and-ma
 import { RawMaterialsAndPackaging } from './components/main-view-components/products-and-materials-module/raw-materials-and-packaging/raw-materials-and-packaging';
 import { Recipe } from './components/main-view-components/products-and-materials-module/recipe/recipe';
 
+// Quality Management Module
+import { QualityManagementPrimary } from './components/main-view-components/quality-management-module/quality-management-primary/quality-management-primary';
+import { RawMaterialsChecks } from './components/main-view-components/quality-management-module/raw-materials-checks/raw-materials-checks';
+import { FinishedProductChecks } from './components/main-view-components/quality-management-module/finished-product-checks/finished-product-checks';
+import { DamagedAndRejectedStock } from './components/main-view-components/quality-management-module/damaged-and-rejected-stock/damaged-and-rejected-stock';
+
 // Logistics Module
 import { LogisticsPrimary } from './components/main-view-components/logistics-module/logistics-primary/logistics-primary';
 import { DeliverySchedulesListWidget } from './components/layout/logistics-module/delivery-schedules-module/delivery-schedules-list-widget/delivery-schedules-list-widget';
@@ -86,6 +92,12 @@ export const routes: Routes = [
       { path: 'products/finished-goods', component: FinishedGoods },
       { path: 'products/raw-materials', component: RawMaterialsAndPackaging },
       { path: 'products/bom', component: Recipe },
+
+      // Quality Management Module Routes
+      { path: 'quality', component: QualityManagementPrimary },
+      { path: 'quality/raw-materials', component: RawMaterialsChecks },
+      { path: 'quality/finished-goods', component: FinishedProductChecks },
+      { path: 'quality/rejected', component: DamagedAndRejectedStock },
 
       // Logistics Module Routes
       { path: 'logistics', component: LogisticsPrimary },
